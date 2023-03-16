@@ -15,35 +15,25 @@ $settingsBtnActive: url('../img/settings_active.svg');
 $backBtn: url('../img/back.svg');
 $backBtnActive: url('../img/back.svg');
 
-$smallScreenWidth: 600px;  // На всякий случай сделаны медиа-запросы
-
-
 * {
     padding: 0;
     margin: 0;
 }
 
+html, body {
+    height: 100%;
+}
 
 body {
+    display: grid;
+    grid-template-columns: $sidebarWidth auto;
+    grid-template-rows: 1fr;
     background-image: $mainBackground;
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
-
-    @media (max-width: $smallScreenWidth) {
-        background-size: auto;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: scroll;
-    }
 }
 
-#main-container {
-    // Общий контейнер
-    display: flex;
-    height: 100vh;
-    width: 100%;
-}
 
 #sidebar {
     height: 100%;
@@ -52,10 +42,6 @@ body {
     grid-template-rows: $headerHeight auto $footerHeight;
     min-height: $minHeight;
     box-shadow: 0px 5px 5px 5px black;
-
-    @media (max-width: $smallScreenWidth) {
-        width: 50px;
-    }
 }
 
 #sidebar-time-holder {
@@ -66,10 +52,6 @@ body {
     line-height: $headerHeight;
     color: white;
     height: $headerHeight;
-
-    @media (max-width: $smallScreenWidth) {
-        font-size: 12px;
-    }
 }
 
 #sidebar-footer {
@@ -145,23 +127,12 @@ body {
             background-image: $backBtnActive;
         }
     }
-
-    @media (max-width: $smallScreenWidth) {
-        & {
-            background-size: 30%;
-            &:active:not(.star, .back) {
-            background-size: 50%;
-            }
-        }
-    }
 }
-
 
 #content-container {
     // Контейнер справа от сайдбара
     width: 100%;
     height: 100%;
-    min-height: $minHeight;
     display: grid;
     grid-template-rows: ($headerHeight auto $footerHeight);
 }
