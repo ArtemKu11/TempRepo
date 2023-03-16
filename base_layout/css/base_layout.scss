@@ -1,9 +1,9 @@
-$headerHeight: 60px;  // Высоты, можно поредактировать как надо
+$headerHeight: 60px; // Высоты, можно поредактировать как надо
 $footerHeight: 60px;
 $sidebarWidth: 110px;
 $minHeight: 500px;
 
-$mainBackground: url('../img/main_background.jpeg');  // Пути до картинок
+$mainBackground: url('../img/main_background.jpeg'); // Пути до картинок
 $menuBtn: url('../img/menu.svg');
 $menuBtnActive: url('../img/menu_active.svg');
 $moveBtn: url('../img/move.svg');
@@ -15,11 +15,14 @@ $settingsBtnActive: url('../img/settings_active.svg');
 $backBtn: url('../img/back.svg');
 $backBtnActive: url('../img/back.svg');
 
+$smallScreenWidth: 600px;  // На всякий случай сделаны медиа-запросы
+
 
 * {
     padding: 0;
     margin: 0;
 }
+
 
 body {
     background-image: $mainBackground;
@@ -27,7 +30,7 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
 
-    @media (max-width: 767px) {
+    @media (max-width: $smallScreenWidth) {
         background-size: auto;
         background-position: center;
         background-repeat: no-repeat;
@@ -35,7 +38,8 @@ body {
     }
 }
 
-#main-container {  // Общий контейнер
+#main-container {
+    // Общий контейнер
     display: flex;
     height: 100vh;
     width: 100%;
@@ -48,22 +52,32 @@ body {
     grid-template-rows: $headerHeight auto $footerHeight;
     min-height: $minHeight;
     box-shadow: 0px 5px 5px 5px black;
+
+    @media (max-width: $smallScreenWidth) {
+        width: 50px;
+    }
 }
 
-#sidebar-time-holder {  // sidebar-header
+#sidebar-time-holder {
+    // sidebar-header
     font-family: Arial, Helvetica, sans-serif;
     font-size: 20px;
     text-align: center;
     line-height: $headerHeight;
     color: white;
     height: $headerHeight;
+
+    @media (max-width: $smallScreenWidth) {
+        font-size: 12px;
+    }
 }
- 
+
 #sidebar-footer {
     height: $footerHeight;
 }
 
-#sidebar-button-holder {  // Контейнер под кнопочки
+#sidebar-button-holder {
+    // Контейнер под кнопочки
     display: grid;
     grid-template-rows: repeat(5, 1fr);
 }
@@ -131,10 +145,20 @@ body {
             background-image: $backBtnActive;
         }
     }
+
+    @media (max-width: $smallScreenWidth) {
+        & {
+            background-size: 30%;
+            &:active:not(.star, .back) {
+            background-size: 50%;
+            }
+        }
+    }
 }
 
 
-#content-container {  // Контейнер справа от сайдбара
+#content-container {
+    // Контейнер справа от сайдбара
     width: 100%;
     height: 100%;
     min-height: $minHeight;

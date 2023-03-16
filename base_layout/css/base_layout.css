@@ -9,7 +9,7 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
-@media (max-width: 767px) {
+@media (max-width: 600px) {
   body {
     background-size: auto;
     background-position: center;
@@ -32,6 +32,11 @@ body {
   min-height: 500px;
   box-shadow: 0px 5px 5px 5px black;
 }
+@media (max-width: 600px) {
+  #sidebar {
+    width: 50px;
+  }
+}
 
 #sidebar-time-holder {
   font-family: Arial, Helvetica, sans-serif;
@@ -40,6 +45,11 @@ body {
   line-height: 60px;
   color: white;
   height: 60px;
+}
+@media (max-width: 600px) {
+  #sidebar-time-holder {
+    font-size: 12px;
+  }
 }
 
 #sidebar-footer {
@@ -103,6 +113,14 @@ body {
 }
 .sidebar-button.back:active {
   background-image: url("../img/back.svg");
+}
+@media (max-width: 600px) {
+  .sidebar-button {
+    background-size: 30%;
+  }
+  .sidebar-button:active:not(.star, .back) {
+    background-size: 50%;
+  }
 }
 
 #content-container {
