@@ -1,0 +1,116 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background-image: url("../img/main_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+@media (max-width: 767px) {
+  body {
+    background-size: auto;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+  }
+}
+
+#main-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+#sidebar {
+  height: 100%;
+  width: 110px;
+  display: grid;
+  grid-template-rows: 60px auto 60px;
+  min-height: 500px;
+  box-shadow: 0px 5px 5px 5px black;
+}
+
+#sidebar-time-holder {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  text-align: center;
+  line-height: 60px;
+  color: white;
+  height: 60px;
+}
+
+#sidebar-footer {
+  height: 60px;
+}
+
+#sidebar-button-holder {
+  display: grid;
+  grid-template-rows: repeat(5, 1fr);
+}
+
+.sidebar-button {
+  display: block;
+  background: transparent;
+}
+
+.sidebar-button {
+  border-radius: 0;
+  border: none;
+}
+.sidebar-button:hover {
+  border-top: 1px solid white;
+  border-bottom: 1px solid white;
+}
+.sidebar-button.menu {
+  background-image: url("../img/menu.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.sidebar-button.menu:active {
+  background-image: url("../img/menu_active.svg");
+}
+.sidebar-button.move {
+  background-image: url("../img/move.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.sidebar-button.move:active {
+  background-image: url("../img/move_active.svg");
+}
+.sidebar-button.star {
+  background-image: url("../img/star.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.sidebar-button.star:active {
+  background-image: url("../img/star.svg");
+}
+.sidebar-button.settings {
+  background-image: url("../img/settings.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.sidebar-button.settings:active {
+  background-image: url("../img/settings_active.svg");
+}
+.sidebar-button.back {
+  background-image: url("../img/back.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.sidebar-button.back:active {
+  background-image: url("../img/back.svg");
+}
+
+#content-container {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  display: grid;
+  grid-template-rows: 60px auto 60px;
+}
+
+/*# sourceMappingURL=base_layout.css.map */
