@@ -27,12 +27,13 @@ $minHeightForFont: 600px;
     grid-template-rows: ($headerHeight auto);
     overflow-y: auto;
     min-height: $minHeight;
-    min-width: 1070px;
 }
 
 #content-header {
     display: grid;
     grid-template-columns: auto auto;
+    min-width: 900px;
+
 }
 
 #operation-container {

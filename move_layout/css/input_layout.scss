@@ -2,7 +2,7 @@
 
 $defaultValcoderDivHeight: 450px; 
 $minValcoderDivHeight: 390px;  
-$minHeightForMinimize: 600px;  // При достижении height: 600px валкожер уменьшиться до $minValcoderDivHeight
+$minHeightForMinimize: 600px;  // При достижении height: 600px валкожер уменьшится до $minValcoderDivHeight
 
 #input-utils-main-container {
     min-height: $minHeight;
@@ -20,6 +20,7 @@ $minHeightForMinimize: 600px;  // При достижении height: 600px ва
 
 
     #input-utils-container {
+        overflow-y: auto;
         grid-column: 2/3;
         display: grid;
         grid-template-columns: 1fr 1fr;
