@@ -26,6 +26,11 @@ body {
   min-height: 500px;
   box-shadow: 0px 5px 5px 5px black;
 }
+@media (max-height: 500px) {
+  #sidebar {
+    position: absolute;
+  }
+}
 
 #sidebar-time-holder {
   font-family: Arial, Helvetica, sans-serif;
