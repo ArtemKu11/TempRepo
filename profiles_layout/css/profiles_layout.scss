@@ -1,8 +1,9 @@
 @import './base_layout.scss';
-// @import './input_layout_full_screen.scss';
-@import './input_layout_not_full_screen.scss'; // Под него желательно делать overflow-x: hidden; у content-container через js
+@import './input_layout_full_screen.scss';
+// @import './input_layout_not_full_screen.scss'; // Под него желательно делать overflow-x: hidden; у content-container через js
 
 @import './layouts_setup_layout.scss';
+@import './material_select_layout.scss';
 
 @mixin layoutsBar {
     grid-column: 2/3;
