@@ -127,6 +127,7 @@ body {
   grid-template-columns: 110px auto;
   grid-template-rows: 1fr;
   background: rgba(21, 21, 21, 0.9);
+  display: none;
 }
 #file-select-container #file-select-content-container {
   min-height: 500px;
@@ -487,16 +488,6 @@ body {
   }
   #icon-holder span {
     font-size: 20px;
-  }
-}
-@media (max-width: 700px) {
-  #icon-holder {
-    column-gap: 40px;
-  }
-}
-@media (max-width: 530px) {
-  #icon-holder {
-    column-gap: 0px;
   }
 }
 

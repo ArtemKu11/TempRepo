@@ -1,11 +1,12 @@
-// Стили окна с клавиатурой и валкодером для окна "Перемещение"
+// Стили окна с клавиатурой и валкодером для окна "Профили"
 
 $defaultValcoderDivHeight: 450px; 
 $minValcoderDivHeight: 390px;  
 $minHeightForMinimize: 600px;  // При достижении height: 600px валкожер уменьшится до $minValcoderDivHeight
 
 #input-utils-main-container {
-    min-height: $minHeight;
+    min-height: 660px;
+
     position: absolute;
     z-index: 3;
     height: 100%;
@@ -15,7 +16,7 @@ $minHeightForMinimize: 600px;  // При достижении height: 600px ва
     grid-template-rows: 1fr;
     // backdrop-filter: blur(5px);
     background: rgba(21, 21, 21, 0.9);
-    // display: none;
+    display: none;
 
 
 
@@ -49,7 +50,7 @@ $minHeightForMinimize: 600px;  // При достижении height: 600px ва
                         max-width: 400px;
                         display: grid;
                         grid-template-rows: 4fr 1fr;
-                        grid-template-columns: 2fr 3fr;
+                        grid-template-columns: 1fr;
                         gap: 10px;
                         color: white;
                         align-items: center;
@@ -57,22 +58,24 @@ $minHeightForMinimize: 600px;  // При достижении height: 600px ва
 
                         #label-coord {
                             font-size: 90px;
-                            grid-column: 1;
-                            grid-row: 1;
+                            // grid-column: 1;
+                            // grid-row: 1;
                             color: rgba(109, 109, 109, 1);
+
                         }
 
                         #label-value {
                             font-size: 90px;
-                            grid-column: 2;
-                            grid-row: 1;
+                            // grid-column: 2;
+                            // grid-row: 1;
                         }
 
                         #label-mills {
                             font-size: 25px;
+                            // grid-column: 2;
+                            // grid-row: 2;
+                            color: #C7C7C7;
 
-                            grid-column: 2;
-                            grid-row: 2;
                         }
                     }
                 }
@@ -148,11 +151,10 @@ $minHeightForMinimize: 600px;  // При достижении height: 600px ва
         }
 
         #keyboard-input-resources {
-
             display: flex;
             align-items: center;
             justify-content: center;
-            // display: none;
+            display: none;
 
             #keyboard {
                 display: grid;
@@ -198,7 +200,7 @@ $minHeightForMinimize: 600px;  // При достижении height: 600px ва
             display: flex;
             flex-direction: column;
             justify-content: center;
-            display: none;
+            // display: none;
 
 
             #valcoder {

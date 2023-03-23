@@ -113,7 +113,7 @@
     grid-template-rows: 1fr;
     // backdrop-filter: blur(5px);
     background: rgba(21, 21, 21, 0.9);
-    // display: none;
+    display: none;
 
     #file-select-content-container {
         min-height: $minHeight;
