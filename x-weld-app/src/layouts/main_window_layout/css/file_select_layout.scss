@@ -1,5 +1,6 @@
 @use "sass:math";
 
+
 * {
     box-sizing: border-box;
 }
@@ -29,6 +30,8 @@
     padding-right: 5%;
     margin-top: 10px;
     cursor: pointer;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    -webkit-tap-highlight-color: transparent;
 
     .info-holder {
         height: 100px;
@@ -88,18 +91,18 @@
         user-select: none;
     }
 
-    &:active {
-        .info-holder {
+    // &:active {
+    //     .info-holder {
 
-            span {
-                color: white;
-            }
-        }
+    //         span {
+    //             color: white;
+    //         }
+    //     }
 
-        button {
-            display: block;
-        }
-    }
+    //     button {
+    //         display: block;
+    //     }
+    // }
 }
 
 #file-select-container {
@@ -113,7 +116,7 @@
     grid-template-rows: 1fr;
     // backdrop-filter: blur(5px);
     background: rgba(21, 21, 21, 0.9);
-    display: none;
+    // display: none;
 
     #file-select-content-container {
         min-height: $minHeight;
@@ -139,7 +142,7 @@
 
             #home-button {
                 @include singleAnglePolygon(84px, 45px, 165deg);
-                background-image: url('../img/home_button.png');
+                background-image: url('@/layouts/main_window_layout/img/home_button.png');
                 background-position: center;
                 background-repeat: no-repeat;
 
@@ -150,7 +153,7 @@
 
             #models-for-print-button {
                 @include doubleAnglePolygon(232px, 45px, 165deg);
-                background-image: url('../img/models_for_print_button.png');
+                background-image: url('@/layouts/main_window_layout/img/models_for_print_button.png');
                 background-position: center;
                 background-repeat: no-repeat;
                 color: white;
@@ -159,7 +162,7 @@
 
             #points-button {
                 @include doubleAnglePolygon(89px, 45px, 165deg);
-                background-image: url('../img/points_button.png');
+                background-image: url('@/layouts/main_window_layout/img/points_button.png');
                 background-position: center;
                 background-repeat: no-repeat;
             }
@@ -222,13 +225,13 @@
                     }
                 }
 
-                &:active {
-                    .info-holder {
-                        img {
-                            content: url('../img/checked_checkbox.png');
-                        }
-                    }
-                }
+                // &:active {
+                //     .info-holder {
+                //         img {
+                //             content: url('@/layouts/main_window_layout/img/checked_checkbox.png');
+                //         }
+                //     }
+                // }
             }
         }
     }

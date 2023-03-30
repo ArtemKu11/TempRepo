@@ -127,6 +127,7 @@ body {
   grid-template-columns: 110px auto;
   grid-template-rows: 1fr;
   background: rgba(21, 21, 21, 0.9);
+  display: none;
 }
 #file-select-container #file-select-content-container {
   min-height: 500px;
