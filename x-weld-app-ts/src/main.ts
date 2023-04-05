@@ -20,3 +20,4 @@ app.mount('#app')
 console.log(store)
 
 socketClient.connect();
+

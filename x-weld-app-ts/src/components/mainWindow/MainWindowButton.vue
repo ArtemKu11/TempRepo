@@ -16,6 +16,7 @@ export default class MainWindowButton extends Vue {
     readonly buttonData: MainWindowButtonInfo
 
     clickHandler() {
+        console.log(this.$store.state)
         this.$store.dispatch('windowFlags/openFileBrowseWindow')
     }
 }
