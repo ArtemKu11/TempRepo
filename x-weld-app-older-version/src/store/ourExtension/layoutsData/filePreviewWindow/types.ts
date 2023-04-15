@@ -1,4 +1,4 @@
-import { FileData } from "../fileBrowseWindow/types";
+import { FileData } from "../../files/types";
 
 export interface FilePreviewWindowState {
     fileData?: FileData

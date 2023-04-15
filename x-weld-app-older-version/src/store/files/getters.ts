@@ -134,5 +134,10 @@ export const getters: GetterTree<FilesState, RootState> = {
    */
   getUsage: (state) => {
     return state.disk_usage
+  },
+
+  // Дописано:
+  getFilesList: (state) => {
+    return state.gcodes[0].items
   }
 }

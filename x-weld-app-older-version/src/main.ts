@@ -1,4 +1,5 @@
 import consola from 'consola'
+import './setupConsola'
 import Vue from 'vue'
 import App from './App.vue'
 import { Globals } from './globals'

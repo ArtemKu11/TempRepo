@@ -7,20 +7,29 @@
 
 
 <script lang="ts">
-import { SocketActions } from '@/api/socketActions';
+import FilesMixin from '@/mixins/files';
+import ServicesMixin from '@/mixins/services';
+import StateMixin from '@/mixins/state';
 import { MainWindowButtonInfo } from '@/store/ourExtension/layoutsData/mainWindow/types';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Mixins, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})
-export default class MainWindowButton extends Vue {
+// export default class MainWindowButton extends Vue {
+export default class MainWindowButton extends Mixins(StateMixin, FilesMixin, ServicesMixin) {
+
     @Prop({ required: true })
     readonly buttonData!: MainWindowButtonInfo;
 
 
-    clickHandler() {
-        // SocketActions.serverFilesListRoot('config')
-        this.$store.dispatch('ourExtension/windowFlags/openFileBrowseWindow')
-        console.log(this.$store.state.files)
+    async clickHandler() {
+        if (this.buttonData.buttonName === 'Открыть файл') {
+            // this.$store.dispatch('ourExtension/files/getAllFilesAndDirs', 'gcodes')
+            this.$store.dispatch('ourExtension/layoutsData/newFileBrowseWindow/setCurrentPath', 'gcodes')
+            this.$store.dispatch('ourExtension/windowFlags/openFileBrowseWindow')
+        } else {
+            this.$store.dispatch('ourExtension/files/getAllFilesAndDirs', 'config')
+
+        }
     }
 }
 </script>

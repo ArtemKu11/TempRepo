@@ -28,7 +28,7 @@ export const actions: ActionTree<SocketState, RootState> = {
     /**
       * Fired when the socket opens.
       */
-    async onSocketOpen({ commit, rootState }, payload) {
+    async onSocketOpen({ commit, rootState, dispatch }, payload) {
         commit('setSocketOpen', payload)
 
         if (payload === true) {
@@ -40,6 +40,8 @@ export const actions: ActionTree<SocketState, RootState> = {
                 url: Globals.GITHUB_REPO
             })
             SocketActions.serverFilesListRoot('config')
+            dispatch('ourExtension/files/getAllFilesAndDirs', 'gcodes', {root: true})
+
         }
     },
 
@@ -176,6 +178,9 @@ export const actions: ActionTree<SocketState, RootState> = {
 
     async notifyFilelistChanged({ dispatch }, payload) {
         dispatch('files/notify' + upperFirst(camelCase(payload.action)), payload, { root: true })
+        if (payload.action) {
+            dispatch('ourExtension/files/onFileListChanged', payload, { root: true })
+        }
     },
 
     // Next release, remove.

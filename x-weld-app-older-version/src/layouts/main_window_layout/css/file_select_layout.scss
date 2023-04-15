@@ -60,16 +60,17 @@
         .file-info {
             grid-column: 2;
             grid-row: 2;
-            display: flex;
-            justify-content: space-evenly;
+            // display: flex;
+            // justify-content: space-evenly;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
 
             span {
                 justify-self: center;
                 color: rgba(107, 107, 107, 1);
                 font-size: 18px;
                 font-weight: 400;
-
-            }
+            }   
         }
     }
 

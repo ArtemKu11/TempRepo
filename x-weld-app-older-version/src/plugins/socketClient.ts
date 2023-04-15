@@ -78,15 +78,12 @@ export class WebSocketClient {
             .then(token => {
                 // Good. Move on with setting up the socket.
                 if (this.store) this.store.dispatch('socket/onSocketConnecting', true)
-                console.log(this.url, token)
                 // this.connection = new WebSocket(`${this.url}?token=${token}`)
                 this.connection = new WebSocket(`ws://localhost:7125/websocket?token=${token}`)
 
-                console.log("Соединение: " + this.connection)
 
 
                 this.connection.onopen = () => {
-                    console.log("OPEN")
 
                     if (this.reconnectEnabled) {
                         this.reconnectCount = 1
@@ -98,7 +95,6 @@ export class WebSocketClient {
                 }
 
                 this.connection.onclose = (e) => {
-                    console.log("CLOSE")
 
                     consola.debug(`${this.logPrefix} Connection closed:`, e)
                     clearTimeout(this.pingTimeout)
@@ -109,13 +105,11 @@ export class WebSocketClient {
                 }
 
                 this.connection.onerror = (e) => {
-                    console.log("ERROR")
                     consola.error(`${this.logPrefix} Connection error:`, e)
                     if (this.store) this.store.dispatch('socket/onSocketError', e)
                 }
 
                 this.connection.onmessage = (m) => {
-                    console.log("MESSAGE")
 
                     // Parse the data packet.
                     const d: SocketResponse = JSON.parse(m.data)
@@ -153,8 +147,9 @@ export class WebSocketClient {
                             result = { result }
                         }
 
+
                         Object.defineProperty(result, '__request__', { enumerable: false, value: request })
-                        consola.debug(`${this.logPrefix} Response:`, result)
+                        consola.debug(`${this.logPrefix} RESPONSE for id: ${request.id}:`, result)
                         if (request.dispatch && this.store) this.store?.dispatch(request.dispatch, result)
                         if (request.commit && this.store) this.store?.commit(request.commit, result)
                     } else {
@@ -166,6 +161,9 @@ export class WebSocketClient {
 
                             if (d.method !== 'notify_status_update') {
                                 // Normally, we let notifications through with no cache...
+                                if ('socket/' + camelCase(d.method) !== 'socket/notifyProcStatUpdate') {
+                                    console.log('socket/' + camelCase(d.method), params)
+                                }
                                 if (this.store) this.store.dispatch('socket/' + camelCase(d.method), params)
                             } else {
                                 // ...However, status notifications come through thick and fast,
@@ -223,11 +221,6 @@ export class WebSocketClient {
      * @param params
      */
     emit(method: string, options?: NotifyOptions) {
-        console.log(`TRY TO SEND SOCKET REQUEST: ${method}, ${options}`)
-        
-        console.log(this.store.state.socket.disconnecting, this.store.state.socket.connecting)
-        console.log("Соединение: " + this.connection)
-
 
         if (this.store.state.socket.disconnecting || this.store.state.socket.connecting) {
             consola.debug(`${this.logPrefix} Socket emit denied, in disconnecting state:`, method, options)
@@ -262,9 +255,8 @@ export class WebSocketClient {
             if (options && options.commit) request.commit = options.commit
             this.requests.push(request)
             this.connection.send(JSON.stringify(packet))
-            console.log(`Succesfully sended: ${JSON.stringify(packet)}`)
+            consola.debug(`${this.logPrefix} Request with id: ${packet.id}, method: "${packet.method}"`, packet)
         } else {
-            console.log(`${this.logPrefix} Not ready, or closed.`, method, options, this.connection?.readyState)
             consola.debug(`${this.logPrefix} Not ready, or closed.`, method, options, this.connection?.readyState)
         }
     }

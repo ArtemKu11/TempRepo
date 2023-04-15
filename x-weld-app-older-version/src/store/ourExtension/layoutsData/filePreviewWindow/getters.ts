@@ -1,6 +1,6 @@
 import { RootState } from "@/store/types";
 import { GetterTree } from "vuex";
-import { FileData } from "../fileBrowseWindow/types";
+import { FileData } from "../../files/types";
 import { FilePreviewWindowState } from "./types";
 
 export const getters: GetterTree<FilePreviewWindowState, RootState> = {
@@ -10,11 +10,17 @@ export const getters: GetterTree<FilePreviewWindowState, RootState> = {
             return currentFileData;
         } else {
             return {
-                fileId: 0,
                 name: "---",
-                size: 0,
-                date: "---",
-                isActive: false
+                sizeInKb: '?',
+                computedSize: '?kb',
+                size: -1,
+                modified: '--:--:----',
+                isSelected: false,
+                layers: "?",
+                permissions: "?",
+                printingTime: "?h ?m",
+                pathForMoonraker: "",
+                dirnameForMoonraker: ""
             }
         }
     }

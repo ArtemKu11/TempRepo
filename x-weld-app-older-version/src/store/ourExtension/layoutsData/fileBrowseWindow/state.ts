@@ -2,6 +2,8 @@ import { FileBrowseWindowState } from "./types";
 
 export const fileBrowserWindowState = () : FileBrowseWindowState => {
     return {
+        currentPath: "gcodes",
+        directoryList: [],
         fileList: [
             {
                 fileId: 0,

@@ -78,7 +78,11 @@ export class WebSocketClient {
       .then(token => {
         // Good. Move on with setting up the socket.
         if (this.store) this.store.dispatch('socket/onSocketConnecting', true)
-        this.connection = new WebSocket(`${this.url}?token=${token}`)
+        // this.connection = new WebSocket(`${this.url}?token=${token}`)
+        this.connection = new WebSocket(`ws://localhost:7125/websocket?token=${token}`)
+        // this.connection = new WebSocket(`ws://${this.url}/websocket?token=${token}`)
+
+
 
         this.connection.onopen = () => {
           if (this.reconnectEnabled) {
@@ -124,6 +128,7 @@ export class WebSocketClient {
           if (d.error) { // Is it in error?
             if (request) {
               Object.defineProperty(d.error, '__request__', { enumerable: false, value: request })
+              
             }
             consola.debug(`${this.logPrefix} Response error:`, d.error)
             if (this.store) this.store.dispatch('socket/onSocketError', d.error)
@@ -142,7 +147,9 @@ export class WebSocketClient {
             }
 
             Object.defineProperty(result, '__request__', { enumerable: false, value: request })
-            consola.debug(`${this.logPrefix} Response:`, result)
+            consola.debug(`${this.logPrefix} RESPONSE for id: ${request.id}:`, result)
+
+            // consola.debug(`${this.logPrefix} Response:`, result)
             if (request.dispatch && this.store) this.store?.dispatch(request.dispatch, result)
             if (request.commit && this.store) this.store?.commit(request.commit, result)
           } else {
@@ -243,6 +250,7 @@ export class WebSocketClient {
       if (options && options.commit) request.commit = options.commit
       this.requests.push(request)
       this.connection.send(JSON.stringify(packet))
+      consola.debug(`${this.logPrefix} Request with id: ${packet.id}, method: "${packet.method}"`, packet)
     } else {
       consola.debug(`${this.logPrefix} Not ready, or closed.`, method, options, this.connection?.readyState)
     }

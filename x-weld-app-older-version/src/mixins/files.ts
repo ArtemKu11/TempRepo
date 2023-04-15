@@ -4,6 +4,7 @@ import { Component } from 'vue-property-decorator'
 import { AxiosRequestConfig } from 'axios'
 import { httpClientActions } from '@/api/httpClientActions'
 import { FileWithPath } from '@/util/file-system-entry'
+import { FileData } from '@/store/ourExtension/files/types'
 
 @Component
 export default class FilesMixin extends Vue {
@@ -67,7 +68,35 @@ export default class FilesMixin extends Vue {
     /**
      * Loads a gcode file and parses for the gcode-viewer.
      */
-    async getGcode(file: AppFile) {
+    // async getGcode(file: AppFile) {
+    //     const sizeInMB = file.size / 1024 / 1024
+    //     let res: boolean | undefined = true
+
+    //     if (sizeInMB >= 100) {
+    //         console.log(`res = await this.$confirm(
+    //             this.$t('app.gcode.msg.confirm', {
+    //                 filename: file.filename,
+    //                 size: this.$filters.getReadableFileSizeString(file.size)
+    //             }).toString(), {
+    //             title: this.$tc('app.general.title.gcode_preview'),
+    //             color: 'card-heading',
+    //             icon: '$error'
+    //         })`)
+    //     }
+
+    //     if (res) {
+    //         this.$store.dispatch('files/createFileTransferCancelTokenSource')
+
+    //         const path = file.path ? `gcodes/${file.path}` : 'gcodes'
+    //         return await this.getFile(file.filename, path, file.size, {
+    //             responseType: 'text',
+    //             transformResponse: [v => v],
+    //             cancelToken: this.cancelTokenSource.token
+    //         })
+    //     }
+    // }
+
+    async getGcode(file: FileData) {
         const sizeInMB = file.size / 1024 / 1024
         let res: boolean | undefined = true
 
@@ -85,9 +114,8 @@ export default class FilesMixin extends Vue {
 
         if (res) {
             this.$store.dispatch('files/createFileTransferCancelTokenSource')
-
-            const path = file.path ? `gcodes/${file.path}` : 'gcodes'
-            return await this.getFile(file.filename, path, file.size, {
+            const path = file.dirnameForMoonraker ? `gcodes/${file.dirnameForMoonraker}` : 'gcodes'
+            return await this.getFile(file.name, path, file.size, {
                 responseType: 'text',
                 transformResponse: [v => v],
                 cancelToken: this.cancelTokenSource.token

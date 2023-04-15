@@ -1,5 +1,5 @@
 import { MutationTree } from "vuex";
-import { FileData } from "../fileBrowseWindow/types";
+import { FileData } from "../../files/types";
 import { FilePreviewWindowState } from "./types";
 
 export const mutations: MutationTree<FilePreviewWindowState> = {

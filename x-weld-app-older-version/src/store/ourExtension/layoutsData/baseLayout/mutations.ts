@@ -4,6 +4,14 @@ import { BaseLayoutState } from "./types";
 export const mutations: MutationTree<BaseLayoutState> = {
     refreshTime(state) {
         const date = new Date();
-        state.actualTime =  `${date.getHours()}:${date.getMinutes()}`
+        let hours = date.getHours() + "";
+        let minutes = date.getMinutes() + "";
+        if (hours.length === 1) {
+            hours = "0" + hours;
+        }
+        if (minutes.length === 1) {
+            minutes = "0" + minutes;
+        }
+        state.actualTime =  `${hours}:${minutes}`
     }
 }

@@ -1,5 +1,5 @@
 /* eslint-disable no-fallthrough */
-import { ArcMove, Layer, LinearMove, Move, Part, Point, PositioningMode, Rotation } from '@/store/gcodePreview/types'
+import { ArcMove, Layer, LinearMove, Move, ParseGcodeWorkerClientMessage, Part, Point, PositioningMode, Rotation } from '@/store/gcodePreview/types'
 import IsKeyOf from '@/util/is-key-of'
 import { pick } from 'lodash-es'
 import shlex from 'shlex'
@@ -65,7 +65,28 @@ const decimalRound = (a: number) => {
     return Math.round(a * 10000) / 10000
 }
 
-const parseGcode = (gcode: string, sendProgress: (filePosition: number) => void) => {
+const sendProgress = (filePosition: number) => {
+    const message: ParseGcodeWorkerClientMessage = {
+        action: 'progress',
+        filePosition
+    }
+
+    postMessage(message)
+}
+
+const sendResult = (moves: Move[], layers: Layer[], parts: Part[]) => {
+    const message: ParseGcodeWorkerClientMessage = {
+        action: 'result',
+        moves,
+        layers,
+        parts
+    }
+
+    postMessage(message)
+}
+
+// const parseGcode = (gcode: string, sendProgress: (filePosition: number) => void) => {
+const parseGcode = (gcode: string) => {
     const moves: Move[] = []
     const layers: Layer[] = []
     const parts: Part[] = []
@@ -99,7 +120,6 @@ const parseGcode = (gcode: string, sendProgress: (filePosition: number) => void)
         }
 
         let move: Move | null = null
-
         if (type === 'macro') {
             switch (command) {
                 case 'SET_PRINT_STATS_INFO':
@@ -250,7 +270,7 @@ const parseGcode = (gcode: string, sendProgress: (filePosition: number) => void)
 
     sendProgress(toolhead.filePosition)
 
-    return { moves, layers, parts }
+    sendResult(moves, layers, parts);
 }
 
 export default parseGcode

@@ -3,7 +3,11 @@ import { FlagsObject, WindowFlagsState } from "./types";
 export const initWindowFlags: FlagsObject = {
     mainWindowFlag: true,
     fileBrowseWindowFlag: false,
-    filePreviewWindowFlag: false
+    filePreviewWindowFlag: false,
+    moveWindowFlag: false,
+    inputWindowFlag: false,
+    mainSettingsWindowFlag: false,
+    consoleWindowFlag: false
 }
 
 export const windowFlagsState = (): WindowFlagsState => {

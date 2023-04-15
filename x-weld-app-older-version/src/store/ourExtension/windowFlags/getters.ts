@@ -16,11 +16,31 @@ export const getters: GetterTree<WindowFlagsState, RootState> =  {
         return state.flags.filePreviewWindowFlag;
     },
 
+    getMoveWindowFlag(state: WindowFlagsState): boolean {
+        return state.flags.moveWindowFlag;
+    },
+
+    getInputWindowFlag(state: WindowFlagsState): boolean {
+        return state.flags.inputWindowFlag;
+    },
+
+    // getInputWindowFlag: state => (): boolean => {
+    //     return state.flags.inputWindowFlag;
+    // },
+
     getCurrentFlagsObject: state => (): FlagsObject => {
         return JSON.parse(JSON.stringify(state.flags))
     },
 
     getInitFlagsObject: state => (): FlagsObject => {
         return JSON.parse(JSON.stringify(initWindowFlags)) 
+    },
+
+    getMainSettingsWindowFlag(state) {
+        return state.flags.mainSettingsWindowFlag;
+    },
+
+    getConsoleWindowFlag(state) {
+        return state.flags.consoleWindowFlag;
     }
 }

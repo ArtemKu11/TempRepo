@@ -1,12 +1,12 @@
 <template>
     <div class="wrapper">
-        <button class="folder-button">
+        <button @click="clickHandler" class="folder-button active">
             <div class="info-holder">
                 <img src="@/layouts/main_window_layout/img/folder.png">
-                <span>Модели новые 123</span>
+                <span>{{ directoryData.name }}</span>
                 <div class="file-info">
-                    <span>Дата: 03.03.2023</span>
-                    <span>Размер: 347kb</span>
+                    <span>Дата: {{ directoryData.date }}</span>
+                    <span>Размер: {{ directoryData.size }}kb</span>
                     <span>Время печати: 15h 21m</span>
                 </div>
             </div>
@@ -17,10 +17,28 @@
 
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { DirectoryData } from '@/store/ourExtension/layoutsData/fileBrowseWindow/types';
+import { Vue, Component, Prop } from 'vue-property-decorator'
 
 @Component({})
 export default class FolderButton extends Vue {
+    @Prop()
+    directoryData!: DirectoryData
 
+    clickHandler() {
+        this.$store.commit('ourExtension/layoutsData/fileBrowseWindow/deactivateFiles');
+        this.$store.dispatch('ourExtension/layoutsData/fileBrowseWindow/openDirectory', this.directoryData);
+    }
 }
 </script>
+
+<style lang="scss">
+.folder-button:active {
+    .info-holder {
+        span {
+            color: white !important;
+        }
+    }
+
+}
+</style>

@@ -37,10 +37,34 @@ export const mutations: MutationTree<WindowFlagsState> = {
     },
 
     openFilePreviewWindow(state) {
-        state.flags = {
-            mainWindowFlag: false,
-            fileBrowseWindowFlag: false,
-            filePreviewWindowFlag: true
-        }
+        const newFlags = JSON.parse(JSON.stringify(initWindowFlags));
+        newFlags.mainWindowFlag = false;
+        newFlags.filePreviewWindowFlag = true;
+        state.flags = newFlags;
     },
+
+    openMoveWindow(state) {
+        const newFlags = JSON.parse(JSON.stringify(initWindowFlags));
+        newFlags.mainWindowFlag = false;
+        newFlags.moveWindowFlag = true;
+        state.flags = newFlags;
+    },
+
+    openInputWindow(state) {
+        state.flags.inputWindowFlag = true;
+    },
+
+    openMainSettingsWindow(state) {
+        const newFlags = JSON.parse(JSON.stringify(initWindowFlags));
+        newFlags.mainWindowFlag = false;
+        newFlags.mainSettingsWindowFlag = true;
+        state.flags = newFlags;
+    },
+
+    openConsoleWindow(state) {
+        const newFlags = JSON.parse(JSON.stringify(initWindowFlags));
+        newFlags.mainWindowFlag = false;
+        newFlags.consoleWindowFlag = true;
+        state.flags = newFlags;
+    }
 }

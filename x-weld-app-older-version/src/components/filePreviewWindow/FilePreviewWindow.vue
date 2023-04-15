@@ -9,9 +9,9 @@
                 <span>Количество слоев: 3415</span>
                 <span>Размер файла: 32,128,476 байт</span> -->
                 <span>{{ fileData.name }}</span>
-                <span>Время печати: 15h 21m</span>
-                <span>Количество слоев: 3415</span>
-                <span>Размер файла: {{ fileData.size }}kb</span>
+                <span>Время печати: {{ fileData.printingTime }}</span>
+                <span>Количество слоев: {{ fileData.layers }}</span>
+                <span>Размер файла: {{ fileData.sizeInKb }}kb</span>
             </div>
         </div>
         <div id="content-footer">
@@ -31,7 +31,7 @@
 
 
 <script lang="ts">
-import { FileData } from '@/store/ourExtension/layoutsData/fileBrowseWindow/types';
+import { FileData } from '@/store/ourExtension/files/types';
 import { Component, Vue } from 'vue-property-decorator';
 
 @Component({})

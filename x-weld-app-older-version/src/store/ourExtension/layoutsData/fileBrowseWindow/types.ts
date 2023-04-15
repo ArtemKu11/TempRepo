@@ -1,3 +1,9 @@
+export interface FileBrowseWindowState {
+    currentPath: string
+    directoryList: Array<DirectoryData>
+    fileList: Array<FileData>
+}
+
 export interface FileData {
     fileId: number,
     name: string,
@@ -6,6 +12,9 @@ export interface FileData {
     isActive: boolean
 }
 
-export interface FileBrowseWindowState {
-    fileList: Array<FileData>
+export interface DirectoryData {
+    directoryId: number,
+    name: string,
+    size: number,
+    date: string,
 }
