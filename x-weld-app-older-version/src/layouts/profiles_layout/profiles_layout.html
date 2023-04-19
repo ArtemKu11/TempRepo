@@ -1,0 +1,330 @@
+<!-- С валкодером на фулл скрин -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./css/profiles_layout.css" rel="stylesheet" />
+    <title>Профили</title>
+</head>
+
+<body>
+
+    <div id="material-select-container">
+        <div id="material-select-content-container">
+            <div id="material-select-header">
+                <button id="home-button"><img src="./img/button_star.svg"></button>
+                <button id="points-button"><img src="./img/points_icon.png"></button>
+            </div>
+            <div id="material-select-center">
+
+                <div class="material-select-button">
+                    <div class="material-info">
+                        <div class="material-icon">Fe-C</div>
+                        <span>Конструкционные стали</span>
+                    </div>
+                    <button class="select-material-button">Выбрать</button>
+                </div>
+                <hr>
+
+                <div class="material-select-button">
+                    <div class="material-info">
+                        <div class="material-icon">Cr-Ni</div>
+                        <span>Нержавеющие стали</span>
+                    </div>
+                    <button class="select-material-button">Выбрать</button>
+                </div>
+                <hr>
+
+                <div class="material-select-button">
+                    <div class="material-info">
+                        <div class="material-icon">Ni</div>
+                        <span>Никелевые сплавы</span>
+                    </div>
+                    <button class="select-material-button">Выбрать</button>
+                </div>
+                <hr>
+
+                <div class="material-select-button">
+                    <div class="material-info">
+                        <div class="material-icon">Ti</div>
+                        <span>Титановые сплавы</span>
+                    </div>
+                    <button class="select-material-button">Выбрать</button>
+                </div>
+                <hr>
+
+                <div class="material-select-button">
+                    <div class="material-info">
+                        <div class="material-icon">Al-Mg</div>
+                        <span>Алюминиево-магниевые сплавы</span>
+                    </div>
+                    <button class="select-material-button">Выбрать</button>
+                </div>
+                <hr>
+
+                <div class="material-select-button">
+                    <div class="material-info">
+                        <div class="material-icon">Cu</div>
+                        <span>Медные сплавы</span>
+                    </div>
+                    <button class="select-material-button">Выбрать</button>
+                </div>
+                <hr>
+                
+            </div>
+            <div id="file-select-footer"></div>
+        </div>
+    </div>
+
+    <div id="sidebar">
+        <div id="sidebar-time-holder">12:39</div>
+        <div id="sidebar-button-holder">
+            <button class="sidebar-button menu"></button>
+            <button class="sidebar-button move"></button>
+            <button class="sidebar-button star"></button>
+            <button class="sidebar-button settings"></button>
+            <button class="sidebar-button back"></button>
+        </div>
+        <div id="sidebar-footer"></div>
+    </div>
+
+    <!-- display: none / ne none; -->
+    <div id="input-utils-main-container">
+        <div id="input-utils-container">
+            <div id="input-info">
+                <div class="input-info-part">
+                    <div class="holder">
+                        <span id="label-value">2999</span>
+                        <span id="label-mills">Слой</span>
+                    </div>
+                </div>
+                <div class="input-info-part">
+                    <div class="holder">
+                        <button><img src="./img/keyboard_button.svg" width="78" height="78" /><span>Ручной
+                                ввод</span></button>
+                        <button><img src="./img/valcoder.png" width="78" height="78" /><span>Валкодер</span></button>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <!-- display:none / ne none-->
+            <div id="keyboard-input-resources">
+                <div id="keyboard">
+                    <button>+</button>
+                    <button><img src="./img/tire.png"></button>
+                    <button><img src="./img/mini-tire.png"></button>
+                    <button>1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>4</button>
+                    <button>5</button>
+                    <button>6</button>
+                    <button>7</button>
+                    <button>8</button>
+                    <button>9</button>
+                    <button><img src="./img/delete_keyboard_button.png"></button>
+                    <button>0</button>
+                    <button><img src="./img/confirm-keyboard-button.png"></button>
+                </div>
+            </div>
+
+
+            <!-- display:none / ne none-->
+            <div id="valcoder-input-resources">
+                <div id="valcoder">
+                    <img src="./img/valcoder_strelka.png" />
+                    <div id="plus-minus-holder">
+                        <span>+</span>
+                        <span>-</span>
+                    </div>
+                    <div id="valcoder-circle-holder">
+                        <div id="valcoder-circle">
+                            <div id="valcoder-point"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="confirm-buttons">
+                    <button><img src="./img/cancel_button.png"><span>Отменить</span></button>
+                    <button><img src="./img/save_button.png"><span>Сохранить</span></button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="layouts-holder">
+        <span>Слои</span>
+        <div class="layouts-icon-holder">
+            <div class="layouts-icon">
+                <div class="point up"></div>
+                <div class="point down"></div>
+            </div>
+        </div>
+
+        <button><img src="./img/layouts_button.svg"></button>
+    </div>
+
+
+    <div id="content-container">
+    
+        <!-- display: none / ne none; -->
+        <div id="layout-setup">
+            <div id="layout-info-holder">
+                <button>
+                    <span>0</span>
+                    <div class="underline"></div>
+                    <span>Начальный слой</span>
+                </button>
+                <button>
+                    <span>3000</span>
+                    <div class="underline"></div>
+                    <span>Конечный слой</span>
+                </button>
+            </div>
+            <div id="layout-buttons-holder">
+                <button>
+                    <img src="./img/add_diapason.svg">
+                    <span>Добавить диапазон</span>
+                </button>
+                <button>
+                    <img src="./img/delete_diapason.svg">
+                    <span>Удалить диапазон</span>
+                </button>
+                <button>
+                    <img src="./img/delete_all_diapasones.svg">
+                    <span>Удалить все диапазоны</span>
+                </button>
+                <button>
+                    <img src="./img/next_diapason.svg">
+                    <span>Следующий диапазон</span>
+                </button>
+                <button>
+                    <img src="./img/prev_diapason.svg">
+                    <span>Предыдущий диапазон</span>
+                </button>
+            </div>
+
+        </div>
+
+        <div id="content-header">
+            <div id="name-container">Профиль печати для всех слоев (124-275)</div>
+            <div id="coordinates-container">
+                <img src="./img/gorelka_logo.svg" />
+                <span id="x-coords">2999</span>
+                <span id="y-coords">380</span>
+                <span id="z-coords">0.6</span>
+            </div>
+        </div>
+        <div id="content-center">
+
+
+            <div id="parameters-holder">
+                <div class="first-holder">
+                    <img src="./img/parameter_icon.svg">
+                    <span>Режим наплавки</span>
+                    <button>Пользовательский</button>
+                    <span>Быстрая печать алюминиево-магниевых сплавов</span>
+                </div>
+
+                <div class="usual-holder">
+                    <img src="./img/parameter_icon.svg">
+                    <span>Основные параметры:</span>
+                    <div class="tree-buttons-holder">
+                        <button class="parameter-button">
+                            <span>215</span>
+                            <div class="underline"></div>
+                            <span>Ток, А</span>
+                        </button>
+                        <button class="parameter-button">
+                            <span>380</span>
+                            <div class="underline"></div>
+                            <span>Напряжение, В</span>
+                        </button>
+                        <button class="parameter-button">
+                            <span>0,6</span>
+                            <div class="underline"></div>
+                            <span>V подачи, м/мин</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="usual-holder">
+                    <img src="./img/parameter_icon.svg">
+                    <span>Дополнительные параметры:</span>
+                    <div class="tree-buttons-holder">
+                        <button class="parameter-button">
+                            <span>3</span>
+                            <span>Длина дуги</span>
+                        </button>
+                        <button class="parameter-button">
+                            <span>-4</span>
+                            <span>Динамика</span>
+                        </button>
+                        <button class="parameter-button">
+                            <span>0,3</span>
+                            <span>V наплавки, м/мин</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="usual-holder">
+                    <img src="./img/parameter_icon.svg">
+                    <span>Параметры осцилляции:</span>
+                    <div class="tree-buttons-holder">
+                        <button class="parameter-button">
+                            <img src="./img/oscilation.svg" alt="">
+                            <span>Тип</span>
+                        </button>
+                        <button class="parameter-button">
+                            <span>12,5</span>
+                            <span>Ширина, мм</span>
+                        </button>
+                        <button class="parameter-button">
+                            <span>2,4</span>
+                            <span>Период, мм</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="setup-buttons-holder">
+                <div class="for-buttons">
+                    <div class="setup-button-wrapper">
+                        <button class="setup-button">82% Ar+18% CO2</button>
+                        <span>Защитный газ</span>
+                    </div>
+                    <div class="setup-button-wrapper">
+                        <button class="setup-button">0,8 mm</button>
+                        <span>Диаметр проволоки</span>
+
+                    </div>
+                    <div class="setup-button-wrapper">
+                        <button class="setup-button">Al-Mg</button>
+                        <span>Материал</span>
+
+                    </div>
+                    <div class="setup-button-wrapper">
+                        <button class="setup-button">DAC Normal (MIG/MAG)</button>
+                        <span>Способ</span>
+                    </div>
+                </div>
+
+
+                <div id="reset-save-buttons-holder">
+                    <button class="reset-save-button"><img src="./img/reset.svg"><span>По умолчанию</span></button>
+                    <button class="reset-save-button"><img src="./img/save.svg"><span>Сохранить</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

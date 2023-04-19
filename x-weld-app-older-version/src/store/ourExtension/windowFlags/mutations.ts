@@ -66,5 +66,16 @@ export const mutations: MutationTree<WindowFlagsState> = {
         newFlags.mainWindowFlag = false;
         newFlags.consoleWindowFlag = true;
         state.flags = newFlags;
+    },
+
+    openProfilesWindow(state) {
+        const newFlags = JSON.parse(JSON.stringify(initWindowFlags));
+        newFlags.mainWindowFlag = false;
+        newFlags.profilesWindowFlag = true;
+        state.flags = newFlags;
+    },
+
+    openSelectListWindow(state) {
+        state.flags.selectListWindowFlag = true;
     }
 }

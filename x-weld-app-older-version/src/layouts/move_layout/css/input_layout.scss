@@ -27,7 +27,7 @@ $minHeightForMinimize: 600px; // При достижении height: 600px ва�
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr;
 
-        #input-info {
+        .input-info.default {
             padding: 10% 0;
             display: grid;
             grid-template-columns: 1fr;

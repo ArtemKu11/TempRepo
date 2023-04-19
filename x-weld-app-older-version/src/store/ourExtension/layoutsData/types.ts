@@ -5,6 +5,8 @@ import { InputWindowState } from "./inputWindow/types";
 import { MainWindowState } from "./mainWindow/types";
 import { MoveWindowState } from "./moveWindow/types";
 import { NewFileBrowseWindowState } from "./newFileBrowseWindow/types";
+import { ProfilesWindowState } from "./profilesWindow/types";
+import { SelectListWindowState } from "./selectListWindow/types";
 
 export interface LayoutsDataState {
     baseLayout: BaseLayoutState,
@@ -13,5 +15,7 @@ export interface LayoutsDataState {
     newFileBrowseWindow: NewFileBrowseWindowState
     filePreviewWindow: FilePreviewWindowState
     moveWindow: MoveWindowState
-    inputWindow: InputWindowState
+    inputWindow: InputWindowState,
+    profilesWindow: ProfilesWindowState
+    selectListWindow: SelectListWindowState
 }

@@ -9,7 +9,9 @@ export const defaultState = (): LightFilesState => {
             gcodes: new Map(),
             config: new Map()
         },
-        isLoadingFinish: true
+        isLoadingFinish: true,
+        isProfilesDownloadingFinished: false,
+        isProfiesSetupFinished: false
     }
 }
 

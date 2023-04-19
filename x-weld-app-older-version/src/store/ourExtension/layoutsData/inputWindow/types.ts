@@ -7,10 +7,15 @@ export interface InputWindowData {
     initValue: number;
     coordName: string;
     dispachAfterConfirm: string;
+    callbackAfterConfirm?: Function
+    maxValue?: number,
+    minValue?: number
+    rejectPointClick?: boolean
 }
 
 export interface FlagsObject {
     defaultImplementation: boolean
+    notDefaultImplementation: boolean
 }
 
 export interface InputWindowState {
@@ -20,4 +25,5 @@ export interface InputWindowState {
     keyboardFlag: boolean 
     valcoderStep: number
     flags: FlagsObject
+    rejectPointClick: boolean
 }

@@ -14,7 +14,8 @@
                 <div id="two-control-buttons">
                     <button><img src="@/layouts/move_layout/img/axis_refresh.png" height="50" /><span>Сброс
                             осей</span></button>
-                    <button @click="sendGcode('G28', $waits.onHomeAll)"><img src="@/layouts/move_layout/img/park.png" height="50" /><span>Парковка</span></button>
+                    <button @click="sendGcode('G28', $waits.onHomeAll)"><img src="@/layouts/move_layout/img/park.png"
+                            height="50" /><span>Парковка</span></button>
                 </div>
                 <XBigButton @plusClick="plusClickHandler" @minusClick="minusClickHandler" />
                 <YBigButton @plusClick="plusClickHandler" @minusClick="minusClickHandler" />
@@ -88,19 +89,35 @@ export default class MoveWindow extends Mixins(StateMixin) {
     }
 
     openInputWindow(coordName: string) {
+        const confirmCallback = this.newValueReceiver.bind(this)
+
         const inputWindowData: InputWindowData = {
             coordName: coordName,
             initValue: this.resolveInitInputWindowValue(coordName),
             // dispachAfterConfirm: `ourExtension/layoutsData/moveWindow/set${coordName.toUpperCase()}`,
-            dispachAfterConfirm: `ourExtension/layoutsData/moveWindow/setNeedToSendGcodeMove`
+            // dispachAfterConfirm: `ourExtension/layoutsData/moveWindow/setNeedToSendGcodeMove`,
+            dispachAfterConfirm: `void`,
+            callbackAfterConfirm: confirmCallback,
+            maxValue: 2000,
+            minValue: -45
         }
         const valcoderStep = this.$store.getters['ourExtension/layoutsData/moveWindow/getCurrentStep']
         const initInfo: InitInputWindowData = {
             inputWindowData: inputWindowData,
-            valcoderStep: valcoderStep
+            valcoderStep: valcoderStep,
         }
         this.$store.dispatch('ourExtension/layoutsData/inputWindow/initInputWindow', initInfo);
         this.$store.dispatch('ourExtension/windowFlags/openInputWindow');
+    }
+
+    newValueReceiver(newValue: number) {
+        const inputWindowData = this.$store.getters['ourExtension/layoutsData/inputWindow/getInputWindowData'] as InputWindowData
+        const axis = inputWindowData.coordName.toLowerCase();
+        const oldValue = this.resolveInitInputWindowValue(axis);
+        const distance = newValue - oldValue;
+        if (distance) {
+            this.sendMoveGcode(axis, distance + '');
+        }
     }
 
     resolveInitInputWindowValue(coordName: string): number {

@@ -41,6 +41,7 @@ export const actions: ActionTree<SocketState, RootState> = {
             })
             SocketActions.serverFilesListRoot('config')
             dispatch('ourExtension/files/getAllFilesAndDirs', 'gcodes', {root: true})
+            dispatch('ourExtension/files/getAllFilesAndDirs', 'config', {root: true})
 
         }
     },

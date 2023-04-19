@@ -3,7 +3,8 @@ import { ProfilesState } from "./types";
 export const defaultState = (): ProfilesState => {
     return {
         profilesList: [],
-        lastSelectedProfile: null
+        lastPrintingProfile: null,
+        profilesMetadata: null
     }
 }
 

@@ -1,5 +1,6 @@
 import { RootState } from "@/store/types";
 import { GetterTree } from "vuex";
+import { getDirectoryByPath, isDirectoryExistInState, splitPath } from "./helpers";
 import { LightFilesState } from "./types";
 
 export const getters: GetterTree<LightFilesState, RootState> = {
@@ -19,7 +20,18 @@ export const getters: GetterTree<LightFilesState, RootState> = {
         return state.isLoadingFinish;
     },
 
+    getProfilesDownloadingFinishedFlag: (state) => {
+        return state.isProfilesDownloadingFinished;
+    },
+
     getFilesMap(state) {
         return state.fileSystem;
+    },
+
+    getProfilesFiles(state) {
+        if (isDirectoryExistInState(state.dirs, splitPath('config/profiles'))) {
+            return getDirectoryByPath(state.dirs, splitPath('config/profiles'))
+        }
+        return null
     }
 }

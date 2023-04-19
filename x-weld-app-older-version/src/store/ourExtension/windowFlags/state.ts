@@ -7,7 +7,9 @@ export const initWindowFlags: FlagsObject = {
     moveWindowFlag: false,
     inputWindowFlag: false,
     mainSettingsWindowFlag: false,
-    consoleWindowFlag: false
+    consoleWindowFlag: false,
+    profilesWindowFlag: false,
+    selectListWindowFlag: false
 }
 
 export const windowFlagsState = (): WindowFlagsState => {

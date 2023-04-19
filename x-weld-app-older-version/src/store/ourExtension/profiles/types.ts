@@ -1,26 +1,7 @@
 export interface ProfilesState {
-    profilesList: ProfileForFile[]
-    lastSelectedProfile: PrintingDiapason | null
-}
-
-// export interface ProfileInfo {
-//     profile: Profile
-//     printingDiapason?: PrintingDiapason
-// }
-
-export interface ProfileForFile {
-    profileName: string
-    diapasones: PrintingDiapason[]
-}
-
-export interface PrintingDiapason {
-    diapason?: LayersDiapason
-    diapasonProfileParameters: Profile
-}
-
-export interface LayersDiapason {
-    firstLayer: number
-    lastLayer: number
+    profilesList: Profile[]
+    lastPrintingProfile: Profile | null
+    profilesMetadata: ProfilesMetadata | null
 }
 
 export interface Profile {
@@ -54,4 +35,34 @@ export interface ProfileWeldParameters {
     wireDiameter: number,  // Длина проволоки, мм
     material: string  // Материал
     method: string  // Способ
+}
+
+export interface ProfilesMetadata {
+    gas: string[],
+    oscilationTypes: string[],
+    weldTypes: string[],
+    wireDiameters: number[]
+}   
+
+export interface PrintingDiapason {
+    profile: Profile,
+    isRootDiapason: boolean,
+    firstLayer?: number,
+    lastLayer?: number
+    nextDiapason?: PrintingDiapason | null
+    prevDiapason?: PrintingDiapason | null
+}
+
+
+export interface PrintingDiapasonProcessor {
+    hasNext(printingDiapason: PrintingDiapason): boolean
+    hasPrev(printingDiapason: PrintingDiapason): boolean
+    next(printingDiapason: PrintingDiapason): PrintingDiapason | null
+    prev(printingDiapason: PrintingDiapason): PrintingDiapason | null
+    deleteCurrent(printingDiapason: PrintingDiapason): PrintingDiapason
+    createNext(printingDiapason: PrintingDiapason): void
+    deleteAll(printingDiapason: PrintingDiapason): PrintingDiapason
+    getRootDiapason(printingDiapason: PrintingDiapason): PrintingDiapason
+    searchInPrevDiapasones(printingDiapason: PrintingDiapason): PrintingDiapason | null
+    searchInNextDiapasones(printingDiapason: PrintingDiapason): PrintingDiapason | null
 }

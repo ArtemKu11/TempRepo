@@ -23,12 +23,18 @@ export default class MainWindowButton extends Mixins(StateMixin, FilesMixin, Ser
 
     async clickHandler() {
         if (this.buttonData.buttonName === 'Открыть файл') {
-            // this.$store.dispatch('ourExtension/files/getAllFilesAndDirs', 'gcodes')
             this.$store.dispatch('ourExtension/layoutsData/newFileBrowseWindow/setCurrentPath', 'gcodes')
             this.$store.dispatch('ourExtension/windowFlags/openFileBrowseWindow')
+        } else if (this.buttonData.buttonName === 'Конфигурация') {
+            this.$store.dispatch('ourExtension/layoutsData/profilesWindow/reset')
+            this.$store.dispatch('ourExtension/layoutsData/profilesWindow/initWithGlobalProfiles')
+            this.$store.dispatch('ourExtension/windowFlags/openProfilesWindow')
         } else {
-            this.$store.dispatch('ourExtension/files/getAllFilesAndDirs', 'config')
-
+            // console.log(typeof new Map(), typeof [])
+            // const map = new Map([['alala', 'lalala'], ['xyi', 'xisdgf']])
+            // for (const [key, value] of map) {
+            //     console.log(key, value)
+            // }
         }
     }
 }

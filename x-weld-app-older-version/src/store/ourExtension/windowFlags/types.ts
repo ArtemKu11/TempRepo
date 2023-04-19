@@ -6,6 +6,8 @@ export interface FlagsObject {
     inputWindowFlag: boolean
     mainSettingsWindowFlag: boolean
     consoleWindowFlag: boolean
+    profilesWindowFlag: boolean
+    selectListWindowFlag: boolean
 }
 
 export interface WindowFlagsState {

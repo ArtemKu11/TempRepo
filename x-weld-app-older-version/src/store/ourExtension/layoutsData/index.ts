@@ -5,6 +5,8 @@ import { inputWindow } from "./inputWindow";
 import mainWindow from "./mainWindow";
 import { moveWindow } from "./moveWindow";
 import { newFileBrowseWindow } from "./newFileBrowseWindow";
+import { profilesWindow } from "./profilesWindow";
+import { selectListWindow } from "./selectListWindow";
 
 const namespaced = true;
 
@@ -19,6 +21,8 @@ export default {
         newFileBrowseWindow,
         filePreviewWindow,
         moveWindow,
-        inputWindow
+        inputWindow,
+        profilesWindow,
+        selectListWindow
     }
 }

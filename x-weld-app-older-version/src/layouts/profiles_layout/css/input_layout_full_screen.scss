@@ -1,0 +1,334 @@
+// Стили окна с клавиатурой и валкодером для окна "Профили"
+
+$defaultValcoderDivHeight: 450px; 
+$minValcoderDivHeight: 390px;  
+$minHeightForMinimize: 600px;  // При достижении height: 600px валкожер уменьшится до $minValcoderDivHeight
+
+#input-utils-main-container {
+    min-height: 660px;
+
+    position: absolute;
+    z-index: 3;
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: $sidebarWidth auto;
+    grid-template-rows: 1fr;
+    // backdrop-filter: blur(5px);
+    background: rgba(21, 21, 21, 0.9);
+    display: none;
+
+
+
+    #input-utils-container {
+        overflow-y: auto;
+        grid-column: 2/3;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr;
+
+        #input-info {
+            padding: 10% 0;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr 1fr;
+            row-gap: 10%;
+
+            .input-info-part {
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr;
+
+                .holder {
+                    width: 500px;
+                }
+
+                &:first-of-type {
+                    .holder {
+                        align-self: flex-end;
+                        justify-self: center;
+                        max-width: 400px;
+                        display: grid;
+                        grid-template-rows: 4fr 1fr;
+                        grid-template-columns: 1fr;
+                        gap: 10px;
+                        color: white;
+                        align-items: center;
+                        justify-items: center;
+
+                        #label-coord {
+                            font-size: 90px;
+                            // grid-column: 1;
+                            // grid-row: 1;
+                            color: rgba(109, 109, 109, 1);
+
+                        }
+
+                        #label-value {
+                            font-size: 90px;
+                            // grid-column: 2;
+                            // grid-row: 1;
+                        }
+
+                        #label-mills {
+                            font-size: 25px;
+                            // grid-column: 2;
+                            // grid-row: 2;
+                            color: #C7C7C7;
+
+                        }
+                    }
+                }
+
+                &:last-of-type {
+                    grid-template-rows: 1fr;
+
+                    .holder {
+                        justify-self: center;
+                        align-self: flex-start;
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        grid-template-rows: 1fr;
+
+                        button {
+                            justify-self: center;
+                            align-self: center;
+                            width: 110px;
+                            height: 110px;
+                            background: none;
+                            border: none;
+                            color: rgba(199, 199, 199, 1);
+                            font-size: 20px;
+                            display: grid;
+                            grid-template-rows: 80% 20%;
+                            align-items: center;
+                            justify-items: center;
+                            user-select: none;
+
+                            &:first-of-type {
+                                width: 120px;
+
+                            }
+
+                            span {
+                                display: block;
+                            }
+
+                            img {
+                                pointer-events: none;
+                            }
+
+                            &:hover {
+                                cursor: pointer;
+                            }
+
+                            &:active {
+                                &:first-of-type {
+                                    img {
+                                        content: url('@/layouts/profiles_layout/img/keyboard_button_active.svg');
+                                        width: 110%;
+                                        height: 110%;
+                                    }
+
+                                    color: white;
+                                }
+
+                                &:last-of-type {
+                                    img {
+                                        content: url('@/layouts/profiles_layout/img/valcoder_active.png');
+                                        width: 90%;
+                                        height: 110%;
+                                    }
+
+                                    color: white;
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        #keyboard-input-resources {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none;
+
+            #keyboard {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-rows: repeat(5, 1fr);
+                width: 400px;
+                height: 500px;
+
+                justify-items: center;
+                align-items: center;
+
+                button {
+                    cursor: pointer;
+                    user-select: none;
+                    background: none;
+                    border: none;
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    font-size: 50px;
+                    color: white;
+
+                    border: 2px solid rgba(199, 199, 199, 1);
+                    filter: drop-shadow(2px 2px 10px #000000) drop-shadow(-2px -2px 10px #757474);
+
+                    &:active {
+                        border-color: white;
+                    }
+
+                    img {
+                        pointer-events: none;
+                    }
+                }
+            }
+
+        }
+
+        #valcoder-input-resources {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            // display: none;
+
+
+            #valcoder {
+                height: $defaultValcoderDivHeight;
+                display: grid;
+                position: relative;
+                grid-template-rows: 1fr 1fr;
+
+                img {
+                    align-self: flex-start;
+                    justify-self: center;
+                    width: $defaultValcoderDivHeight + 100 - 90;
+                }
+
+                #valcoder-circle-holder {
+                    position: absolute;
+                    height: 100%;
+                    width: 100%;
+                    display: grid;
+                }
+
+                #valcoder-circle {
+                    position: relative;
+                    max-height: $defaultValcoderDivHeight - 90;
+                    max-width: $defaultValcoderDivHeight - 90;
+                    height: 100%;
+                    width: 100%;
+                    background-image: url('../img/valcoder_logo.png'), linear-gradient(rgba(34, 34, 34, 1), rgba(51, 51, 51, 1));
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    align-self: center;
+                    justify-self: center;
+                    border-radius: 50%;
+                    box-shadow: -4px -4px 4px 0px rgba(163, 163, 163, 0.39), 10px 10px 4px 0px rgba(0, 0, 0, 0.67);
+
+                    #valcoder-point {
+                        position: absolute;
+                        height: 13%;
+                        width: 13%;
+                        border-radius: 50%;
+                        left: 8%;
+                        top: 60%;
+                        background-color: #383838;
+                        box-shadow: inset 6px 6px 6px rgba(12, 12, 12, 0.62), inset -6px -6px 4px rgba(101, 101, 101, 0.38);
+                    }
+
+                    &:hover {
+                        transform: rotate(-0.25turn);
+                        cursor: pointer;
+                    }
+                }
+
+                #plus-minus-holder {
+                    padding-top: 20px;
+                    width: $defaultValcoderDivHeight + 100 - 90;
+                    justify-self: center;
+                    display: grid;
+                    grid-template-rows: 1fr;
+                    grid-template-columns: 1fr 1fr;
+
+
+                    span {
+                        display: block;
+                        color: rgba(109, 109, 109, 1);
+                        font-size: 40px;
+
+                        &:first-of-type {
+                            justify-self: flex-start;
+                        }
+
+                        &:last-of-type {
+                            justify-self: flex-end;
+                            padding-right: 5px;
+                        }
+                    }
+                }
+            }
+
+            #confirm-buttons {
+                display: flex;
+                justify-content: center;
+
+                button {
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    color: rgba(195, 195, 195, 1);
+
+                    &:first-of-type {
+                        margin-right: 60px;
+                    }
+
+                    &:active {
+                        color: white;
+                    }
+
+                    span {
+                        padding-top: 5px;
+                        display: block;
+                        font-size: 20px;
+                    }
+                }
+            }
+
+            @media (max-height: $minHeightForMinimize) {
+                #valcoder {
+                    height: $minValcoderDivHeight;
+
+                    img {
+                        width: $minValcoderDivHeight + 100 - 90;
+                    }
+
+                    #valcoder-circle {
+                        max-height: $minValcoderDivHeight - 90;
+                        max-width: $minValcoderDivHeight - 90;
+                    }
+
+                    #plus-minus-holder {
+                        width: $minValcoderDivHeight + 100 - 90;
+                    }
+                }
+
+                #confirm-buttons {
+                    img {
+                        height: 60px;
+                    }
+                }
+            }
+        }
+    }
+}

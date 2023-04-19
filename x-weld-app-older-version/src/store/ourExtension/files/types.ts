@@ -1,9 +1,13 @@
+import { PrintingDiapason } from "../profiles/types"
+
 export interface LightFilesState {
     files: FileData[]
     dirs: DirectoryData[],
     recursiveFlag: number[] // must be empty, when recursive process is finished
     fileSystem: FileSystem
     isLoadingFinish: boolean
+    isProfilesDownloadingFinished: boolean
+    isProfiesSetupFinished: boolean
 }
 
 export interface DirectoryData {
@@ -28,9 +32,16 @@ export interface FileData {
     isSelected: boolean,
     pathForMoonraker: string,
     dirnameForMoonraker: string,
+    profiles?: GcodePrintingProfiles
 }
 
 export interface FileSystem {
     gcodes: Map<string, FileData>,
     config?: Map<string, FileData>
+}
+
+export interface GcodePrintingProfiles {
+    lastSelectedDiapason?: PrintingDiapason,
+    selectedDiapason?: PrintingDiapason | null,
+    profiles: Map<string, PrintingDiapason>
 }

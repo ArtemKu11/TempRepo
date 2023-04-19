@@ -21,6 +21,7 @@
 
 
 <script lang="ts">
+import { InputWindowData } from '@/store/ourExtension/layoutsData/inputWindow/types';
 import { Vue, Component } from 'vue-property-decorator';
 
 @Component({})
@@ -44,9 +45,27 @@ export default class ValcoderInput extends Vue {
         return this.$store.getters['ourExtension/layoutsData/inputWindow/getValcoderStep']
     }
 
+    get inputWindowData(): InputWindowData {
+        return this.$store.getters['ourExtension/layoutsData/inputWindow/getInputWindowData']
+    }
+
     mounted() {
         const newValue = +this.processingValue + '';
         this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue);
+    }
+
+    finalLengthCheck(newValue: string): string {
+        const maxValue = this.inputWindowData.maxValue;
+        const minValue = this.inputWindowData.minValue;
+        if (typeof maxValue === 'number' && +newValue > maxValue) {
+            newValue = maxValue + '';
+        }
+
+        if (typeof minValue === 'number' && +newValue < minValue) {
+            newValue = minValue + '';
+        }
+
+        return newValue;
     }
 
     cancelButtonClick() {
@@ -223,7 +242,8 @@ export default class ValcoderInput extends Vue {
     resolveValueUpdate() {
         let angleSteps = Math.round((this.angle - this.lastBorderAngle) / 30);
         if (angleSteps != 0) {
-            const newValue = this.round(+this.processingValue + this.valcoderStep * angleSteps) + '';
+            let newValue = this.round(+this.processingValue + this.valcoderStep * angleSteps) + '';
+            newValue = this.finalLengthCheck(newValue)
             this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue)
             this.lastBorderAngle = this.angle;
         }

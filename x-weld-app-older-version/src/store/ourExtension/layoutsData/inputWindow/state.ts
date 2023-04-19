@@ -1,7 +1,8 @@
 import { FlagsObject, InputWindowState } from "./types";
 
 export const defaultFlags: FlagsObject = {
-    defaultImplementation: true
+    defaultImplementation: true,
+    notDefaultImplementation: false
 }
 
 export const defaultState = (): InputWindowState => {
@@ -15,7 +16,8 @@ export const defaultState = (): InputWindowState => {
         finalValue: 0,
         keyboardFlag: true,
         valcoderStep: 1,
-        flags: defaultFlags
+        flags: defaultFlags,
+        rejectPointClick: false
     }
 }
 

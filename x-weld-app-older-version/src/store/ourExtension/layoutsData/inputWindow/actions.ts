@@ -1,7 +1,7 @@
 import { RootState } from "@/store/types";
 import { ActionTree } from "vuex";
 import { defaultFlags } from "./state";
-import { InitInputWindowData, InputWindowState } from "./types";
+import { FlagsObject, InitInputWindowData, InputWindowState } from "./types";
 
 export const actions: ActionTree<InputWindowState, RootState> = {
     initInputWindow({ commit }, payload: InitInputWindowData) {  // Можно писать свои имплементации этой функции в связке с dispatch('confirm')
@@ -12,16 +12,39 @@ export const actions: ActionTree<InputWindowState, RootState> = {
         commit('setValcoderStep', payload.valcoderStep)  // Обязательно. Используется в шаблоне валкодера в расчетах
         const flags = JSON.parse(JSON.stringify(defaultFlags))
         commit('setFlags', flags)  // Обязательно. Для отрисовки нужно вариации окна в шаблоне
+        if (payload.inputWindowData.rejectPointClick) {
+            commit('rejectPointClick')  // Если нужно отменить клик по точке (нужны только целые значения)
+        }
+    },
+
+    initNotDefaultInputWindow({ commit }, payload: InitInputWindowData) {
+        commit('reset')
+        commit('setInputWindowData', payload.inputWindowData)
+        commit('setProcessingValue', payload.inputWindowData.initValue + "")
+        commit('setFinalValue', payload.inputWindowData.initValue)
+        commit('setValcoderStep', payload.valcoderStep)
+        const flags: FlagsObject = JSON.parse(JSON.stringify(defaultFlags))
+        flags.defaultImplementation = false
+        flags.notDefaultImplementation = true;
+        commit('setFlags', flags)
+        if (payload.inputWindowData.rejectPointClick) {
+            commit('rejectPointClick')
+        }
     },
 
     confirm({ dispatch, commit, state }) {  // Можно писать свои имплементации этой функции в связке с dispatch('initInputWindow')
         dispatch('ourExtension/windowFlags/openPreviousWindow', null, { root: true });
+        state.finalValue = +state.processingValue;
+
+        const confirmCallback = state.inputWindowData?.callbackAfterConfirm;
+        if (confirmCallback) {
+            confirmCallback(state.finalValue)
+        }
+
         const confirmDispatch = state.inputWindowData?.dispachAfterConfirm;
         if (confirmDispatch === 'void' || !confirmDispatch) {
-            state.finalValue = +state.processingValue;
             return;
         }
-        state.finalValue = +state.processingValue;
         dispatch(confirmDispatch, state.finalValue, { root: true });
     }
 }

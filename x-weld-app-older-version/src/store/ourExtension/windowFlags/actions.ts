@@ -9,6 +9,10 @@ export const actions: ActionTree<WindowFlagsState, RootState> = {
     //     SocketActions.serverGetGcodes();
     // },
 
+    clearStack({ commit, dispatch, getters, rootState }) {
+        commit('setWindowStack', [getters.getInitFlagsObject()])
+    },
+
     onOpenFileBrowseWindow({ commit, dispatch, getters, rootState }, payload) {
         commit('openFileBrowseWindow');  // 1. Изменить флаги (Показать окно)
         const currentFlags: FlagsObject = getters.getCurrentFlagsObject();  // 2. Получить эти флаги
@@ -61,6 +65,18 @@ export const actions: ActionTree<WindowFlagsState, RootState> = {
 
     openConsoleWindow({commit, getters}) {
         commit('openConsoleWindow');
+        const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
+        commit('saveCurrentLayoutInStack', currentFlags);
+    },
+
+    openProfilesWindow({commit, getters, state, dispatch}) {
+        commit('openProfilesWindow');
+        const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
+        commit('saveCurrentLayoutInStack', currentFlags);
+    },
+
+    openSelectListWindow({ commit, getters }) {
+        commit('openSelectListWindow');
         const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
         commit('saveCurrentLayoutInStack', currentFlags);
     }

@@ -1,8 +1,10 @@
 import { SocketActions } from "@/api/socketActions";
 import { RootState } from "@/store/types";
 import { ActionTree } from "vuex";
-import { createFilesMap, handleDirectoryCreation, handleDirectoryDeletion, handleDirectoryMove, handleFileCreation, handleFileDeletion, handleFileModifying, handleFileMove, isDirectoryExistInState as isDirectoryExistInState, refreshDirectoriesSize, refreshMoonrakerPaths, splitPath, tryToCreateDirectoryInState, tryToInsertDirectoryInfoToState } from "./helpers";
-import { LightFilesState } from "./types";
+import { getSortedMapKeys } from "../profiles/helpers";
+import { PrintingDiapason } from "../profiles/types";
+import { createFilesMap, deepCopyOfMap, handleDirectoryCreation, handleDirectoryDeletion, handleDirectoryMove, handleFileCreation, handleFileDeletion, handleFileModifying, handleFileMove, isDirectoryExistInState as isDirectoryExistInState, refreshDirectoriesSize, refreshMoonrakerPaths, setProfilesForNewFiles, splitPath, tryToCreateDirectoryInState, tryToInsertDirectoryInfoToState } from "./helpers";
+import { GcodePrintingProfiles, LightFilesState } from "./types";
 
 export const actions: ActionTree<LightFilesState, RootState> = {
     getAllFilesAndDirs({ state }, directory: string) {
@@ -22,7 +24,7 @@ export const actions: ActionTree<LightFilesState, RootState> = {
             } else {
                 anotherDirs = tryToInsertDirectoryInfoToState(state.dirs, pathParts, payload)
             }
-            
+
             if (anotherDirs.length > 0) {
                 for (const dirName of anotherDirs) {
                     if (dirName) {
@@ -37,6 +39,8 @@ export const actions: ActionTree<LightFilesState, RootState> = {
             dispatch('createFilesMap')
             dispatch('refreshDirectoriesSize')
             state.isLoadingFinish = true;
+            state.isProfilesDownloadingFinished = true;
+            dispatch('setPrintingProfilesForNewFiles')
         }
     },
 
@@ -55,7 +59,7 @@ export const actions: ActionTree<LightFilesState, RootState> = {
     refreshDirectoriesSize({ state }) {
         refreshDirectoriesSize(state.dirs)
     },
-    
+
     refreshGcodeParser({ commit, dispatch, state }) {
         refreshMoonrakerPaths(state.dirs);
         dispatch('createFilesMap');
@@ -68,6 +72,7 @@ export const actions: ActionTree<LightFilesState, RootState> = {
                 handleFileCreation(state.dirs, payload)
                 if (payload.item.root === "gcodes") {
                     commit('refreshGcodeParser')
+                    dispatch('setPrintingProfilesForNewFiles')
                 }
                 break;
             case "delete_file":
@@ -90,7 +95,8 @@ export const actions: ActionTree<LightFilesState, RootState> = {
                 break;
             case "create_dir":
                 handleDirectoryCreation(state.dirs, payload)
-                dispatch('getAllFilesAndDirs', 'gcodes/' + payload.item.path)
+                state.recursiveFlag = []
+                dispatch('getAllFilesAndDirs', payload.item.root + '/' + payload.item.path)
                 break;
             case "delete_dir":
                 handleDirectoryDeletion(state.dirs, payload)
@@ -105,5 +111,37 @@ export const actions: ActionTree<LightFilesState, RootState> = {
         }
         dispatch('createFilesMap');
         dispatch('refreshDirectoriesSize')
+    },
+
+    setProfilesForAllGcodes({ state, rootGetters }, payload: Map<string, PrintingDiapason>) {
+        for (const file of state.fileSystem.gcodes.values()) {
+            const profilesMap: Map<string, PrintingDiapason> = deepCopyOfMap(payload);
+            // const lastSelectedDiapason: PrintingDiapason = {
+            //     isRootDiapason: true,
+            //     profile: rootGetters['ourExtension/profiles/getLastPrintingProfile']
+            // }
+            const gCodePrintingProfiles: GcodePrintingProfiles = {
+                // lastSelectedDiapason: lastSelectedDiapason,
+                profiles: profilesMap
+            }
+            file.profiles = gCodePrintingProfiles
+        }
+        state.isProfiesSetupFinished = true;
+    },
+
+    setPrintingProfilesForNewFiles({ state, rootGetters }) {
+        if (state.isProfiesSetupFinished) {
+            const profilesMap = rootGetters['ourExtension/profiles/getDefaultProfilesMap']
+            const profilesMapCopy: Map<string, PrintingDiapason> = deepCopyOfMap(profilesMap);
+            // const lastSelectedDiapason: PrintingDiapason = {
+            //     isRootDiapason: true,
+            //     profile: rootGetters['ourExtension/profiles/getLastPrintingProfile']
+            // }
+            const gCodePrintingProfiles: GcodePrintingProfiles = {
+                // lastSelectedDiapason: lastSelectedDiapason,
+                profiles: profilesMapCopy
+            }
+            setProfilesForNewFiles(state.dirs, gCodePrintingProfiles);
+        }
     }
 }

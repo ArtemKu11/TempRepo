@@ -4,7 +4,11 @@ import { FlagsObject, InputWindowData, InputWindowState } from "./types";
 
 export const mutations: MutationTree<InputWindowState> = {
     setInputWindowData(state, payload: InputWindowData) {
+        const callback = payload.callbackAfterConfirm;
         state.inputWindowData = JSON.parse(JSON.stringify(payload));
+        if (state.inputWindowData) {
+            state.inputWindowData.callbackAfterConfirm = callback
+        }
     },
 
     setProcessingValue(state, payload: string) {
@@ -32,5 +36,9 @@ export const mutations: MutationTree<InputWindowState> = {
 
     setFlags(state, flags: FlagsObject) {
         state.flags = flags;
+    },
+
+    rejectPointClick(state) {
+        state.rejectPointClick = true;
     }
 }

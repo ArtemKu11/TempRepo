@@ -22,12 +22,17 @@
 
 
 <script lang="ts">
+import { InputWindowData } from '@/store/ourExtension/layoutsData/inputWindow/types';
 import { Vue, Component } from 'vue-property-decorator';
 
 @Component({})
 export default class KeyboardInput extends Vue {
     get processingValue(): string {
         return this.$store.getters['ourExtension/layoutsData/inputWindow/getProcessingValue']
+    }
+
+    get inputWindowData(): InputWindowData {
+        return this.$store.getters['ourExtension/layoutsData/inputWindow/getInputWindowData']
     }
 
     lengthCheck() {
@@ -40,7 +45,37 @@ export default class KeyboardInput extends Vue {
         return ((Math.round(Math.abs(+currentValue)) + "").length < 5)
     }
 
+    maxMinValueCheck(newValue: string): string {
+        const maxValue = this.inputWindowData.maxValue;
+        const minValue = this.inputWindowData.minValue;
+        if (typeof maxValue === 'number' && +newValue > maxValue) {
+            newValue = maxValue + '';
+        }
+
+        if (typeof minValue === 'number' && +newValue < minValue && minValue < 0) {
+            newValue = minValue + '';
+        }
+
+        return newValue;
+    }
+
+    finalMaxMinValueCheck(newValue: string): string {
+        const maxValue = this.inputWindowData.maxValue;
+        const minValue = this.inputWindowData.minValue;
+        if (typeof maxValue === 'number' && +newValue > maxValue) {
+            newValue = maxValue + '';
+        }
+
+        if (typeof minValue === 'number' && +newValue < minValue) {
+            newValue = minValue + '';
+        }
+
+        return newValue;
+    }
+
     confirmButtonClick() {
+        const newValue = this.finalMaxMinValueCheck(this.processingValue)
+        this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue)
         this.$store.dispatch('ourExtension/layoutsData/inputWindow/confirm')
     }
 
@@ -53,6 +88,7 @@ export default class KeyboardInput extends Vue {
         if (newValue === "") {
             newValue = '0';
         }
+        newValue = this.maxMinValueCheck(newValue)
         this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue)
     }
 
@@ -70,6 +106,9 @@ export default class KeyboardInput extends Vue {
     }
 
     pointButtonClick() {
+        if (this.inputWindowData.rejectPointClick) {
+            return
+        }
         const currentValue = this.processingValue;
         if (!currentValue.includes('.')) {
             const newValue = currentValue + ".";
@@ -81,7 +120,8 @@ export default class KeyboardInput extends Vue {
         const currentValue = this.processingValue;
         let firstDigit = (currentValue).charAt(0);
         if ((firstDigit === '-') && currentValue.length > 1) {
-            const newValue = currentValue.slice(1);
+            let newValue = currentValue.slice(1);
+            newValue = this.maxMinValueCheck(newValue)
             if (newValue.endsWith('.')) {
                 this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue)
             } else {
@@ -94,7 +134,8 @@ export default class KeyboardInput extends Vue {
         const currentValue = this.processingValue;
         let firstDigit = currentValue.charAt(0);
         if (!(firstDigit === '-') && currentValue !== "0") {
-            const newValue = '-' + currentValue;
+            let newValue = '-' + currentValue;
+            newValue = this.maxMinValueCheck(newValue)
             if (newValue.endsWith('.')) {
                 this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue)
             } else {

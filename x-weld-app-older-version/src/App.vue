@@ -19,7 +19,8 @@
         <InputWindow v-if="inputWindowFlag" />
         <MainSettingsWindow v-if="mainSettingsWindowFlag" />
         <ConsoleWindow v-if="consoleWindowFlag" />
-
+        <ProfilesWindow v-if="profilesWindowFlag" />
+        <SelectListWindow v-if="selectListWindowFlag" />
     </div>
 </template>
 
@@ -33,16 +34,23 @@ import MoveWindow from './components/moveWindow/MoveWindow.vue';
 import InputWindow from './components/inputWindow/InputWindow.vue';
 import MainSettingsWindow from './components/mainSettingsWindow/MainSettingsWindow.vue'
 import ConsoleWindow from './components/consoleWindow/ConsoleWindow.vue';
-import { FileData, FileSystem } from './store/ourExtension/files/types';
+import ProfilesWindow from './components/profilesWindow/ProfilesWindow.vue';
+import SelectListWindow from './components/selectListWindow/SelectListWindow.vue';
+import { FileData, FileSystem, DirectoryData } from './store/ourExtension/files/types';
 import FilesMixin from './mixins/files';
 import { parseGcode } from './workers/xWeldParser';
+import { Profile } from './store/ourExtension/profiles/types'
+import { isSatisfiesProfilesMetadataType, isSatisfiesProfileType } from './store/ourExtension/profiles/helpers';
+import { AxiosResponse } from 'axios';
+import StateMixin from './mixins/state';
 
 @Component({
     components: {
-        MainWindow, FileBrowseWindow, FilePreviewWindow, MoveWindow, InputWindow, MainSettingsWindow, ConsoleWindow
+        MainWindow, FileBrowseWindow, FilePreviewWindow, MoveWindow, InputWindow, MainSettingsWindow, ConsoleWindow,
+        ProfilesWindow, SelectListWindow
     },
 })
-export default class App extends Mixins(FilesMixin) {
+export default class App extends Mixins(FilesMixin, StateMixin) {
     get mainWindowFlag(): boolean {
         return this.$store.getters['ourExtension/windowFlags/getMainWindowFlag'];
     }
@@ -71,6 +79,14 @@ export default class App extends Mixins(FilesMixin) {
         return this.$store.getters['ourExtension/windowFlags/getConsoleWindowFlag'];
     }
 
+    get profilesWindowFlag(): boolean {
+        return this.$store.getters['ourExtension/windowFlags/getProfilesWindowFlag'];
+    }
+
+    get selectListWindowFlag(): boolean {
+        return this.$store.getters['ourExtension/windowFlags/getSelectListWindowFlag'];
+    }
+
     get actualTime(): string {
         return this.$store.getters['ourExtension/layoutsData/baseLayout/getActualTime']();
     }
@@ -79,7 +95,7 @@ export default class App extends Mixins(FilesMixin) {
         return this.$store.getters['ourExtension/files/getFilesLoadingFinishedFlag']
     }
 
-    @Watch('isFilesLoadingFinished', {deep: true})
+    @Watch('isFilesLoadingFinished', { deep: true })
     isFilesLoadingFinishedWather() {
         if (this.isFilesLoadingFinished) {
             const filesMap: FileSystem = this.$store.getters['ourExtension/files/getFilesMap']
@@ -91,18 +107,58 @@ export default class App extends Mixins(FilesMixin) {
         }
     }
 
+    get isProfilesDownloadingFinished(): Boolean {
+        return this.$store.getters['ourExtension/files/getProfilesDownloadingFinishedFlag']
+    }
+
+    @Watch('isProfilesDownloadingFinished', { deep: true })
+    isProfilesDownloadingFinishedWather() {
+        if (this.isProfilesDownloadingFinished) {
+            const directoryData: DirectoryData = this.$store.getters['ourExtension/files/getProfilesFiles']
+            if (directoryData) {
+                const profilesList: Profile[] = []
+                const promiseList = []
+                for (const file of directoryData.files) {
+                    const response = this.getFile(file.name, 'config' + '/' + file.dirnameForMoonraker);
+                    let promise = response.then((responseData) => { this.handleProfileResponse(responseData, profilesList) })
+                    promiseList.push(promise)
+                }
+                Promise.all(promiseList).then(() => { this.$store.dispatch('ourExtension/profiles/setProfiles', profilesList) })
+            }
+        }
+    }
+
+    handleProfileResponse(response: AxiosResponse<any, any>, profilesList: Profile[]) {
+        if (response.status === 200) {
+            const content = response.data;
+            if (isSatisfiesProfileType(content)) {
+                profilesList.push(content)
+            } else if (isSatisfiesProfilesMetadataType(content)) {
+                this.$store.commit('ourExtension/profiles/setProfilesMetadata', content)
+            }
+        }
+    }
+
     mounted() {
         this.$store.dispatch('ourExtension/layoutsData/baseLayout/startTimeRefreshing');
     }
 
     starClick() {
-        this.$store.dispatch('ourExtension/files/setLayersByMoonrakerPath', { path: 'hexagon.gcode', layers: '20' })
-        console.log(this.$store.state.ourExtension.files)
-        console.log(this.$store.state.ourExtension.files.fileSystem)
+        this.$store.dispatch('ourExtension/windowFlags/clearStack')
+        if (this.profilesWindowFlag) {
+            this.openPreviousWindow()
+            setTimeout(() => {
+                this.$store.dispatch('ourExtension/layoutsData/profilesWindow/reset')
+                this.$store.dispatch('ourExtension/layoutsData/profilesWindow/initWithGlobalProfiles')
+                this.$store.dispatch('ourExtension/windowFlags/openProfilesWindow')
+            }, 1);
+        } else {
+            this.$store.dispatch('ourExtension/layoutsData/profilesWindow/reset')
+            this.$store.dispatch('ourExtension/layoutsData/profilesWindow/initWithGlobalProfiles')
+            this.$store.dispatch('ourExtension/windowFlags/openProfilesWindow')
+        }
 
-        console.log(this.$store.state.ourExtension.layoutsData.newFileBrowseWindow)
-        console.log(this.$store.getters['ourExtension/layoutsData/newFileBrowseWindow/getSelectedFile'])
-        console.log(this.$store.state.files)
+
     }
 
     openPreviousWindow() {

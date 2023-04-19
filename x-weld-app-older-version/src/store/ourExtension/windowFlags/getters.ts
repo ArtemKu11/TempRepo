@@ -42,5 +42,13 @@ export const getters: GetterTree<WindowFlagsState, RootState> =  {
 
     getConsoleWindowFlag(state) {
         return state.flags.consoleWindowFlag;
+    },
+
+    getProfilesWindowFlag(state) {
+        return state.flags.profilesWindowFlag;
+    },
+
+    getSelectListWindowFlag(state) {
+        return state.flags.selectListWindowFlag
     }
 }

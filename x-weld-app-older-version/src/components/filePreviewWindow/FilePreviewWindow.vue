@@ -16,11 +16,11 @@
         </div>
         <div id="content-footer">
             <div class="one-button-wrapper">
-                <button><img src="@/layouts/open_file_layout/img/open_icon.png"><span>Открыть</span></button>
+                <button @click="openPreviousWindow"><img src="@/layouts/open_file_layout/img/open_icon.png"><span>Открыть</span></button>
             </div>
             <div class="two-buttons-wrapper">
                 <button><img src="@/layouts/open_file_layout/img/move_icon.png"><span>Перемещение</span></button>
-                <button><img src="@/layouts/open_file_layout/img/profiles_icon.png"><span>Профили</span></button>
+                <button @click="openProfilesWindow"><img src="@/layouts/open_file_layout/img/profiles_icon.png"><span>Профили</span></button>
             </div>
             <div class="one-button-wrapper">
                 <button><img src="@/layouts/open_file_layout/img/print_icon.png"><span>Печать</span></button>
@@ -38,6 +38,16 @@ import { Component, Vue } from 'vue-property-decorator';
 export default class FilePreviewWindow extends Vue {
     get fileData(): FileData {
         return this.$store.getters['ourExtension/layoutsData/filePreviewWindow/getFileData']()
+    }
+
+    openProfilesWindow() {
+        this.$store.dispatch('ourExtension/layoutsData/profilesWindow/reset')
+        this.$store.dispatch('ourExtension/layoutsData/profilesWindow/setFile', this.fileData)
+        this.$store.dispatch('ourExtension/windowFlags/openProfilesWindow')    
+    }
+
+    openPreviousWindow() {
+        this.$store.dispatch('ourExtension/windowFlags/openPreviousWindow')
     }
 }
 </script>

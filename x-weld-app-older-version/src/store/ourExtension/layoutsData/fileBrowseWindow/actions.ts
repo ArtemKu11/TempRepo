@@ -22,7 +22,6 @@ export const actions: ActionTree<FileBrowseWindowState, RootState> = {
             } else {
                 currentPath = ""
             }
-            console.log(currentPath)
             SocketActions.serverGetGcodes(currentPath);
         }
     },

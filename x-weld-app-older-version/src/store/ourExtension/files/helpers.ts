@@ -1,4 +1,5 @@
-import { DirectoryData, FileData, FileSystem } from "./types";
+import { PrintingDiapason } from "../profiles/types";
+import { DirectoryData, FileData, FileSystem, GcodePrintingProfiles } from "./types";
 
 export const splitPath = (path: string): string[] => {
     let newPath = path;
@@ -473,7 +474,7 @@ export const refreshMoonrakerPaths = (dirs: DirectoryData[], path = '') => {
         const prefix = resolvePrefix(dir.name, path)
         for (const file of dir.files) {
             file.pathForMoonraker = prefix + file.name;
-            file.dirnameForMoonraker = prefix.slice(0,-1);
+            file.dirnameForMoonraker = prefix.slice(0, -1);
         }
         if (dir.dirs.length !== 0) {
             refreshMoonrakerPaths(dir.dirs, prefix)
@@ -487,4 +488,29 @@ function resolvePrefix(dirname: string, path: string) {
         return path + dirname + '/';
     }
     return dirname + '/';
+}
+
+export const deepCopyOfMap = <T, V>(map: Map<T, V>): Map<T, V> => {
+    return new Map(JSON.parse(JSON.stringify(Array.from(map))))
+}
+
+export const setProfilesForNewFiles = (dirs: DirectoryData[], gCodePrintingProfiles: GcodePrintingProfiles) => {
+    const gCodesDir = getDirectoryByPath(dirs, ['gcodes'])
+    recursiveSetProfiles(gCodesDir, gCodePrintingProfiles)
+}
+
+function recursiveSetProfiles(dir: DirectoryData, gCodePrintingProfiles: GcodePrintingProfiles) {
+    // const lastSelectedDiapason = gCodePrintingProfiles.lastSelectedDiapason;
+    const profilesMap = gCodePrintingProfiles.profiles;
+    for (const file of dir.files) {
+        if (!file.profiles) {
+            file.profiles = {
+                // lastSelectedDiapason: JSON.parse(JSON.stringify(lastSelectedDiapason)),
+                profiles: deepCopyOfMap(profilesMap)
+            }
+        }
+    }
+    for (const childDir of dir.dirs) {
+        recursiveSetProfiles(childDir, gCodePrintingProfiles)
+    }
 }
