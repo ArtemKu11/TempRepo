@@ -13,36 +13,31 @@
             </button>
         </div>
         <div id="layout-buttons-holder">
-            <button @click="addDiapason" v-if="addDiapasonFlag">
+
+            <button @click="addDiapason" class="diapason-button add" :class="{ 'deactive': !addDiapasonFlag }">
                 <img src="@/layouts/profiles_layout/img/add_diapason.svg">
                 <span>Добавить диапазон</span>
             </button>
-            <button @click="nextDiapason" v-if="selectedDiapason.nextDiapason">
-                <img src="@/layouts/profiles_layout/img/next_diapason.svg">
-                <span>Следующий диапазон</span>
-            </button>
-            <!-- <div v-else class="button-mock"></div> -->
-            <button @click="prevDiapason" v-if="selectedDiapason.prevDiapason">
-                <img src="@/layouts/profiles_layout/img/prev_diapason.svg">
-                <span>Предыдущий диапазон</span>
-            </button>
-            <!-- <div v-else class="button-mock"></div> -->
-            <button @click="deleteCurrent" v-if="!selectedDiapason.isRootDiapason">
+            <button @click="deleteCurrent" class="diapason-button delete"
+                :class="{ 'deactive': selectedDiapason.isRootDiapason }">
                 <img src="@/layouts/profiles_layout/img/delete_diapason.svg">
                 <span>Удалить диапазон</span>
             </button>
-            <!-- <div v-else class="button-mock"></div> -->
-            <button @click="deleteAll" v-if="selectedDiapason.nextDiapason || selectedDiapason.prevDiapason">
+            <button @click="deleteAll" class="diapason-button delete-all"
+                :class="{ 'deactive': !(selectedDiapason.nextDiapason || selectedDiapason.prevDiapason) }">
                 <img src="@/layouts/profiles_layout/img/delete_all_diapasones.svg">
                 <span>Удалить все диапазоны</span>
             </button>
-            <!-- <div v-else class="button-mock"></div> -->
-            <div v-if="!addDiapasonFlag" class="button-mock"></div>
-            <div v-if="selectedDiapason.isRootDiapason" class="button-mock"></div>
-            <div v-if="!(selectedDiapason.nextDiapason || selectedDiapason.prevDiapason)" class="button-mock"></div>
-            <div v-if="!selectedDiapason.nextDiapason" class="button-mock"></div>
-            <div v-if="!selectedDiapason.prevDiapason" class="button-mock"></div>
-
+            <button @click="nextDiapason" class="diapason-button next"
+                :class="{ 'deactive': !selectedDiapason.nextDiapason }">
+                <img src="@/layouts/profiles_layout/img/next_diapason.svg">
+                <span>Следующий диапазон</span>
+            </button>
+            <button @click="prevDiapason" class="diapason-button prev"
+                :class="{ 'deactive': !selectedDiapason.prevDiapason }">
+                <img src="@/layouts/profiles_layout/img/prev_diapason.svg">
+                <span>Предыдущий диапазон</span>
+            </button>
         </div>
 
     </div>
@@ -63,19 +58,29 @@ import { Component, Model, Prop, Vue, Watch } from 'vue-property-decorator';
     },
 })
 export default class LayersSetup extends Vue {
-    addDiapasonFlag = false;
-    firstLayer = 0;
-    // firstLayer = this.getInitFirstLayer();
-    lastLayer = 0;
-    // lastLayer = this.getInitLastLayer();
-    selectedDiapason: PrintingDiapason = this.getSelectedDiapason();
+    // addDiapasonFlag = false;
+    addDiapasonFlag = true; 
 
-    // get selectedDiapason(): PrintingDiapason {
-    //     return this.$store.state.ourExtension.layoutsData.profilesWindow.selectedDiapason
-    // }
+    firstLayer = 0;
+    lastLayer = 0;
+    selectedDiapason: PrintingDiapason = this.getSelectedDiapason();
+   
+    @Model('update:modelValue', { type: Object })
+    modelValue!: any
+
+    @Watch('modelValue', { deep: true })
+    modelWather() {
+        this.firstLayer = this.modelValue.cachedFirstLayer
+        this.lastLayer = this.modelValue.cachedLastLayer
+
+        // if (this.firstLayer === this.getInitFirstLayer() && this.lastLayer === this.getInitLastLayer()) {
+        //     this.addDiapasonFlag = false
+        // } else {
+        //     this.addDiapasonFlag = true
+        // }
+    }
 
     getSelectedDiapason(): PrintingDiapason {
-        // return this.$store.getters['ourExtension/layoutsData/profilesWindow/getSelectedDiapason']()
         return this.$store.state.ourExtension.layoutsData.profilesWindow.selectedDiapason
     }
 
@@ -86,9 +91,10 @@ export default class LayersSetup extends Vue {
     mounted() {
         this.selectedDiapason = this.getSelectedDiapason()
 
-        this.addDiapasonFlag = false
+        // this.addDiapasonFlag = false
         this.refreshLayers()
     }
+
 
     refreshLayers() {
         this.firstLayer = this.getInitFirstLayer();
@@ -146,51 +152,78 @@ export default class LayersSetup extends Vue {
     newFirstLayerReceiver(newValue: number) {
         if (newValue < this.lastLayer) {
             this.firstLayer = newValue
+            this.modelValue.cachedFirstLayer = newValue
         }
 
-        if (newValue === this.getInitFirstLayer()) {
-            this.addDiapasonFlag = false
-        } else {
-            this.addDiapasonFlag = true
-        }
+        // if (newValue === this.getInitFirstLayer()) {
+        //     this.addDiapasonFlag = false
+        // } else {
+        //     this.addDiapasonFlag = true
+        // }
+
+
     }
 
     newLastLayerReceiver(newValue: number) {
         if (newValue > this.firstLayer) {
             this.lastLayer = newValue
+            this.modelValue.cachedLastLayer = newValue
         }
 
-        if (newValue === this.getInitLastLayer()) {
-            this.addDiapasonFlag = false
-        } else {
-            this.addDiapasonFlag = true
-        }
+        // if (newValue === this.getInitLastLayer()) {
+        //     this.addDiapasonFlag = false
+        // } else {
+        //     this.addDiapasonFlag = true
+        // }
+
+
     }
 
     addDiapason() {
-        this.$store.dispatch('ourExtension/layoutsData/profilesWindow/addDiapason', {firstLayer: this.firstLayer, lastLayer: this.lastLayer})
-        this.addDiapasonFlag = false;
+        this.$store.dispatch('ourExtension/layoutsData/profilesWindow/addDiapason', { firstLayer: this.firstLayer, lastLayer: this.lastLayer })
         this.forceUpdate()
+
+        // if (this.addDiapasonFlag) {
+        //     this.$store.dispatch('ourExtension/layoutsData/profilesWindow/addDiapason', { firstLayer: this.firstLayer, lastLayer: this.lastLayer })
+        //     this.addDiapasonFlag = false;
+        //     this.forceUpdate()
+        // }
     }
 
     prevDiapason() {
         this.$store.dispatch('ourExtension/layoutsData/profilesWindow/prevDiapason')
-        this.forceUpdate()
+            this.forceUpdate()
+
+        // if (this.selectedDiapason.prevDiapason) {
+        //     this.addDiapasonFlag = false;
+        //     this.$store.dispatch('ourExtension/layoutsData/profilesWindow/prevDiapason')
+        //     this.forceUpdate()
+        // }
     }
 
     nextDiapason() {
-        this.$store.dispatch('ourExtension/layoutsData/profilesWindow/nextDiapason')
-        this.forceUpdate()
+        if (this.selectedDiapason.nextDiapason) {
+            // this.addDiapasonFlag = false;
+            this.$store.dispatch('ourExtension/layoutsData/profilesWindow/nextDiapason')
+            this.forceUpdate()
+        }
+
     }
 
     deleteCurrent() {
-        this.$store.dispatch('ourExtension/layoutsData/profilesWindow/deleteCurrent')
-        this.forceUpdate()
+        if (!this.selectedDiapason.isRootDiapason) {
+            // this.addDiapasonFlag = false;
+            this.$store.dispatch('ourExtension/layoutsData/profilesWindow/deleteCurrent')
+            this.forceUpdate()
+        }
     }
 
     deleteAll() {
-        this.$store.dispatch('ourExtension/layoutsData/profilesWindow/deleteAll')
-        this.forceUpdate()
+        if (this.selectedDiapason.nextDiapason || this.selectedDiapason.prevDiapason) {
+            // this.addDiapasonFlag = false;
+            this.$store.dispatch('ourExtension/layoutsData/profilesWindow/deleteAll')
+            this.forceUpdate()
+        }
     }
 
     forceUpdate() {
@@ -198,6 +231,7 @@ export default class LayersSetup extends Vue {
         this.refreshLayers()
         this.forceUpdateParent()
         this.$forceUpdate()
+        this.acualizeModel()
     }
 
     forceUpdateParent() {
@@ -205,6 +239,12 @@ export default class LayersSetup extends Vue {
     }
 
     beforeDestroy() {
+        this.acualizeModel()
+    }
+
+    acualizeModel() {
+        this.modelValue.cachedFirstLayer = this.getInitFirstLayer()
+        this.modelValue.cachedLastLayer = this.getInitLastLayer()
     }
 }
 </script>

@@ -1,4 +1,4 @@
-import { PrintingDiapason } from "../profiles/types"
+import { PrintingDiapason, PrintingDiapasonForMoonraker } from "../profiles/types"
 
 export interface LightFilesState {
     files: FileData[]
@@ -8,6 +8,7 @@ export interface LightFilesState {
     isLoadingFinish: boolean
     isProfilesDownloadingFinished: boolean
     isProfiesSetupFinished: boolean
+    lastPrintingFile?: LastPrintingFile
 }
 
 export interface DirectoryData {
@@ -44,4 +45,9 @@ export interface GcodePrintingProfiles {
     lastSelectedDiapason?: PrintingDiapason,
     selectedDiapason?: PrintingDiapason | null,
     profiles: Map<string, PrintingDiapason>
+}
+
+export interface LastPrintingFile {
+    file: FileData,
+    diapason: PrintingDiapasonForMoonraker
 }

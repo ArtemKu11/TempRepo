@@ -30,6 +30,7 @@ import { parts } from './parts'
 import { webcams } from './webcams'
 import { jobQueue } from './jobQueue'
 import { ourExtension } from './ourExtension'
+import { Alerts } from './ourExtension/layoutsData/alerts/helpers'
 
 Vue.use(Vuex)
 
@@ -82,6 +83,8 @@ export default new Vuex.Store<RootState>({
     },
 
     async init ({ dispatch, commit }, payload: InitConfig) {
+        Alerts.dispatch = dispatch
+
       // Sets the version and hash of Fluidd.
       commit('version/setVersion', Globals.VERSION)
       commit('version/setHash', Globals.HASH)

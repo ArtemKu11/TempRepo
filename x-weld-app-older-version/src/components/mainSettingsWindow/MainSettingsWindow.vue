@@ -5,7 +5,7 @@
         </div>
         <div class="content-center main-settings-window">
             <div class="button-container">
-                <button class="settings-button">
+                <button @click="clickHandler" class="settings-button">
                     <div class="picture-container">
                         <img src="@/layouts/main_setting_screen/img/settings_menu.svg">
                     </div>
@@ -14,7 +14,7 @@
             </div>
 
             <div class="button-container">
-                <button class="maintenance-button">
+                <button @click="openGorelkaMaintenanceWindow" class="maintenance-button">
                     <div class="picture-container">
                         <img src="@/layouts/main_setting_screen/img/maintenance-menu.png">
                     </div>
@@ -33,7 +33,7 @@
             </div>
 
             <div class="button-container-system">
-                <button class="system-button">
+                <button @click="openSystemInfoWindow" class="system-button">
                     <div class="system-picture-container">
                         <img src="@/layouts/main_setting_screen/img/system-menu.png">
                     </div>
@@ -48,12 +48,26 @@
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import StateMixin from '@/mixins/state';
+import { Component, Mixins, Vue } from 'vue-property-decorator';
 
 @Component({})
-export default class MainSettingsWindow extends Vue {
+export default class MainSettingsWindow extends Mixins(StateMixin) {
     openConsoleWindow() {
         this.$store.dispatch('ourExtension/windowFlags/openConsoleWindow')
+    }
+
+    openGorelkaMaintenanceWindow() {
+        this.$store.dispatch('ourExtension/windowFlags/openGorelkaMaintenanceWindow')
+    }
+
+    openSystemInfoWindow() {
+        this.$store.dispatch('ourExtension/windowFlags/openSystemInfoWindow')
+    }
+
+    clickHandler() {
+        console.log(this.$store.getters['notifications/getNotifications'])
+        console.log(this.hasWarnings, this.klippyConnected, this.klippyReady, this.klippyState)
     }
 }
 </script>

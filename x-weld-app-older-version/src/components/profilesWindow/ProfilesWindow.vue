@@ -1,8 +1,9 @@
 <template>
     <div @click="closeLayersSetup" class="content-container profiles-window" :class="{ 'full-screen': !layersBarFlag }">
 
-        <LayersBar ref="layersBar" @openLayersSetup="openLayersSetup" v-if="layersBarFlag" />
-        <LayersSetup ref="layersSetup" @forceUpdate="forceUpdateSelectedDiapason" v-if="layersSetupFlag" />
+        <LayersBar ref="layersBar" @openLayersSetup="openLayersSetup" v-if="layersBarFlag" v-model="modelLayers" />
+        <LayersSetup ref="layersSetup" @forceUpdate="forceUpdateSelectedDiapason" v-if="layersSetupFlag"
+            v-model="modelLayers" />
         <div id="content-header">
             <div id="name-container">{{ headerText }} {{ layersText }}</div>
             <div id="coordinates-container">
@@ -19,7 +20,7 @@
                 <div class="first-holder">
                     <img src="@/layouts/profiles_layout/img/parameter_icon.svg">
                     <span>Режим наплавки</span>
-                    <button >Пользовательский</button>
+                    <button>Пользовательский</button>
                     <span @click="openProfileSelect">{{ selectedDiapason.profile.name }} {{ appendPostfix }}</span>
                     <!-- <button><span>{{ selectedDiapason.profile.name }}</span></button> -->
                 </div>
@@ -140,7 +141,7 @@ import { FileData, GcodePrintingProfiles } from '@/store/ourExtension/files/type
 import { InitInputWindowData, InputWindowData } from '@/store/ourExtension/layoutsData/inputWindow/types';
 import { printingDiapasonProcessor, resolveParamNameByPath } from '@/store/ourExtension/profiles/helpers';
 import { PrintingDiapason, Profile, ProfileAdditionalParameters, ProfileMainParameters, ProfileOscilationParameters, ProfilesMetadata } from '@/store/ourExtension/profiles/types';
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import { SelectListInitData } from '@/store/ourExtension/layoutsData/selectListWindow/types'
 import LayersBar from './LayersBar.vue'
 import LayersSetup from './LayersSetup.vue'
@@ -151,17 +152,18 @@ import LayersSetup from './LayersSetup.vue'
     },
 })
 export default class ProfilesWindow extends Vue {
+    modelLayers = {
+        cachedFirstLayer: 0,
+        cachedLastLayer: 0
+    }
     selectedDiapason: PrintingDiapason = this.getSelectedDiapason();
     allowPointWhenChangeWalue = ['profile.profileOscilationParameters.period', 'profile.profileOscilationParameters.width',
         'profile.profileAdditionalParameters.weldingSpeed', 'profile.profileMainParameters.feedRate']
     processingParameterPath = ''
 
-    // get selectedDiapason(): PrintingDiapason {
-    //     return this.$store.state.ourExtension.layoutsData.profilesWindow.selectedDiapason
-    // }
 
     get coordinatesHolder(): number[] {
-        return this.$store.getters['ourExtension/layoutsData/moveWindow/getCoordinates']
+        return this.$store.getters['ourExtension/layoutsData/moveWindow/getCoordinates']()
     }
 
     get file(): FileData {
@@ -216,6 +218,33 @@ export default class ProfilesWindow extends Vue {
 
     mounted() {
         // console.log(this.file)
+        this.refreshModelLayers()
+    }
+
+    refreshModelLayers() {
+        if (this.layersBarFlag) {
+            this.modelLayers.cachedFirstLayer = this.getInitFirstLayer();
+            this.modelLayers.cachedLastLayer = this.getInitLastLayer();
+        }
+    }
+
+    getInitLastLayer(): number {
+        if (this.selectedDiapason.lastLayer) {
+            return this.selectedDiapason.lastLayer
+        } else {
+            if (this.file.layers !== '?') {
+                return +this.file.layers
+            }
+            return 0;
+        }
+    }
+
+    getInitFirstLayer(): number {
+        if (this.selectedDiapason.firstLayer) {
+            return this.selectedDiapason.firstLayer
+        } else {
+            return 0;
+        }
     }
 
     beforeDestroy() {
@@ -352,11 +381,12 @@ export default class ProfilesWindow extends Vue {
     newProfileValueReceiver(newProfileName: string) {
         this.$store.dispatch('ourExtension/layoutsData/profilesWindow/setProfile', newProfileName)
         this.forceUpdateSelectedDiapason()
+        this.refreshModelLayers()
     }
 
     listButtonClick(type: string) {
         const profilesMetadata: ProfilesMetadata = this.$store.getters['ourExtension/profiles/getProfilesMetadata']
-        const callback =  this.newListParameterValueReceiver.bind(this);
+        const callback = this.newListParameterValueReceiver.bind(this);
         let initList = []
         switch (type) {
             case 'gas':

@@ -10,7 +10,7 @@ export const getters: GetterTree<MoveWindowState, RootState> = {
     //   get toolheadPosition() {
     //     return this.$store.state.printer.printer.toolhead.position
     // }
-    getCoordinates(state, getters, rootState, rootGetters) {
+    getCoordinates: (state, getters, rootState) => () => {
         return rootState.printer.printer.toolhead.position
         // return state.coordinates;
     },

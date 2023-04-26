@@ -1,7 +1,7 @@
 import { RootState } from "@/store/types";
 import { GetterTree } from "vuex";
 import { getDirectoryByPath, isDirectoryExistInState, splitPath } from "./helpers";
-import { LightFilesState } from "./types";
+import { DirectoryData, LightFilesState } from "./types";
 
 export const getters: GetterTree<LightFilesState, RootState> = {
     getListOfFilesAndDirs(state) {
@@ -28,10 +28,14 @@ export const getters: GetterTree<LightFilesState, RootState> = {
         return state.fileSystem;
     },
 
-    getProfilesFiles(state) {
+    getProfilesFiles(state): DirectoryData | null {
         if (isDirectoryExistInState(state.dirs, splitPath('config/profiles'))) {
             return getDirectoryByPath(state.dirs, splitPath('config/profiles'))
         }
         return null
+    },
+
+    getLastPrintingFile: (state) => () => {
+        return state.lastPrintingFile
     }
 }

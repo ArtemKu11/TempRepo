@@ -42,6 +42,7 @@ export const mutations: MutationTree<PrinterState> = {
   },
 
   setSocketNotify (state, payload) {
+    console.log('SET PRINTER NOTIFY', payload)
     if (typeof payload.payload === 'object') {
       const o = get(state.printer, payload.key)
       if (o === undefined) {

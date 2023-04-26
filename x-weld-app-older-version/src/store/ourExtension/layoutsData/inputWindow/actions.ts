@@ -2,6 +2,7 @@ import { RootState } from "@/store/types";
 import { ActionTree } from "vuex";
 import { defaultFlags } from "./state";
 import { FlagsObject, InitInputWindowData, InputWindowState } from "./types";
+import { TimeProcessor } from "@/components/inputWindow/timeProcessor";
 
 export const actions: ActionTree<InputWindowState, RootState> = {
     initInputWindow({ commit }, payload: InitInputWindowData) {  // Можно писать свои имплементации этой функции в связке с dispatch('confirm')
@@ -34,7 +35,11 @@ export const actions: ActionTree<InputWindowState, RootState> = {
 
     confirm({ dispatch, commit, state }) {  // Можно писать свои имплементации этой функции в связке с dispatch('initInputWindow')
         dispatch('ourExtension/windowFlags/openPreviousWindow', null, { root: true });
-        state.finalValue = +state.processingValue;
+        if (state.inputWindowData?.isItTime) {
+            state.finalValue = TimeProcessor.toSeconds(state.processingValue)
+        } else {
+            state.finalValue = +state.processingValue;
+        }
 
         const confirmCallback = state.inputWindowData?.callbackAfterConfirm;
         if (confirmCallback) {

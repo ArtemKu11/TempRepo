@@ -9,7 +9,12 @@ export const initWindowFlags: FlagsObject = {
     mainSettingsWindowFlag: false,
     consoleWindowFlag: false,
     profilesWindowFlag: false,
-    selectListWindowFlag: false
+    selectListWindowFlag: false,
+    preprintingWindowFlag: false,
+    printingWindowFlag: false,
+    printSettingsFlag: false,
+    gorelkaMaintenanceWindowFlag: false,
+    systemInfoWindow: false
 }
 
 export const windowFlagsState = (): WindowFlagsState => {

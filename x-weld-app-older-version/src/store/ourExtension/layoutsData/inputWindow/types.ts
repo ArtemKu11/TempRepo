@@ -11,6 +11,8 @@ export interface InputWindowData {
     maxValue?: number,
     minValue?: number
     rejectPointClick?: boolean
+    coordUnits?: string
+    isItTime?: boolean
 }
 
 export interface FlagsObject {

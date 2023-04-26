@@ -130,6 +130,8 @@
                 padding-right: 5%;
                 margin-top: 10px;
                 cursor: pointer;
+                -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+                -webkit-tap-highlight-color: transparent;
 
 
 
@@ -160,6 +162,7 @@
                         font-weight: 700;
                         font-size: 35px;
                         color: #6B6B6B;
+                        
                     }
                 }
 

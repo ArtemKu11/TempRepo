@@ -8,6 +8,11 @@ export interface FlagsObject {
     consoleWindowFlag: boolean
     profilesWindowFlag: boolean
     selectListWindowFlag: boolean
+    preprintingWindowFlag: boolean
+    printingWindowFlag: boolean
+    printSettingsFlag: boolean
+    gorelkaMaintenanceWindowFlag: boolean
+    systemInfoWindow: boolean
 }
 
 export interface WindowFlagsState {

@@ -64,29 +64,29 @@ import ZBigButton from './ZBigButton.vue'
 })
 export default class MoveWindow extends Mixins(StateMixin) {
     get coordinatesHolder(): number[] {
-        return this.$store.getters['ourExtension/layoutsData/moveWindow/getCoordinates']
+        return this.$store.getters['ourExtension/layoutsData/moveWindow/getCoordinates']()
     }
 
     get currentStep(): number {
         return this.$store.getters['ourExtension/layoutsData/moveWindow/getCurrentStep'];
     }
 
-    get moveAfterInputWindow() {
-        return this.$store.getters['ourExtension/layoutsData/moveWindow/getNeedToSendGCodeMove'];
-    }
+    // get moveAfterInputWindow() {
+    //     return this.$store.getters['ourExtension/layoutsData/moveWindow/getNeedToSendGCodeMove'];
+    // }
 
-    @Watch("moveAfterInputWindow")
-    inputWindowConfirmWatcher() {
-        if (this.moveAfterInputWindow) {
-            this.$store.commit(`ourExtension/layoutsData/moveWindow/setNeedToSendGcodeMove`, false)
-            const newValue = this.$store.getters['ourExtension/layoutsData/inputWindow/getFinalValue'] as number
-            const inputWindowData = this.$store.getters['ourExtension/layoutsData/inputWindow/getInputWindowData'] as InputWindowData
-            const axis = inputWindowData.coordName.toLowerCase();
-            const oldValue = this.resolveInitInputWindowValue(axis);
-            const distance = newValue - oldValue + "";
-            this.sendMoveGcode(axis, distance);
-        }
-    }
+    // @Watch("moveAfterInputWindow")
+    // inputWindowConfirmWatcher() {
+    //     if (this.moveAfterInputWindow) {
+    //         this.$store.commit(`ourExtension/layoutsData/moveWindow/setNeedToSendGcodeMove`, false)
+    //         const newValue = this.$store.getters['ourExtension/layoutsData/inputWindow/getFinalValue'] as number
+    //         const inputWindowData = this.$store.getters['ourExtension/layoutsData/inputWindow/getInputWindowData'] as InputWindowData
+    //         const axis = inputWindowData.coordName.toLowerCase();
+    //         const oldValue = this.resolveInitInputWindowValue(axis);
+    //         const distance = newValue - oldValue + "";
+    //         this.sendMoveGcode(axis, distance);
+    //     }
+    // }
 
     openInputWindow(coordName: string) {
         const confirmCallback = this.newValueReceiver.bind(this)

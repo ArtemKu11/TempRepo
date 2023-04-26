@@ -132,7 +132,10 @@ export class WebSocketClient {
                             Object.defineProperty(d.error, '__request__', { enumerable: false, value: request })
                         }
                         consola.debug(`${this.logPrefix} Response error:`, d.error)
-                        if (this.store) this.store.dispatch('socket/onSocketError', d.error)
+                        if (this.store) {
+                            this.store.dispatch('socket/onSocketError', d.error)
+                            this.store.dispatch('ourExtension/layoutsData/alerts/onSocketError', d.error)
+                        }
                         return
                     }
 

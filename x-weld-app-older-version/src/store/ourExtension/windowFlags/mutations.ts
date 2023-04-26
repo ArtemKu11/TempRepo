@@ -77,5 +77,37 @@ export const mutations: MutationTree<WindowFlagsState> = {
 
     openSelectListWindow(state) {
         state.flags.selectListWindowFlag = true;
+    },
+
+    openPreprintingWindow(state) {
+        const newFlags = JSON.parse(JSON.stringify(initWindowFlags));
+        newFlags.mainWindowFlag = false;
+        newFlags.preprintingWindowFlag = true;
+        state.flags = newFlags;
+    },
+
+    openPrintingWindow(state) {
+        const newFlags = JSON.parse(JSON.stringify(initWindowFlags));
+        newFlags.mainWindowFlag = false;
+        newFlags.printingWindowFlag = true;
+        state.flags = newFlags;
+    },
+
+    openPrintSettingsWindow(state) {
+        state.flags.printSettingsFlag = true
+    },
+
+    openGorelkaMaintenanceWindow(state) {
+        const newFlags = JSON.parse(JSON.stringify(initWindowFlags));
+        newFlags.mainWindowFlag = false;
+        newFlags.gorelkaMaintenanceWindowFlag = true;
+        state.flags = newFlags;
+    },
+
+    openSystemInfoWindow(state) {
+        const newFlags = JSON.parse(JSON.stringify(initWindowFlags));
+        newFlags.mainWindowFlag = false;
+        newFlags.systemInfoWindow = true;
+        state.flags = newFlags;
     }
 }

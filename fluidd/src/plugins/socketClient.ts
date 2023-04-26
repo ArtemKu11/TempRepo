@@ -163,6 +163,7 @@ export class WebSocketClient {
                 // Normally, we let notifications through with no cache...
                 if (this.store) this.store.dispatch('socket/' + camelCase(d.method), params)
               } else {
+                console.log('SOCKET NOTIFICATION', d)
                 // ...However, status notifications come through thick and fast,
                 // so we cache these and send them through every second.
 

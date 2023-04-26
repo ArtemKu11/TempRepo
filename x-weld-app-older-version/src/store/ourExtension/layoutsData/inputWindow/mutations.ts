@@ -1,6 +1,7 @@
 import { MutationTree } from "vuex";
 import { defaultState } from "./state";
 import { FlagsObject, InputWindowData, InputWindowState } from "./types";
+import { TimeProcessor } from "@/components/inputWindow/timeProcessor";
 
 export const mutations: MutationTree<InputWindowState> = {
     setInputWindowData(state, payload: InputWindowData) {
@@ -25,7 +26,11 @@ export const mutations: MutationTree<InputWindowState> = {
 
     setKeyboardFlag(state, newFlag) {
         if (!newFlag) {
-            state.processingValue = +state.processingValue + '';
+            if (state.inputWindowData?.isItTime) {
+                state.processingValue = TimeProcessor.toTime(TimeProcessor.toSeconds(state.processingValue))
+            } else {
+                state.processingValue = +state.processingValue + '';
+            }
         }
         state.keyboardFlag = newFlag;
     },

@@ -36,7 +36,12 @@ export const mutations: MutationTree<ProfilesWindowState> = {
     },
 
     reset(state) {
-        state.file = null
+        state.file = null,
+        state.confirmCallback = null
+        state.selectedDiapason = null
+        state.globalLastPrintingDiapason = null
+        state.globalProfilesInitialisationFlag = null
+        state.globalProfilesMap = null
     },
 
     openLayersSetupWindow(state) {

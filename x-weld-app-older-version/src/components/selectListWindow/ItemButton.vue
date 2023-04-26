@@ -1,6 +1,6 @@
 <template>
     <div class="button-wrapper">
-        <div @click="firstClickHandler" class="material-select-button" :class="{'active': listInstance.isActive}">
+        <div @click="firstClickHandler" class="material-select-button" :class="{ 'active': listInstance.isActive }">
             <div class="material-info">
                 <div v-if="isItIconImplementation" class="material-icon">{{ listInstance.icon }}</div>
                 <span>{{ listInstance.name }}</span>
@@ -45,4 +45,5 @@ export default class ItemButton extends Vue {
 </script>
 
 
-<style lang="scss"></style>
+<style lang="scss">
+</style>

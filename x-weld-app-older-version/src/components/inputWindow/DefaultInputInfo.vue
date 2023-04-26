@@ -3,7 +3,7 @@
         <div class="holder">
             <span id="label-coord">{{ inputWindowData.coordName }}</span>
             <span id="label-value">{{ processingValue }}</span>
-            <span id="label-mills">мм</span>
+            <span id="label-mills">{{ coordUnits }}</span>
         </div>
     </div>
 </template>
@@ -21,6 +21,15 @@ export default class extends Vue {
 
     get processingValue(): string {
         return this.$store.getters['ourExtension/layoutsData/inputWindow/getProcessingValue']
+    }
+
+    get coordUnits(): string {
+        const inputData = this.inputWindowData
+        if (inputData.coordUnits) {
+            return inputData.coordUnits
+        } else {
+            return 'мм'
+        }
     }
 }
 </script>

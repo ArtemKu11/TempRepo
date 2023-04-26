@@ -23,5 +23,9 @@ export const getters: GetterTree<FilePreviewWindowState, RootState> = {
                 dirnameForMoonraker: ""
             }
         }
+    },
+
+    getSelectedDiapason: (state) => () => {
+        return state.selectedDiapason
     }
 }

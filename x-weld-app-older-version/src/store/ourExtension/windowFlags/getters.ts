@@ -50,5 +50,25 @@ export const getters: GetterTree<WindowFlagsState, RootState> =  {
 
     getSelectListWindowFlag(state) {
         return state.flags.selectListWindowFlag
+    },
+
+    getPreprintingWindowFlag(state) {
+        return state.flags.preprintingWindowFlag
+    },
+
+    getPrintingWindowFlag(state) {
+        return state.flags.printingWindowFlag
+    },
+
+    getPrintSettingsWindowFlag(state) {
+        return state.flags.printSettingsFlag
+    },
+
+    getGorelkaMaintenanceWindowFlag(state) {
+        return state.flags.gorelkaMaintenanceWindowFlag
+    },
+
+    getSystemInfoWindowFlag(state) {
+        return state.flags.systemInfoWindow
     }
 }

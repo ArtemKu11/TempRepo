@@ -35,29 +35,38 @@
         .layouts-icon {
             width: 17px;
             height: 80%;
-            background: linear-gradient(90deg, #0047B3 0%, rgba(0, 224, 255, 0.63) 100%);
             border-radius: 5px;
             border: 4px solid rgb(66, 66, 66);
             box-shadow: 6px 6px 10px #000000, -6px -6px 10px rgba(117, 116, 116, 0.44);
             position: relative;
 
-            .point {
+            .range {
                 position: absolute;
-                width: 19px;
-                height: 19px;
-                background: #D9D9D9;
-                border-radius: 50%;
-                left: -4px;
+                width: 100%;
+                background: linear-gradient(90deg, #0047B3 0%, rgba(0, 224, 255, 0.63) 100%);
+                top: 0%;
+                bottom: 0%;
 
-                &.up {
-                    top: 0px;
-                }
-
-                &.down {
-                    bottom: 0px;
-
+                .point {
+                    position: absolute;
+                    width: 19px;
+                    height: 19px;
+                    background: #D9D9D9;
+                    border-radius: 50%;
+                    left: -4px;
+    
+                    &.up {
+                        top: 0%;
+                    }
+    
+                    &.down {
+                        bottom: 0%;
+    
+                    }
                 }
             }
+
+            
         }
     }
 
@@ -263,13 +272,18 @@
 
             .first-holder {
                 button {
+                    border: none;
                     display: inline;
                     font-weight: 400;
                     font-size: 20px;
                     color: #1D1D1D;
                     background: #D9D9D9;
                     padding: 11px 17px;
-                    cursor: pointer;
+                    // cursor: pointer;
+
+                    &:focus {
+                        outline: none;
+                    }
                 }
 
                 span {
@@ -282,12 +296,15 @@
                     }
 
                     &:last-of-type {
+                        cursor: pointer;
                         margin-top: 15px;
                         display: block;
                         font-weight: 700;
                         font-size: 25px;
                         color: white;
                         text-decoration: underline;
+                        -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+                        -webkit-tap-highlight-color: transparent;
                     }
                 }
             }

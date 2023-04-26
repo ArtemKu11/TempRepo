@@ -2,7 +2,8 @@
     <div id="material-select-container">
         <div id="material-select-content-container">
             <div id="material-select-header">
-                <button @click="homeButtonClick" id="home-button"><img src="@/layouts/profiles_layout/img/button_star.svg"></button>
+                <button @click="homeButtonClick" id="home-button"><img
+                        src="@/layouts/profiles_layout/img/button_star.svg"></button>
                 <button id="points-button"><img src="@/layouts/profiles_layout/img/points_icon.png"></button>
             </div>
             <div id="material-select-center">
@@ -34,3 +35,10 @@ export default class SelectListWindow extends Vue {
     }
 }
 </script>
+
+<style>
+button {
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    -webkit-tap-highlight-color: transparent;
+}
+</style>

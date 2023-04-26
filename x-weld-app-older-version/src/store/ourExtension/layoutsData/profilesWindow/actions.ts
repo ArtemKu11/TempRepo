@@ -6,6 +6,8 @@ import { FileData } from "../../files/types";
 import { printingDiapasonProcessor } from "../../profiles/helpers";
 import { deepCopyOfMap } from "../../files/helpers";
 import { defaultState } from "./state";
+import { InfoAlertType } from "../alerts/types";
+import { Alerts } from "../alerts/helpers";
 
 
 export const actions: ActionTree<ProfilesWindowState, RootState> = {
@@ -29,9 +31,15 @@ export const actions: ActionTree<ProfilesWindowState, RootState> = {
 
             commit('setHeaderText', header)
             state.lastPrintingProfileFlag = false
+
+            Alerts.profileSelectedAlert(selectedDiapason.profile.name, state.layersText)
         } else {
             dispatch('setLastPrintingInterval')
         }
+    },
+
+    setCallback({ state }, payload: Function) {
+        state.confirmCallback = payload;
     },
 
     initWithGlobalProfiles({ commit, dispatch, rootGetters, state }) {
@@ -47,10 +55,12 @@ export const actions: ActionTree<ProfilesWindowState, RootState> = {
         state.lastPrintingProfileFlag = true
         state.globalLastPrintingDiapason = lastPrintingDiapason
         commit('setSelectedDiapason', lastPrintingDiapason)
+        Alerts.lastPrintingProfileSelectedAlert(state.layersText)
+
         // commit('setHeaderText', 'Последняя печать')
     },
 
-    setLastPrintingInterval({ commit, rootGetters, state }) {
+    setLastPrintingInterval({ dispatch, commit, rootGetters, state }) {
         if (!state.globalProfilesInitialisationFlag) {  // Поведение при инициализации файлом
             state.lastPrintingProfileFlag = true
             if (state.file && state.file.profiles) {
@@ -67,10 +77,10 @@ export const actions: ActionTree<ProfilesWindowState, RootState> = {
             state.selectedDiapason = state.globalLastPrintingDiapason
             commit('setHeaderText', 'Последняя печать')
         }
-
+        Alerts.lastPrintingProfileSelectedAlert(state.layersText)
     },
 
-    addDiapason({ commit, state }, payload) {
+    addDiapason({ dispatch, commit, state }, payload) {
         const selectedDiapason = state.selectedDiapason;
         if (selectedDiapason) {
             printingDiapasonProcessor.createNext(selectedDiapason)
@@ -78,37 +88,53 @@ export const actions: ActionTree<ProfilesWindowState, RootState> = {
                 selectedDiapason.nextDiapason.firstLayer = payload.firstLayer
                 selectedDiapason.nextDiapason.lastLayer = payload.lastLayer
                 commit('setSelectedDiapason', selectedDiapason.nextDiapason)
+                Alerts.addDiapasonAlert(state.layersText)
             }
         }
     },
 
-    prevDiapason({ commit, state }) {
+    prevDiapason({ dispatch, commit, state }) {
         const prevDiapason = state.selectedDiapason?.prevDiapason
         if (prevDiapason) {
             commit('setSelectedDiapason', prevDiapason)
+
+            let text = state.layersText
+            if (state.selectedDiapason?.isRootDiapason) {
+                text = '(Основной диапазон)'
+            }
+            Alerts.diapasonSelectedAlert(text)
         }
     },
 
-    nextDiapason({ commit, state }) {
+    nextDiapason({ dispatch, commit, state }) {
         const nextDiapason = state.selectedDiapason?.nextDiapason
         if (nextDiapason) {
             commit('setSelectedDiapason', nextDiapason)
+
+            let text = state.layersText
+            if (state.selectedDiapason?.isRootDiapason) {
+                text = '(Основной диапазон)'
+            }
+
+            Alerts.diapasonSelectedAlert(text)
         }
     },
 
-    deleteCurrent({ commit, state }) {
+    deleteCurrent({ dispatch, commit, state }) {
         const selectedDiapason = state.selectedDiapason;
         if (selectedDiapason) {
             const newDiapason = printingDiapasonProcessor.deleteCurrent(selectedDiapason);
             commit('setSelectedDiapason', newDiapason)
+            Alerts.deleteDiapasonAlert(selectedDiapason)
         }
     },
 
-    deleteAll({ commit, state }) {
+    deleteAll({ dispatch, commit, state }) {
         const selectedDiapason = state.selectedDiapason;
         if (selectedDiapason) {
             const newDiapason = printingDiapasonProcessor.deleteAll(selectedDiapason);
             commit('setSelectedDiapason', newDiapason)
+            Alerts.deleteAllDiapasonesAlert()
         }
 
     },
@@ -147,6 +173,7 @@ export const actions: ActionTree<ProfilesWindowState, RootState> = {
 
                     state.lastPrintingProfileFlag = false
                     commit('setSelectedDiapason', newRootDiapason)
+                    Alerts.profileSelectedAlert(newRootDiapason.profile.name, state.layersText)
                 }
             }
         } else {  // Поведение при инициализации глобальными профилями
@@ -161,6 +188,9 @@ export const actions: ActionTree<ProfilesWindowState, RootState> = {
                 commit('setHeaderText', 'Профиль печати')
                 state.lastPrintingProfileFlag = false
                 commit('setSelectedDiapason', newRootDiapason)
+                if (newRootDiapason) {
+                    Alerts.profileSelectedAlert(newRootDiapason.profile.name, state.layersText)
+                }
             }
         }
     },
@@ -168,7 +198,11 @@ export const actions: ActionTree<ProfilesWindowState, RootState> = {
 
     confirm({ state, commit, dispatch }) {
         if (!state.globalProfilesInitialisationFlag) {  // Поведение при инициализации файлом
-        } else {
+            if (state.confirmCallback) {
+                state.confirmCallback(state.selectedDiapason)
+            }
+            dispatch('ourExtension/windowFlags/openPreviousWindow', null, { root: true })
+        } else {  // Поведение при инициализации глобальными профилями
             const map = state.globalProfilesMap
             const values = map?.values()
             if (values) {
@@ -179,6 +213,7 @@ export const actions: ActionTree<ProfilesWindowState, RootState> = {
                 commit('ourExtension/profiles/setProfiles', newProfiles, { root: true })
                 commit('ourExtension/profiles/setLastPrintingProfile', state.globalLastPrintingDiapason?.profile, { root: true })
             }
+            
             dispatch('ourExtension/windowFlags/openPreviousWindow', null, { root: true })
         }
     }

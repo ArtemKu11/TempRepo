@@ -53,6 +53,13 @@ export interface PrintingDiapason {
     prevDiapason?: PrintingDiapason | null
 }
 
+export interface PrintingDiapasonForMoonraker {
+    profile: Profile,
+    allLayersFlag: boolean,
+    firstLayer: number | null,
+    lastLayer: number | null
+}
+
 
 export interface PrintingDiapasonProcessor {
     hasNext(printingDiapason: PrintingDiapason): boolean

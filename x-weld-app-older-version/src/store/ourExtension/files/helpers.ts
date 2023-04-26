@@ -1,4 +1,3 @@
-import { PrintingDiapason } from "../profiles/types";
 import { DirectoryData, FileData, FileSystem, GcodePrintingProfiles } from "./types";
 
 export const splitPath = (path: string): string[] => {
@@ -239,12 +238,13 @@ function createMap(filesMap: Map<string, FileData>, currentDir: DirectoryData) {
 }
 
 export const handleFileCreation = (dirs: DirectoryData[], payload: any) => {
-    console.log(payload)
+    if (selectedDiapasonCheck(payload)) return
+    // console.log(payload)
     const path = splitPath(payload.item.path)
     path.unshift(payload.item.root)
     const filename = path[path.length - 1]
     const requiredDirectory = getDirectoryByPath(dirs, path.slice(0, path.length - 1))
-    console.log(path.slice(0, path.length - 1).join('/'))
+    // console.log(path.slice(0, path.length - 1).join('/'))
     requiredDirectory?.files.push({
         dirnameForMoonraker: getDirNameForMoonraker(path.slice(0, path.length - 1).join('/')),
         isSelected: false,
@@ -259,6 +259,11 @@ export const handleFileCreation = (dirs: DirectoryData[], payload: any) => {
         computedSize: resolveComputedSize(payload.item.size)
     })
 
+}
+
+function selectedDiapasonCheck(payload: any): boolean {
+    if (payload.item.root === 'config' && payload.item.path === 'profiles/selected_diapason.json') return true
+    return false
 }
 
 export const handleFileDeletion = (dirs: DirectoryData[], payload: any) => {

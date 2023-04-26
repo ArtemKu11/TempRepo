@@ -4,10 +4,6 @@
         <div id="content-center">
             <img src="@/layouts/open_file_layout/img/printing_file_icon.png">
             <div id="file-info-holder">
-                <!-- <span>3D_Printer_test_fixed_stl_3rd_gen...</span>
-                <span>Время печати: 15h 21m</span>
-                <span>Количество слоев: 3415</span>
-                <span>Размер файла: 32,128,476 байт</span> -->
                 <span>{{ fileData.name }}</span>
                 <span>Время печати: {{ fileData.printingTime }}</span>
                 <span>Количество слоев: {{ fileData.layers }}</span>
@@ -16,14 +12,18 @@
         </div>
         <div id="content-footer">
             <div class="one-button-wrapper">
-                <button @click="openPreviousWindow"><img src="@/layouts/open_file_layout/img/open_icon.png"><span>Открыть</span></button>
+                <button @click="openPreviousWindow"><img
+                        src="@/layouts/open_file_layout/img/open_icon.png"><span>Открыть</span></button>
             </div>
             <div class="two-buttons-wrapper">
-                <button><img src="@/layouts/open_file_layout/img/move_icon.png"><span>Перемещение</span></button>
-                <button @click="openProfilesWindow"><img src="@/layouts/open_file_layout/img/profiles_icon.png"><span>Профили</span></button>
+                <button @click="openPreprintingWindow"><img
+                        src="@/layouts/open_file_layout/img/move_icon.png"><span>Перемещение</span></button>
+                <button @click="openProfilesWindow"><img
+                        src="@/layouts/open_file_layout/img/profiles_icon.png"><span>Профили</span></button>
             </div>
             <div class="one-button-wrapper">
-                <button><img src="@/layouts/open_file_layout/img/print_icon.png"><span>Печать</span></button>
+                <button @click="printClickHandler"><img
+                        src="@/layouts/open_file_layout/img/print_icon.png"><span>Печать</span></button>
             </div>
         </div>
     </div>
@@ -31,23 +31,138 @@
 
 
 <script lang="ts">
-import { FileData } from '@/store/ourExtension/files/types';
-import { Component, Vue } from 'vue-property-decorator';
+import { SocketActions } from '@/api/socketActions';
+import FilesMixin from '@/mixins/files';
+import StateMixin from '@/mixins/state';
+import { FileData, LastPrintingFile } from '@/store/ourExtension/files/types';
+import { AlertType, InfoAlertType } from '@/store/ourExtension/layoutsData/alerts/types';
+import { PrintingDiapason, PrintingDiapasonForMoonraker, Profile } from '@/store/ourExtension/profiles/types';
+import { Component, Mixins, Vue } from 'vue-property-decorator';
 
 @Component({})
-export default class FilePreviewWindow extends Vue {
+export default class FilePreviewWindow extends Mixins(FilesMixin, StateMixin) {
+
+    get selectedDiapason(): PrintingDiapason {
+        return this.$store.getters['ourExtension/layoutsData/filePreviewWindow/getSelectedDiapason']()
+    }
+
     get fileData(): FileData {
         return this.$store.getters['ourExtension/layoutsData/filePreviewWindow/getFileData']()
     }
 
+    get lastPrintingProfile(): Profile {
+        return this.$store.getters['ourExtension/profiles/getLastPrintingProfile']()
+    }
+
     openProfilesWindow() {
+        const confirmCallback = this.selectedPrintingDiapasonReceiver.bind(this)
         this.$store.dispatch('ourExtension/layoutsData/profilesWindow/reset')
         this.$store.dispatch('ourExtension/layoutsData/profilesWindow/setFile', this.fileData)
-        this.$store.dispatch('ourExtension/windowFlags/openProfilesWindow')    
+        this.$store.dispatch('ourExtension/layoutsData/profilesWindow/setCallback', confirmCallback)
+        this.$store.dispatch('ourExtension/windowFlags/openProfilesWindow')
     }
 
     openPreviousWindow() {
         this.$store.dispatch('ourExtension/windowFlags/openPreviousWindow')
+    }
+
+    openPreprintingWindow() {
+        this.$store.dispatch('ourExtension/layoutsData/preprintingWindow/reset')
+        this.$store.dispatch('ourExtension/layoutsData/preprintingWindow/initByFile', this.fileData)
+        this.$store.dispatch('ourExtension/windowFlags/openPreprintingWindow')
+    }
+
+    selectedPrintingDiapasonReceiver(selectedDiapason: PrintingDiapason) {
+        this.$store.commit('ourExtension/layoutsData/filePreviewWindow/setSelectedDiapason', selectedDiapason)
+    }
+
+    async printClickHandler() {
+        if (this.printerPrinting) {
+            this.openExsistingWindow()
+            return
+        }
+        if (this.printerBusy) {
+            this.showBusyAlert()
+            return
+        }
+
+        let diapasonForMoonraker: PrintingDiapasonForMoonraker;
+        let allLayersFlag = true
+        let firstLayer = null
+        let lastLayer = null
+        if (this.selectedDiapason) {
+            if (this.selectedDiapason.firstLayer && this.selectedDiapason.lastLayer &&
+                !isNaN(parseInt(this.selectedDiapason.firstLayer + '')) && !isNaN(parseInt(this.selectedDiapason.lastLayer + ''))) {
+                allLayersFlag = false
+                firstLayer = +this.selectedDiapason.firstLayer
+                lastLayer = +this.selectedDiapason.lastLayer
+            }
+            diapasonForMoonraker = {
+                profile: JSON.parse(JSON.stringify(this.selectedDiapason.profile)),
+                allLayersFlag: allLayersFlag,
+                firstLayer: firstLayer,
+                lastLayer: lastLayer
+            }
+            this.printFile(diapasonForMoonraker, this.fileData)
+        } else {
+            const profile = this.lastPrintingProfile
+            diapasonForMoonraker = {
+                profile: JSON.parse(JSON.stringify(profile)),
+                allLayersFlag: true,
+                firstLayer: null,
+                lastLayer: null
+            }
+            const callback = this.printFile.bind(this, diapasonForMoonraker, this.fileData)
+            const alert: AlertType = {
+                type: 'yes_no',
+                message: 'Вы не применили профиль для печати. Использовать профиль последней печати? (Все слои)',
+                header: 'ВНИМАНИЕ!',
+                confirmCallback: callback,
+            }
+            this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
+        }
+    }
+
+    async printFile(diapasonForMoonraker: PrintingDiapasonForMoonraker, file: FileData) {
+        if (this.printerBusy) {
+            const infoAlert: InfoAlertType = {
+                message: 'Принтер занят. Печать невозможна',
+                type: 'red'
+            }
+            this.$store.dispatch('ourExtension/layoutsData/alerts/showInfoAlert', infoAlert)
+        } else {
+            const response = await this.sendProfileAndOpenPrintingWindow(diapasonForMoonraker, file)
+            if (response.status && response.status === 201) {
+                const lastPrintingFile: LastPrintingFile = {
+                    diapason: diapasonForMoonraker,
+                    file: file
+                }
+                this.$store.commit('ourExtension/files/setLastPrintingFile', lastPrintingFile)
+            }
+            this.startPrint(file)
+        }
+    }
+
+    startPrint(file: FileData) {
+        SocketActions.printerPrintStart(file.pathForMoonraker)
+    }
+
+    openExsistingWindow() {
+        this.$store.dispatch('ourExtension/windowFlags/openPrintingWindow')
+        const alert: AlertType = {
+            message: 'Печать невозможна. Принтер уже печатает',
+            type: 'ok'
+        }
+        this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
+    }
+
+    showBusyAlert() {
+        const alert: AlertType = {
+            header: 'ОШИБКА!',
+            message: 'Печать невозможна. Принтер занят',
+            type: 'ok'
+        }
+        this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
     }
 }
 </script>

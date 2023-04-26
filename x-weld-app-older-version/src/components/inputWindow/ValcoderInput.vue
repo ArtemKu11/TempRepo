@@ -7,22 +7,27 @@
                 <span>+</span>
             </div>
             <div ref="valcoderCircleHolder" id="valcoder-circle-holder">
-                <div ref="valcoder" @mousedown="mousedownFlag = true" @mousemove="mouseMoveHandler" @touchmove="touchHandler" id="valcoder-circle">
+                <div ref="valcoder" @mousedown="mousedownFlag = true" @mousemove="mouseMoveHandler"
+                    @touchmove="touchHandler" id="valcoder-circle">
                     <div ref="valcoderPoint" id="valcoder-point"></div>
                 </div>
             </div>
         </div>
         <div id="confirm-buttons">
-            <button @click="cancelButtonClick"><img src="@/layouts/move_layout/img/cancel_button.png"><span>Отменить</span></button>
-            <button @click="confirmButtonClick"><img src="@/layouts/move_layout/img/save_button.png"><span>Сохранить</span></button>
+            <button @click="cancelButtonClick"><img
+                    src="@/layouts/move_layout/img/cancel_button.png"><span>Отменить</span></button>
+            <button @click="confirmButtonClick"><img
+                    src="@/layouts/move_layout/img/save_button.png"><span>Сохранить</span></button>
         </div>
     </div>
 </template>
 
 
 <script lang="ts">
+import state from '@/mixins/state';
 import { InputWindowData } from '@/store/ourExtension/layoutsData/inputWindow/types';
 import { Vue, Component } from 'vue-property-decorator';
+import { TimeProcessor } from './timeProcessor';
 
 @Component({})
 export default class ValcoderInput extends Vue {
@@ -49,8 +54,17 @@ export default class ValcoderInput extends Vue {
         return this.$store.getters['ourExtension/layoutsData/inputWindow/getInputWindowData']
     }
 
+    get isItTime(): boolean {
+        return Boolean(this.inputWindowData.isItTime)
+    }
+
     mounted() {
-        const newValue = +this.processingValue + '';
+        let newValue;
+        if (this.isItTime) {
+            newValue = TimeProcessor.toTime(TimeProcessor.toSeconds(this.processingValue))
+        } else {
+            newValue = +this.processingValue + '';
+        }
         this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue);
     }
 
@@ -242,10 +256,22 @@ export default class ValcoderInput extends Vue {
     resolveValueUpdate() {
         let angleSteps = Math.round((this.angle - this.lastBorderAngle) / 30);
         if (angleSteps != 0) {
-            let newValue = this.round(+this.processingValue + this.valcoderStep * angleSteps) + '';
-            newValue = this.finalLengthCheck(newValue)
-            this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue)
-            this.lastBorderAngle = this.angle;
+            if (this.isItTime) {
+                const processingSeconds = TimeProcessor.toSeconds(this.processingValue)
+                let newSeconds = this.round(processingSeconds + this.valcoderStep * angleSteps);
+                if (newSeconds < 0) {
+                    newSeconds = 0
+                }
+                let newTime = TimeProcessor.toTime(newSeconds)
+                newTime = TimeProcessor.makeSatisfiesLength(newTime, this.inputWindowData.maxValue, this.inputWindowData.minValue)
+                this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newTime)
+                this.lastBorderAngle = this.angle;
+            } else {
+                let newValue = this.round(+this.processingValue + this.valcoderStep * angleSteps) + '';
+                newValue = this.finalLengthCheck(newValue)
+                this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue)
+                this.lastBorderAngle = this.angle;
+            }
         }
     }
 

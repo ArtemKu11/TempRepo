@@ -48,7 +48,7 @@ export const getters: GetterTree<ProfilesWindowState, RootState> = {
                 return map;
             }
         } else {
-            const profilesMap: Map<string, PrintingDiapason> | undefined = state.globalProfilesMap
+            const profilesMap: Map<string, PrintingDiapason> | null | undefined = state.globalProfilesMap
             if (profilesMap) {
                 const keys: IterableIterator<string> = profilesMap.keys()
                 const keysArr: string[] = Array.from(keys).sort()

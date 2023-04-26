@@ -1,7 +1,7 @@
 import { MutationTree } from "vuex";
 import { getRootDiapason, getSortedMapKeys } from "../profiles/helpers";
 import { PrintingDiapason } from "../profiles/types";
-import { GcodePrintingProfiles, LightFilesState } from "./types";
+import { GcodePrintingProfiles, LightFilesState, LastPrintingFile } from "./types";
 
 export const mutations: MutationTree<LightFilesState> = {
     setLayersByMoonrakerPath(state, payload) {
@@ -18,5 +18,7 @@ export const mutations: MutationTree<LightFilesState> = {
         state.isLoadingFinish = true;
     },
 
-    
+    setLastPrintingFile(state, payload: LastPrintingFile) {
+        state.lastPrintingFile = payload;
+    }
 }

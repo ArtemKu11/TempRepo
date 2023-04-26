@@ -24,6 +24,7 @@
 <script lang="ts">
 import { InputWindowData } from '@/store/ourExtension/layoutsData/inputWindow/types';
 import { Vue, Component } from 'vue-property-decorator';
+import { TimeProcessor } from './timeProcessor';
 
 @Component({})
 export default class KeyboardInput extends Vue {
@@ -33,6 +34,10 @@ export default class KeyboardInput extends Vue {
 
     get inputWindowData(): InputWindowData {
         return this.$store.getters['ourExtension/layoutsData/inputWindow/getInputWindowData']
+    }
+
+    get isItTime(): boolean {
+        return Boolean(this.inputWindowData.isItTime)
     }
 
     lengthCheck() {
@@ -74,12 +79,22 @@ export default class KeyboardInput extends Vue {
     }
 
     confirmButtonClick() {
-        const newValue = this.finalMaxMinValueCheck(this.processingValue)
+        let newValue;
+        if (this.isItTime) {
+            newValue = TimeProcessor.confirm(this.processingValue, this.inputWindowData.maxValue, this.inputWindowData.minValue)
+        } else {
+            newValue = this.finalMaxMinValueCheck(this.processingValue)
+        }
         this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue)
         this.$store.dispatch('ourExtension/layoutsData/inputWindow/confirm')
     }
 
     digitButtonClick(digitValue: string) {
+        if (this.isItTime) {
+            const newValue = TimeProcessor.digitButton(this.processingValue, digitValue, this.inputWindowData.maxValue, this.inputWindowData.minValue)
+            this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue)
+            return;
+        }
         if (!this.lengthCheck()) {
             return;
         }
@@ -93,6 +108,12 @@ export default class KeyboardInput extends Vue {
     }
 
     deleteButtonClick() {
+        if (this.isItTime) {
+            const newValue = TimeProcessor.deleteButton(this.processingValue)
+            this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue)
+            return;
+        }
+
         const currentValue = this.processingValue;
         let newValue = (currentValue + "").slice(0, (currentValue + "").length - 1);
         if (newValue === "" || newValue === "-") {
@@ -106,6 +127,10 @@ export default class KeyboardInput extends Vue {
     }
 
     pointButtonClick() {
+        if (this.isItTime) {
+            return;
+        }
+
         if (this.inputWindowData.rejectPointClick) {
             return
         }
@@ -117,6 +142,10 @@ export default class KeyboardInput extends Vue {
     }
 
     plusButtonClick() {
+        if (this.isItTime) {
+            return;
+        }
+
         const currentValue = this.processingValue;
         let firstDigit = (currentValue).charAt(0);
         if ((firstDigit === '-') && currentValue.length > 1) {
@@ -131,6 +160,10 @@ export default class KeyboardInput extends Vue {
     }
 
     minusButtonClick() {
+        if (this.isItTime) {
+            return;
+        }
+
         const currentValue = this.processingValue;
         let firstDigit = currentValue.charAt(0);
         if (!(firstDigit === '-') && currentValue !== "0") {

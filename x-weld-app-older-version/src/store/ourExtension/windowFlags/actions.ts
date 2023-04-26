@@ -57,19 +57,19 @@ export const actions: ActionTree<WindowFlagsState, RootState> = {
     },
 
     openMainSettingsWindow({ dispatch, commit, getters }) {
-        commit('openMainSettingsWindow'); 
-        commit('setWindowStack', [getters.getInitFlagsObject()])  
-        const currentFlags: FlagsObject = getters.getCurrentFlagsObject(); 
-        commit('saveCurrentLayoutInStack', currentFlags); 
+        commit('openMainSettingsWindow');
+        commit('setWindowStack', [getters.getInitFlagsObject()])
+        const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
+        commit('saveCurrentLayoutInStack', currentFlags);
     },
 
-    openConsoleWindow({commit, getters}) {
+    openConsoleWindow({ commit, getters }) {
         commit('openConsoleWindow');
         const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
         commit('saveCurrentLayoutInStack', currentFlags);
     },
 
-    openProfilesWindow({commit, getters, state, dispatch}) {
+    openProfilesWindow({ commit, getters, state, dispatch }) {
         commit('openProfilesWindow');
         const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
         commit('saveCurrentLayoutInStack', currentFlags);
@@ -79,5 +79,35 @@ export const actions: ActionTree<WindowFlagsState, RootState> = {
         commit('openSelectListWindow');
         const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
         commit('saveCurrentLayoutInStack', currentFlags);
-    }
+    },
+
+    openPreprintingWindow({ commit, getters }) {
+        commit('openPreprintingWindow');
+        const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
+        commit('saveCurrentLayoutInStack', currentFlags);
+    },
+
+    openPrintingWindow({ commit, getters }) {
+        commit('openPrintingWindow');
+        const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
+        commit('saveCurrentLayoutInStack', currentFlags);
+    },
+
+    openPrintSettingsWindow({ commit, getters }) {
+        commit('openPrintSettingsWindow');
+        const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
+        commit('saveCurrentLayoutInStack', currentFlags);
+    },
+
+    openGorelkaMaintenanceWindow({ commit, getters }) {
+        commit('openGorelkaMaintenanceWindow');
+        const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
+        commit('saveCurrentLayoutInStack', currentFlags);
+    },
+
+    openSystemInfoWindow({ commit, getters }) {
+        commit('openSystemInfoWindow');
+        const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
+        commit('saveCurrentLayoutInStack', currentFlags);
+    },
 }

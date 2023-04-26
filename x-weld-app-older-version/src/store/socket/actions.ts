@@ -8,6 +8,7 @@ import { SocketActions } from '@/api/socketActions'
 import { EventBus, FlashMessageTypes } from '@/eventBus'
 import { upperFirst, camelCase } from 'lodash-es'
 import IsKeyOf from '@/util/is-key-of'
+import { Alerts } from '../ourExtension/layoutsData/alerts/helpers'
 
 let retryTimeout: number
 
@@ -40,9 +41,8 @@ export const actions: ActionTree<SocketState, RootState> = {
                 url: Globals.GITHUB_REPO
             })
             SocketActions.serverFilesListRoot('config')
-            dispatch('ourExtension/files/getAllFilesAndDirs', 'gcodes', {root: true})
-            dispatch('ourExtension/files/getAllFilesAndDirs', 'config', {root: true})
-
+            dispatch('ourExtension/files/getAllFilesAndDirs', 'gcodes', { root: true })
+            dispatch('ourExtension/files/getAllFilesAndDirs', 'config', { root: true })
         }
     },
 
