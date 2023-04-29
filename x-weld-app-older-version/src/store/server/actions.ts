@@ -55,7 +55,7 @@ export const actions: ActionTree<ServerState, RootState> = {
     SocketActions.machineSystemInfo()
 
     commit('setServerInfo', payload)
-
+    console.log('KLIPPY_STATE', payload.klippy_state)
     if (payload.klippy_state !== 'ready') {
       // If klippy is not connected, we'll continue to
       // retry the init process.

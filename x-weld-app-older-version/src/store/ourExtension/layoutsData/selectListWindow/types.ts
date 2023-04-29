@@ -2,6 +2,7 @@ export interface SelectListWindowState {
     listItems: ListInstance[]
     // mapItems: Map<string, ListInstance> | null,
     callbackAfterSelect?: Function
+    zIndex?: number
 }
 
 export interface ListInstance {
@@ -13,5 +14,6 @@ export interface ListInstance {
 export interface SelectListInitData {
     initMap?: Map<string, string>
     initList?: string[]
-    callbackAfterConfirm?: Function
+    callbackAfterConfirm?: Function,
+    zIndex?: number
 }

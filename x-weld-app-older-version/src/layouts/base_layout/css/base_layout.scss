@@ -31,7 +31,14 @@ body {
 }
 
 body {
-    background-image: $mainBackground;
+    // background-image: $mainBackground;
+    background: linear-gradient(black, rgb(44, 44, 44), black);
+
+    // background: linear-gradient(black, rgb(32, 32, 32), black);
+    // background: linear-gradient(black, rgb(32, 32, 32), rgb(27, 27, 27));
+    // background: linear-gradient(black, rgb(44, 44, 44)), linear-gradient(black, rgb(44, 44, 44));
+    // background: linear-gradient(rgb(22, 22, 22), rgb(0, 0, 0)), linear-gradient(black, rgb(27, 27, 27));
+
 }
 
 #app-child {
@@ -107,10 +114,10 @@ body {
     border-radius: 0;
     border: none;
 
-    &:hover {
-        border-top: 1px solid white;
-        border-bottom: 1px solid white;
-    }
+    // &:hover {
+    //     border-top: 1px solid white;
+    //     border-bottom: 1px solid white;
+    // }
 
     &.menu {
         background-image: $menuBtn;

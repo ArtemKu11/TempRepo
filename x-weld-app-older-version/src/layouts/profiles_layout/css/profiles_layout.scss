@@ -30,7 +30,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-
+    
 
         .layouts-icon {
             width: 17px;
@@ -39,6 +39,14 @@
             border: 4px solid rgb(66, 66, 66);
             box-shadow: 6px 6px 10px #000000, -6px -6px 10px rgba(117, 116, 116, 0.44);
             position: relative;
+
+            .invisible-clickable-div {
+                position: absolute;
+                z-index: 10;
+                width: 700%;
+                height: 100%;
+                left: -260%;
+            }
 
             .range {
                 position: absolute;
@@ -114,6 +122,7 @@
 
     grid-template-rows: $headerHeight auto;
     min-height: $minHeight;
+    position: relative;
 
     // margin-left: 0px;
     // grid-column: 3/4;
@@ -150,23 +159,23 @@
             #x-coords {
                 margin: 0px 40px;
 
-                &::before {
-                    content: 'X\00a0';
-                }
+                // &::before {
+                //     content: 'X\00a0';
+                // }
             }
 
             #y-coords {
-                &::before {
-                    content: 'Y\00a0';
-                }
+                // &::before {
+                //     content: 'Y\00a0';
+                // }
             }
 
             #z-coords {
                 margin-left: 40px;
 
-                &::before {
-                    content: 'Z\00a0';
-                }
+                // &::before {
+                //     content: 'Z\00a0';
+                // }
             }
         }
     }

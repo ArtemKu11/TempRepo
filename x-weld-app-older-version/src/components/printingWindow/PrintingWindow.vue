@@ -166,6 +166,10 @@ export default class PrintingWindow extends Mixins(WindowsMixin, StateMixin) {
                 return 'Принтер занят'
             case 'cancelled':
                 return 'Отменено'
+            case 'ready':
+                return 'Готов к печати'
+            case 'idle':
+                return 'Бездействует'
             default:
                 break;
         }

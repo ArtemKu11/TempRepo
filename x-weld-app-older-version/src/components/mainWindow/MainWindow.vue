@@ -1,7 +1,7 @@
 <template>
     <div class="content-container main-window-layout">
         <div id="content-header">
-            <span v-if="warningFlag" @click="warningClickHandler">WARNING</span>
+            <!-- <span v-if="warningFlag" @click="warningClickHandler">WARNING</span> -->
 
             <img src="@/layouts/main_window_layout/img/xweld_logo.png">
         </div>

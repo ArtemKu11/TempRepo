@@ -59,12 +59,12 @@ import { Component, Model, Prop, Vue, Watch } from 'vue-property-decorator';
 })
 export default class LayersSetup extends Vue {
     // addDiapasonFlag = false;
-    addDiapasonFlag = true; 
+    addDiapasonFlag = true;
 
     firstLayer = 0;
     lastLayer = 0;
     selectedDiapason: PrintingDiapason = this.getSelectedDiapason();
-   
+
     @Model('update:modelValue', { type: Object })
     modelValue!: any
 
@@ -192,7 +192,7 @@ export default class LayersSetup extends Vue {
 
     prevDiapason() {
         this.$store.dispatch('ourExtension/layoutsData/profilesWindow/prevDiapason')
-            this.forceUpdate()
+        this.forceUpdate()
 
         // if (this.selectedDiapason.prevDiapason) {
         //     this.addDiapasonFlag = false;

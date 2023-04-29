@@ -20,7 +20,7 @@
     clip-path: polygon(0% 0%, $width - $visota 0%, 100% 50%, $width - $visota 100%, 0% 100%);
 }
 
-#material-select-container {
+.material-select-container {
     min-height: 660px;
     position: absolute;
     z-index: 3;
@@ -33,7 +33,7 @@
     background: rgba(21, 21, 21, 0.9);
     // display: none;
 
-    #material-select-content-container {
+    .material-select-content-container {
         min-height: 660px;
         height: 100%;
         display: grid;
@@ -42,7 +42,7 @@
         grid-column: 2/3;
         padding: 0px 40px;
 
-        #material-select-header {
+        .material-select-header {
             display: flex;
             align-items: center;
             height: $headerHeight;
@@ -55,7 +55,7 @@
 
             }
 
-            #home-button {
+            .home-button {
                 @include singleAnglePolygon(84px, 45px, 165deg);
                 background-image: url('@/layouts/profiles_layout/img/star_button.svg');
                 background-position: center;
@@ -66,7 +66,7 @@
                 }
             }
 
-            #points-button {
+            .points-button {
                 @include doubleAnglePolygon(89px, 45px, 165deg);
                 background-image: url('@/layouts/profiles_layout/img/points_button.svg');
                 background-position: center;
@@ -74,7 +74,7 @@
             }
         }
 
-        #material-select-center {
+        .material-select-center {
             min-width: 1140px - $sidebarWidth;
             grid-row: 3;
             width: 100%;

@@ -129,6 +129,45 @@ const getMoorakerDatabase = async (apiConfig: ApiConfig, namespace: string) => {
 }
 
 export const appInit = async (apiConfig?: ApiConfig, hostConfig?: HostConfig): Promise<InitConfig> => {
+
+    let cons = console as any
+
+    cons.defaultError = console.error.bind(console);
+    cons.errors = [];
+    console.error = function () {
+        // default &  console.error()
+        cons.defaultError.apply(console, arguments);
+        // new & array data
+        cons.errors.push(Array.from(arguments));
+    }
+
+    cons.defaultLog = console.log.bind(console);
+    cons.logs = [];
+    console.log = function () {
+        // default &  console.log()
+        cons.defaultLog.apply(console, arguments);
+        // new & array data
+        cons.logs.push(Array.from(arguments));
+    }
+
+    cons.defaultWarn = console.warn.bind(console);
+    cons.warns = [];
+    console.warn = function () {
+        // default &  console.warn()
+        cons.defaultWarn.apply(console, arguments);
+        // new & array data
+        cons.warns.push(Array.from(arguments));
+    }
+
+    cons.defaultDebug = console.debug.bind(console);
+    cons.debugs = [];
+    console.debug = function () {
+        // default &  console.debug()
+        cons.defaultDebug.apply(console, arguments);
+        // new & array data
+        cons.debugs.push(Array.from(arguments));
+    }
+
     // Reset the store to its default state.
     await store.dispatch('reset', undefined, { root: true })
 

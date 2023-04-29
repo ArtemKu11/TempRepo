@@ -10,7 +10,7 @@
                 <button @click="openPreviousWindow" class="sidebar-button back"></button>
             </div>
             <div id="sidebar-footer">
-                <span v-if="warningFlag" @click="warningClickHandler">WARN</span>
+                <!-- <span v-if="warningFlag" @click="warningClickHandler">WARN</span> -->
             </div>
         </div>
 
@@ -29,6 +29,7 @@
         <SystemInfoWindow v-if="systemInfoWindowFlag" />
         <DefaultAlert v-if="alertFlag" />
         <InfoAlert v-if="infoAlertFlag" />
+        <FatalErrorAlert v-if="fatalErrorFlag" />
 
     </div>
 </template>
@@ -51,6 +52,7 @@ import GorelkaMaintenanceWindow from './components/gorelkaMaintenanceWindow/Gore
 import SystemInfoWindow from './components/systemInfoWindow/SystemInfoWindow.vue';
 import DefaultAlert from './components/alerts/DefaultAluert.vue';
 import InfoAlert from './components/alerts/InfoAlert.vue';
+import FatalErrorAlert from '@/components/alerts/FatalErrorAlert.vue'
 import { FileData, FileSystem, DirectoryData } from './store/ourExtension/files/types';
 import FilesMixin from './mixins/files';
 import { parseGcode } from './workers/xWeldParser';
@@ -60,15 +62,16 @@ import { AxiosResponse } from 'axios';
 import StateMixin from './mixins/state';
 import { AlertType } from './store/ourExtension/layoutsData/alerts/types';
 import { SocketActions } from './api/socketActions';
+import WindowsMixin from './mixins/windows';
 
 @Component({
     components: {
         MainWindow, FileBrowseWindow, FilePreviewWindow, MoveWindow, InputWindow, MainSettingsWindow, ConsoleWindow,
         ProfilesWindow, SelectListWindow, PreprintingWindow, PrintingWindow, DefaultAlert, InfoAlert,
-        GorelkaMaintenanceWindow, SystemInfoWindow
+        GorelkaMaintenanceWindow, SystemInfoWindow, FatalErrorAlert
     },
 })
-export default class App extends Mixins(FilesMixin, StateMixin) {
+export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
     get mainWindowFlag(): boolean {
         return this.$store.getters['ourExtension/windowFlags/getMainWindowFlag'];
     }
@@ -171,6 +174,10 @@ export default class App extends Mixins(FilesMixin, StateMixin) {
         return this.$store.getters['ourExtension/files/getProfilesDownloadingFinishedFlag']
     }
 
+    get fatalErrorFlag(): Boolean {
+        return !this.klippyReady || !this.klippyConnected
+    }
+
     @Watch('isProfilesDownloadingFinished', { deep: true })
     isProfilesDownloadingFinishedWather() {
         if (this.isProfilesDownloadingFinished) {
@@ -201,30 +208,20 @@ export default class App extends Mixins(FilesMixin, StateMixin) {
 
     mounted() {
         this.$store.dispatch('ourExtension/layoutsData/baseLayout/startTimeRefreshing');
-        setTimeout(() => {
-            if (!this.klippyReady || !this.klippyConnected) {
-                const message = this.klippyStateMessage
-                const alert: AlertType = {
-                    message: message,
-                    type: 'ok',
-                    header: 'ОШИБКА!'
-                }
-                this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
-            }
-        }, 1000)
-
     }
 
     starClick() {
-        if (this.printingWindowFlag) {
-            this.printerIsPrintingAlert('', true)
-            return
-        }
+        // if (this.printingWindowFlag) {
+        //     this.printerIsPrintingAlert('', true)
+        //     return
+        // }
         this.openProfilesWindow()
+        // console.log(this.$store.state.printer)
+        // console.log(this.$store.state.files)
     }
 
     openProfilesWindow() {
-        this.$store.dispatch('ourExtension/windowFlags/clearStack')
+        // this.$store.dispatch('ourExtension/windowFlags/clearStack')
         if (this.profilesWindowFlag) {
             this.openPreviousWindow()
             setTimeout(() => {
@@ -240,7 +237,7 @@ export default class App extends Mixins(FilesMixin, StateMixin) {
     }
 
     openPreviousWindow() {
-        if (this.printingWindowFlag && !this.inputWindowFlag && !this.printSettingsFLag) {
+        if (this.printingWindowFlag && !this.inputWindowFlag && !this.printSettingsFLag && !this.selectListWindowFlag) {
             this.printerIsPrintingAlert('ourExtension/windowFlags/openPreviousWindow')
             return
         }
@@ -248,27 +245,37 @@ export default class App extends Mixins(FilesMixin, StateMixin) {
     }
 
     openMainWindow() {
-        if (this.printingWindowFlag) {
-            this.printerIsPrintingAlert('ourExtension/windowFlags/openMainWindow')
+        // if (this.printingWindowFlag) {
+        //     this.printerIsPrintingAlert('ourExtension/windowFlags/openMainWindow')
+        //     return
+        // }
+
+        if (this.printerPrinting) {
+            this.openExisitingPrintingWindow()
             return
+        } else {
+            this.$store.dispatch('ourExtension/windowFlags/openMainWindow');
         }
-        this.$store.dispatch('ourExtension/windowFlags/openMainWindow');
     }
 
     openMoveWindow() {
-        if (this.printingWindowFlag) {
-            this.printerIsPrintingAlert('ourExtension/windowFlags/openMoveWindow')
-            return
+        // if (this.printingWindowFlag) {
+        //     this.printerIsPrintingAlert('ourExtension/windowFlags/openMoveWindow')
+        //     return
+        // }
+        if (!this.moveWindowFlag) {
+            this.$store.dispatch('ourExtension/windowFlags/openMoveWindow');
         }
-        this.$store.dispatch('ourExtension/windowFlags/openMoveWindow');
     }
 
     openMainSettingsWindow() {
-        if (this.printingWindowFlag) {
-            this.printerIsPrintingAlert('ourExtension/windowFlags/openMainSettingsWindow')
-            return
+        // if (this.printingWindowFlag) {
+        //     this.printerIsPrintingAlert('ourExtension/windowFlags/openMainSettingsWindow')
+        //     return
+        // }
+        if (!this.mainSettingsWindowFlag) {
+            this.$store.dispatch('ourExtension/windowFlags/openMainSettingsWindow');
         }
-        this.$store.dispatch('ourExtension/windowFlags/openMainSettingsWindow');
     }
 
     printerIsPrintingAlert(dispatch: string, isItStarClick = false) {

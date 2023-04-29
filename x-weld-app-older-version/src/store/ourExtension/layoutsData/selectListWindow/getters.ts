@@ -13,4 +13,8 @@ export const getters: GetterTree<SelectListWindowState, RootState> = {
     getListItems(state) {
         return state.listItems
     },
+
+    getZIndex(state) {
+        return state.zIndex
+    }
 }

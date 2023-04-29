@@ -1,15 +1,15 @@
 <template>
-    <div id="material-select-container">
-        <div id="material-select-content-container">
-            <div id="material-select-header">
-                <button @click="homeButtonClick" id="home-button"><img
+    <div ref="mainContainer" class="material-select-container">
+        <div class="material-select-content-container">
+            <div class="material-select-header">
+                <button @click="homeButtonClick" class="home-button"><img
                         src="@/layouts/profiles_layout/img/button_star.svg"></button>
-                <button id="points-button"><img src="@/layouts/profiles_layout/img/points_icon.png"></button>
+                <button class="points-button"><img src="@/layouts/profiles_layout/img/points_icon.png"></button>
             </div>
-            <div id="material-select-center">
+            <div class="material-select-center">
                 <ItemButton v-for="(item, index) of listItems" :key="index" :listInstance="item" />
             </div>
-            <div id="file-select-footer"></div>
+            <div class="file-select-footer"></div>
         </div>
     </div>
 </template>
@@ -28,6 +28,19 @@ import ItemButton from './ItemButton.vue';
 export default class SelectListWindow extends Vue {
     get listItems(): ListInstance[] {
         return this.$store.getters['ourExtension/layoutsData/selectListWindow/getListItems']
+    }
+
+    get zIndex() {
+        return this.$store.getters['ourExtension/layoutsData/selectListWindow/getZIndex']
+    }
+
+    mounted() {
+        if (this.zIndex) {
+            const container = this.$refs.mainContainer as HTMLElement
+            if (container) {
+                container.style.zIndex = this.zIndex
+            }
+        }
     }
 
     homeButtonClick() {

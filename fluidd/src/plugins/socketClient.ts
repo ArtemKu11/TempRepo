@@ -161,6 +161,9 @@ export class WebSocketClient {
 
               if (d.method !== 'notify_status_update') {
                 // Normally, we let notifications through with no cache...
+                if (d.method !== 'notify_proc_stat_update') {
+                    console.log('SOCKET NOTIFICATION', d)
+                }
                 if (this.store) this.store.dispatch('socket/' + camelCase(d.method), params)
               } else {
                 console.log('SOCKET NOTIFICATION', d)

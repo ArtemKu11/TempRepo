@@ -13,7 +13,7 @@
         </div>
         <div id="content-center">
             <div class="button-container">
-                <button class="get-back-button">
+                <button @touchstart="feedBackStart" @touchend="feedBackEnd" class="get-back-button">
                     <div class="picture-container">
                         <img src="@/layouts/maintenance_screen/img/get-back.png">
                     </div>
@@ -22,7 +22,7 @@
             </div>
 
             <div class="button-container">
-                <button class="gas-test-button">
+                <button @touchstart="gasTestStart" @touchend="gasTestEnd" class="gas-test-button">
                     <div class="picture-container">
                         <img src="@/layouts/maintenance_screen/img/gas-test.png">
                     </div>
@@ -31,7 +31,7 @@
             </div>
 
             <div class="button-container">
-                <button class="arc-test-button">
+                <button @touchstart="arcTestStart" @touchend="arcTestEnd" class="arc-test-button">
                     <div class="picture-container">
                         <img src="@/layouts/maintenance_screen/img/arc-test.png">
                     </div>
@@ -40,7 +40,8 @@
             </div>
 
             <div class="button-container">
-                <button class="get-forward-button">
+                <button @touchstart="feedForwardStart" @touchend="feedForwardEnd"
+                 class="get-forward-button">
                     <div class="picture-container">
                         <img src="@/layouts/maintenance_screen/img/get-forward.png">
                     </div>
@@ -49,7 +50,7 @@
             </div>
 
             <div class="button-container">
-                <button class="zone-of-service-button">
+                <button @touchstart="maintenanceArea" class="zone-of-service-button">
                     <div class="picture-container">
                         <img src="@/layouts/maintenance_screen/img/zone-of-service.png">
                     </div>
@@ -58,7 +59,7 @@
             </div>
 
             <div class="button-container">
-                <button class="error-drop-button">
+                <button @touchstart="resetWarnings" class="error-drop-button">
                     <div class="picture-container">
                         <img src="@/layouts/maintenance_screen/img/error-drop.png">
                     </div>
@@ -73,16 +74,119 @@
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import StateMixin from '@/mixins/state';
+import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
+import { InfoAlertType } from '@/store/ourExtension/layoutsData/alerts/types';
+import { Component, Mixins, Vue } from 'vue-property-decorator';
 
 @Component({
     components: {
 
     },
 })
-export default class GorelkaMaintenanceWindow extends Vue {
+export default class GorelkaMaintenanceWindow extends Mixins(StateMixin) {
     get coordinatesHolder(): number[] {
         return this.$store.getters['ourExtension/layoutsData/moveWindow/getCoordinates']()
+    }
+
+    feedForwardStart() {
+        this.sendGcode('MEGMEET_WIRE_FORWARD_START')
+        const alert: InfoAlertType = {
+            message: 'Запрошена подача вперед',
+            type: 'green',
+            time: 1500
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    feedForwardEnd() {
+        this.sendGcode('MEGMEET_WIRE_FORWARD_END')
+        const alert: InfoAlertType = {
+            message: 'Подача вперед завершена',
+            type: 'green',
+            time: 1500
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    feedBackStart() {
+        this.sendGcode('MEGMEET_WIRE_REVERSE_START')
+        const alert: InfoAlertType = {
+            message: 'Запрошена подача назад',
+            type: 'green',
+            time: 1500
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    feedBackEnd() {
+        this.sendGcode('MEGMEET_WIRE_REVERSE_END')
+        const alert: InfoAlertType = {
+            message: 'Подача назад завершена',
+            type: 'green',
+            time: 1500
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    gasTestStart() {
+        this.sendGcode('MEGMEET_GAS_START')
+        const alert: InfoAlertType = {
+            message: 'Запрошен GAS тест',
+            type: 'green',
+            time: 1500
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    gasTestEnd() {
+        this.sendGcode('MEGMEET_GAS_END')
+        const alert: InfoAlertType = {
+            message: 'Завершен GAS тест',
+            type: 'green',
+            time: 1500
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    arcTestStart() {
+        this.sendGcode('MEGMEET_ARC_START')
+        const alert: InfoAlertType = {
+            message: 'Запрошен ARC тест',
+            type: 'green',
+            time: 1500
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    arcTestEnd() {
+        this.sendGcode('MEGMEET_ARC_END')
+        const alert: InfoAlertType = {
+            message: 'Завершен ARC тест',
+            type: 'green',
+            time: 1500
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    maintenanceArea() {
+        this.sendGcode('G1 x500 y0 f6000')
+        const alert: InfoAlertType = {
+            message: 'Выполняется перемещение в зону обслуэивания',
+            type: 'green',
+            time: 1500
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    resetWarnings() {
+        this.sendGcode('MEGMEET_ERROR_RESET')
+        const alert: InfoAlertType = {
+            message: 'Сброс ошибок выполнен!',
+            type: 'green',
+            time: 1500
+        }
+        Alerts.showInfoAlert(alert)
     }
 }
 </script>
@@ -157,7 +261,7 @@ export default class GorelkaMaintenanceWindow extends Vue {
     }
 
     .left-header {
-        width: 340px;
+        width: 400px;
         padding-left: 40px;
     }
 

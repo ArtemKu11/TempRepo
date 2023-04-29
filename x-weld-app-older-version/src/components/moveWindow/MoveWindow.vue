@@ -1,7 +1,7 @@
 <template>
     <div class="content-container move-layout">
         <div id="content-header">
-            <div id="name-container">Профиль печати для всех слоев (124-275)</div>
+            <div id="name-container">Перемещение горелки</div>
             <div id="coordinates-container">
                 <img src="@/layouts/move_layout/img/gorelka_logo.svg" />
                 <span id="x-coords">{{ coordinatesHolder[0] }}</span>
@@ -12,7 +12,8 @@
         <div id="content-center">
             <div id="buttons-container">
                 <div id="two-control-buttons">
-                    <button><img src="@/layouts/move_layout/img/axis_refresh.png" height="50" /><span>Сброс
+                    <button @click="sendGcode('set_kinematic_position x=0 y=0 z=0')"><img
+                            src="@/layouts/move_layout/img/axis_refresh.png" height="50" /><span>Сброс
                             осей</span></button>
                     <button @click="sendGcode('G28', $waits.onHomeAll)"><img src="@/layouts/move_layout/img/park.png"
                             height="50" /><span>Парковка</span></button>
@@ -56,6 +57,8 @@ import StepSelector from './StepSelector.vue';
 import XBigButton from './XBigButton.vue';
 import YBigButton from './YBigButton.vue';
 import ZBigButton from './ZBigButton.vue'
+import { InfoAlertType } from '@/store/ourExtension/layoutsData/alerts/types';
+import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
 
 @Component({
     components: {
@@ -65,6 +68,14 @@ import ZBigButton from './ZBigButton.vue'
 export default class MoveWindow extends Mixins(StateMixin) {
     get coordinatesHolder(): number[] {
         return this.$store.getters['ourExtension/layoutsData/moveWindow/getCoordinates']()
+    }
+
+    get maxCoordinates(): number[] {
+        return this.$store.getters['ourExtension/layoutsData/moveWindow/getMaxCoordinates']()
+    }
+
+    get minCoordinates(): number[] {
+        return this.$store.getters['ourExtension/layoutsData/moveWindow/getMinCoordinates']()
     }
 
     get currentStep(): number {
@@ -91,6 +102,8 @@ export default class MoveWindow extends Mixins(StateMixin) {
     openInputWindow(coordName: string) {
         const confirmCallback = this.newValueReceiver.bind(this)
 
+        const [minValue, maxValue] = this.resolveMinMaxValue(coordName)
+
         const inputWindowData: InputWindowData = {
             coordName: coordName,
             initValue: this.resolveInitInputWindowValue(coordName),
@@ -98,8 +111,8 @@ export default class MoveWindow extends Mixins(StateMixin) {
             // dispachAfterConfirm: `ourExtension/layoutsData/moveWindow/setNeedToSendGcodeMove`,
             dispachAfterConfirm: `void`,
             callbackAfterConfirm: confirmCallback,
-            maxValue: 2000,
-            minValue: -45
+            maxValue: maxValue,
+            minValue: minValue
         }
         const valcoderStep = this.$store.getters['ourExtension/layoutsData/moveWindow/getCurrentStep']
         const initInfo: InitInputWindowData = {
@@ -120,6 +133,19 @@ export default class MoveWindow extends Mixins(StateMixin) {
         }
     }
 
+    resolveMinMaxValue(coordName: string): number[] { // min, max
+        switch (coordName.toUpperCase()) {
+            case 'X':
+                return [this.minCoordinates[0], this.maxCoordinates[0]]
+            case 'Y':
+                return [this.minCoordinates[1], this.maxCoordinates[1]]
+            case 'Z':
+                return [this.minCoordinates[2], this.maxCoordinates[2]]
+            default:
+                return [0, 1000];
+        }
+    }
+
     resolveInitInputWindowValue(coordName: string): number {
         switch (coordName.toUpperCase()) {
             case 'X':
@@ -136,13 +162,45 @@ export default class MoveWindow extends Mixins(StateMixin) {
     plusClickHandler(axis: string) {
         const lowerCaseAxis = axis.toLowerCase()
         const distance = this.currentStep + ""
-        this.sendMoveGcode(lowerCaseAxis, distance)
+        if (this.borderCheck(axis, distance)) {
+            this.sendMoveGcode(lowerCaseAxis, distance)
+        } else {
+            const alert: InfoAlertType = {
+                message: 'Достигнуто максимальное значение'
+            }
+            Alerts.showInfoAlert(alert)
+        }
+    }
+
+    borderCheck(axis: string, distance: string) {
+        const lowerCaseAxis = axis.toLowerCase()
+        let newCoord;
+        switch (lowerCaseAxis) {
+            case 'x':
+                newCoord = this.coordinatesHolder[0] + +distance
+                return newCoord > this.minCoordinates[0] && newCoord < this.maxCoordinates[0]
+            case 'y':
+                newCoord = this.coordinatesHolder[1] + +distance
+                return newCoord > this.minCoordinates[1] && newCoord < this.maxCoordinates[1]
+            case 'z':
+                newCoord = this.coordinatesHolder[2] + +distance
+                return newCoord > this.minCoordinates[2] && newCoord < this.maxCoordinates[2]
+            default:
+                return false
+        }
     }
 
     minusClickHandler(axis: string) {
         const lowerCaseAxis = axis.toLowerCase()
         const distance = '-' + this.currentStep
-        this.sendMoveGcode(lowerCaseAxis, distance)
+        if (this.borderCheck(axis, distance)) {
+            this.sendMoveGcode(lowerCaseAxis, distance)
+        } else {
+            const alert: InfoAlertType = {
+                message: 'Достигнуто минимальное значение'
+            }
+            Alerts.showInfoAlert(alert)
+        }
     }
 
     sendMoveGcode(axis: string, distance: string, negative = false) {
@@ -155,7 +213,8 @@ export default class MoveWindow extends Mixins(StateMixin) {
         //     ? '-' + distance
         //     : distance
 
-        if ("this.forceMove") {
+        // if ("this.forceMove") {
+        if (false) {  // ))0)0
             const accel = (axis.toLowerCase() === 'z')
                 ? this.$store.getters['printer/getPrinterSettings']('printer.max_z_accel')
                 : this.$store.state.printer.printer.toolhead.max_accel

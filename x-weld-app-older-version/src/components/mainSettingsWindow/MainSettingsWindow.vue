@@ -199,8 +199,14 @@ export default class MainSettingsWindow extends Mixins(StateMixin) {
 .content-header.main-settings-window {
     display: flex;
     align-items: center;
-    justify-content: end;
+    // justify-content: end;
     margin-right: 40px;
+    position: relative;
+
+    img {
+        position: absolute;
+        right: 0px;
+    }
 }
 
 .content-center.main-settings-window {

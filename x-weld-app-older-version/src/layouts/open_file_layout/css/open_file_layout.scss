@@ -26,7 +26,13 @@
     #content-header {
         display: flex;
         align-items: center;
-        justify-content: end;
+        // justify-content: end;
+        position: relative;
+
+        img {
+            position: absolute;
+            right: 0;
+        }
     }
 
     #content-center {

@@ -147,7 +147,7 @@ export default class InputWindow extends Vue {
                     user-select: none;
 
                     &:first-of-type {
-                        width: 120px;
+                        width: 150px;
 
                     }
 

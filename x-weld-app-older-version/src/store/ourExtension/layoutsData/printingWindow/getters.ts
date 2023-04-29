@@ -17,5 +17,13 @@ export const getters: GetterTree<PrintingWindowState, RootState> = {
     
     getFile: (state) => () => {
         return state.file
-    }
+    },
+
+    hasFile: (state) => () => {
+        return Boolean(state.file)
+    },
+
+    hasPrintingDiapason: (state) => () => {
+        return Boolean(state.printingDiapason)
+    },
 }

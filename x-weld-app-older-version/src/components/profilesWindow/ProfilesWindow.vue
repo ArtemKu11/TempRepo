@@ -8,9 +8,9 @@
             <div id="name-container">{{ headerText }} {{ layersText }}</div>
             <div id="coordinates-container">
                 <img src="@/layouts/profiles_layout/img/gorelka_logo.svg" />
-                <span id="x-coords">{{ coordinatesHolder[0] }}</span>
-                <span id="y-coords">{{ coordinatesHolder[1] }}</span>
-                <span id="z-coords">{{ coordinatesHolder[2] }}</span>
+                <span id="x-coords">X {{ coordinatesHolder[0] }}</span>
+                <span id="y-coords">Y {{ coordinatesHolder[1] }}</span>
+                <span id="z-coords">Z {{ coordinatesHolder[2] }}</span>
             </div>
         </div>
         <div id="content-center">

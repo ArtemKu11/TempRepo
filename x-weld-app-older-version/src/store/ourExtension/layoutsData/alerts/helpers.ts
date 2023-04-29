@@ -71,6 +71,11 @@ export class AlertsProcessor {
         }
         this.dispatch('ourExtension/layoutsData/alerts/showInfoAlert', alert, { root: true })
     }
+
+    showInfoAlert(alert: InfoAlertType) {
+        if (!this.dispatch) return
+        this.dispatch('ourExtension/layoutsData/alerts/showInfoAlert', alert, { root: true })
+    }
 }
 
 export const Alerts = new AlertsProcessor()

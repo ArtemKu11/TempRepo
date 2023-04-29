@@ -107,7 +107,7 @@ $minHeightForMinimize: 600px; // При достижении height: 600px ва�
                             user-select: none;
 
                             &:first-of-type {
-                                width: 120px;
+                                width: 150px;
 
                             }
 
@@ -200,11 +200,44 @@ $minHeightForMinimize: 600px; // При достижении height: 600px ва�
 
         }
 
+        #valcoder-input-resources,
+        #valcoder,
+        img,
+        #valcoder-circle-holder,
+        #valcoder-circle,
+        #valcoder-invisible-circle {
+            user-select: none;
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+            -webkit-tap-highlight-color: transparent;
+
+            &:focus {
+                border: none;
+                background: none;
+                user-select: none;
+            }
+
+            &:active {
+                border: none;
+                background: none;
+                user-select: none;
+            }
+
+            &:hover {
+                border: none;
+                background: none;
+                user-select: none;
+            }
+        }
+
         #valcoder-input-resources {
             display: flex;
             flex-direction: column;
             justify-content: center;
+            user-select: none;
+            // pointer-events: none;
             // display: none;
+
+
 
 
             #valcoder {
@@ -245,6 +278,13 @@ $minHeightForMinimize: 600px; // При достижении height: 600px ва�
                     justify-self: center;
                     border-radius: 50%;
                     box-shadow: -4px -4px 4px 0px rgba(163, 163, 163, 0.39), 10px 10px 4px 0px rgba(0, 0, 0, 0.67);
+
+                    #valcoder-invisible-circle {
+                        position: absolute;
+                        border-radius: 50%;
+                        height: 100%;
+                        width: 100%;
+                    }
 
                     #valcoder-point {
                         position: absolute;

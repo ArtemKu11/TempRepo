@@ -4,7 +4,8 @@
             <div class="screen-name">Информация о системе</div>
             <div class="xweld-logo"><img class="xweld-logo-img" src="@/layouts/system_info_screen/img/xweld_logo.png"></div>
             <div class="system-info-placeholder">
-                <button @click="clickHandler" class="refresh-button"><span>Обновить</span></button>
+                <button @click="refreshWindow" class="refresh-button"><span>Обновить</span></button>
+
             </div>
         </div>
     </div>
@@ -20,9 +21,10 @@ import { Component, Vue } from 'vue-property-decorator';
     },
 })
 export default class SystemInfoWindow extends Vue {
-    clickHandler() {
+    refreshWindow() {
         location.reload()
     }
+
 }
 </script>
 
@@ -69,7 +71,9 @@ export default class SystemInfoWindow extends Vue {
         padding-top: 10px;
         padding-left: 40px;
 
+
         button {
+            display: block;
             background: none;
             border: none;
             border: 2px solid gray;
@@ -78,6 +82,7 @@ export default class SystemInfoWindow extends Vue {
             height: 50px;
             cursor: pointer;
             user-select: none;
+            margin-bottom: 20px;
 
             span {
                 color: white;

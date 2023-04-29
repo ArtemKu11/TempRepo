@@ -1,5 +1,5 @@
 <template>
-    <div @mouseup="mousedownFlag = false" id="valcoder-input-resources">
+    <div id="valcoder-input-resources">
         <div id="valcoder">
             <img src="@/layouts/move_layout/img/valcoder_strelka.png" />
             <div id="plus-minus-holder">
@@ -7,9 +7,11 @@
                 <span>+</span>
             </div>
             <div ref="valcoderCircleHolder" id="valcoder-circle-holder">
-                <div ref="valcoder" @mousedown="mousedownFlag = true" @mousemove="mouseMoveHandler"
-                    @touchmove="touchHandler" id="valcoder-circle">
-                    <div ref="valcoderPoint" id="valcoder-point"></div>
+                <div @mousedown.prevent="mousedownFlag = true"
+                    @mousemove.prevent="mouseMoveHandler" @touchmove.prevent="touchHandler" id="valcoder-circle">
+                    <div ref="valcoder" id="valcoder-invisible-circle">
+                        <div ref="valcoderPoint" id="valcoder-point"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -28,6 +30,8 @@ import state from '@/mixins/state';
 import { InputWindowData } from '@/store/ourExtension/layoutsData/inputWindow/types';
 import { Vue, Component } from 'vue-property-decorator';
 import { TimeProcessor } from './timeProcessor';
+import { InfoAlertType } from '@/store/ourExtension/layoutsData/alerts/types';
+import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
 
 @Component({})
 export default class ValcoderInput extends Vue {
@@ -58,6 +62,27 @@ export default class ValcoderInput extends Vue {
         return Boolean(this.inputWindowData.isItTime)
     }
 
+    setBlur(e: MouseEvent) {
+        e.preventDefault()
+        e.stopPropagation()
+        e.stopImmediatePropagation()
+        if (e.target) {
+            const target = e.target as HTMLElement
+            target.blur();
+            // let className = target.className
+            // if (!className) {
+            //     className = target.id
+            // }
+
+            // const alert: InfoAlertType = {
+            //     message: e.type + ' ' + className
+            // }
+            // Alerts.showInfoAlert(alert)
+        }
+
+
+    }
+
     mounted() {
         let newValue;
         if (this.isItTime) {
@@ -66,6 +91,9 @@ export default class ValcoderInput extends Vue {
             newValue = +this.processingValue + '';
         }
         this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue);
+        // window.addEventListener('mouseup', () => {
+        //     this.mousedownFlag = false
+        // })
     }
 
     finalLengthCheck(newValue: string): string {
@@ -92,6 +120,7 @@ export default class ValcoderInput extends Vue {
     }
 
     mouseMoveHandler(e: MouseEvent) {
+        this.setBlur(e)
         if (this.mousedownFlag) {
             const [clickX, clickY, pointX, pointY, valcoderDiameter] = this.resolveClickCoord(e);
             if (clickX === null || clickY === null || pointX === null || pointY === null || valcoderDiameter === null) {

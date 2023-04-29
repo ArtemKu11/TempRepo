@@ -80,7 +80,7 @@ export default class DefaultAlert extends Vue {
         background: rgba(0, 0, 0, 0.5);
         padding: 30px 40px;
         border-radius: 10px;
-        border: 3px solid #6B6B6B;
+        border: 2px solid #6B6B6B;
 
         display: flex;
         flex-direction: column;
@@ -121,13 +121,13 @@ export default class DefaultAlert extends Vue {
                 cursor: pointer;
                 width: 100px;
                 height: 50px;
-                border: 3px solid #6B6B6B;
+                border: 2px solid #6B6B6B;
                 border-radius: 6px;
                 font-size: 20px;
                 color: white;
 
                 &:active {
-                    border: 3px solid white;
+                    border: 2px solid white;
                 }
             }
         }
@@ -141,18 +141,16 @@ export default class DefaultAlert extends Vue {
                 cursor: pointer;
                 width: 100px;
                 height: 50px;
-                border: 3px solid #6B6B6B;
+                border: 2px solid #6B6B6B;
                 border-radius: 6px;
                 font-size: 20px;
                 color: white;
 
                 &:active {
-                    border: 3px solid white;
+                    border: 2px solid white;
                 }
             }
         }
     }
-
-
 }
 </style>

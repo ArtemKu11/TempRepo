@@ -1,3 +1,6 @@
+// set_kinematic_position x=0 y=0 z=0
+
+
 import Vue from 'vue'
 import Vuex from 'vuex'
 import consola from 'consola'

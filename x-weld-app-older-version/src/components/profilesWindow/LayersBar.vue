@@ -2,7 +2,8 @@
     <div ref="layersBar" class="layouts-holder">
         <span>Слои</span>
         <div @mousemove="mousemoveHandler" class="layouts-icon-holder">
-            <div @touchmove="touchmoveHandler" @mousemove="mousemoveHandler" @mousedown="mousedownHandler" ref="rangeHolder" class="layouts-icon">
+            <div @touchmove="touchmoveHandler" @touchstart="touchmoveHandler" @mousemove="mousemoveHandler" @mousedown="mousedownHandler" ref="rangeHolder" class="layouts-icon">
+                <div class="invisible-clickable-div"></div>
                 <div ref="range" class="range">
                     <div class="point up"></div>
                     <div class="point down"></div>
@@ -26,7 +27,8 @@ import { FileData } from '@/store/ourExtension/files/types';
     },
 })
 export default class LayersBar extends Vue {
-    mousedownFlag = false
+    mousedownFlag = true
+    mousedownFlagKostyl = false;
 
     @Model('update:modelValue', { type: Object })
     modelValue!: any
@@ -41,7 +43,7 @@ export default class LayersBar extends Vue {
 
     @Watch('modelValue', { deep: true })
     modelWather() {
-        if (!this.mousedownFlag) {
+        if (!this.mousedownFlagKostyl) {
             const firstLayer = 0;
             const lastLayer = +this.file.layers
             const requiredFirstLayer = this.modelValue.cachedFirstLayer
@@ -58,12 +60,14 @@ export default class LayersBar extends Vue {
 
     mounted() {
         window.addEventListener('mouseup', () => {
-            this.mousedownFlag = false;
+            // this.mousedownFlag = false;
+            this.mousedownFlagKostyl = false;
             doubleRangeProcessor.processingPoint = null
         })
 
         window.addEventListener('touchend', () => {
-            this.mousedownFlag = false;
+            // this.mousedownFlag = false;
+            this.mousedownFlagKostyl = false;
             doubleRangeProcessor.processingPoint = null
         })
         this.modelWather()

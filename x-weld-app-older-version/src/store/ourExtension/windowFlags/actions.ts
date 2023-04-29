@@ -34,10 +34,13 @@ export const actions: ActionTree<WindowFlagsState, RootState> = {
     // ИЛИ
     openMoveWindow({ dispatch, commit, getters }) {
         dispatch('ourExtension/layoutsData/moveWindow/reset', null, { root: true })
-        commit("openMoveWindow");  // 1. Изменить флаги (Показать окно)
-        commit('setWindowStack', [getters.getInitFlagsObject()])  // 2. Обнулить стек (Кнопка "Назад" в данном окне будет возвращать MainWindow)
-        const currentFlags: FlagsObject = getters.getCurrentFlagsObject();  // 3. Сохранить в стэк текущее окно
-        commit('saveCurrentLayoutInStack', currentFlags);  // (Кнопка "Назад" в следующем окне вернет сначала данное окно, а затем MainWindow)
+        // commit("openMoveWindow");  // 1. Изменить флаги (Показать окно)
+        // commit('setWindowStack', [getters.getInitFlagsObject()])  // 2. Обнулить стек (Кнопка "Назад" в данном окне будет возвращать MainWindow)
+        // const currentFlags: FlagsObject = getters.getCurrentFlagsObject();  // 3. Сохранить в стэк текущее окно
+        // commit('saveCurrentLayoutInStack', currentFlags);  // (Кнопка "Назад" в следующем окне вернет сначала данное окно, а затем MainWindow)
+        commit('openMoveWindow');
+        const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
+        commit('saveCurrentLayoutInStack', currentFlags);
     },
 
     openFilePreviewWindow({ commit, getters }) {
@@ -57,8 +60,11 @@ export const actions: ActionTree<WindowFlagsState, RootState> = {
     },
 
     openMainSettingsWindow({ dispatch, commit, getters }) {
+        // commit('openMainSettingsWindow');
+        // commit('setWindowStack', [getters.getInitFlagsObject()])
+        // const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
+        // commit('saveCurrentLayoutInStack', currentFlags);
         commit('openMainSettingsWindow');
-        commit('setWindowStack', [getters.getInitFlagsObject()])
         const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
         commit('saveCurrentLayoutInStack', currentFlags);
     },

@@ -144,7 +144,7 @@ export default class FilePreviewWindow extends Mixins(FilesMixin, StateMixin) {
     }
 
     startPrint(file: FileData) {
-        SocketActions.printerPrintStart(file.pathForMoonraker)
+        // SocketActions.printerPrintStart(file.pathForMoonraker)
     }
 
     openExsistingWindow() {

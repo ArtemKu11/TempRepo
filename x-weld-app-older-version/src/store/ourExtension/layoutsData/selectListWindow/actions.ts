@@ -6,6 +6,7 @@ import { ListInstance, SelectListInitData, SelectListWindowState } from "./types
 export const actions: ActionTree<SelectListWindowState, RootState> = {
     reset({ state }) {
         Object.assign(state, defaultState())
+        state.zIndex = undefined
     },
 
     initWithIcons({ state }, payload: SelectListInitData) {  // <название, иконка>
@@ -23,6 +24,7 @@ export const actions: ActionTree<SelectListWindowState, RootState> = {
             listItems.push(listInstance)
         }
         state.listItems = listItems;
+        state.zIndex = payload.zIndex
     },
 
     initWithoutIcons({ state }, payload: SelectListInitData) { 
@@ -39,6 +41,7 @@ export const actions: ActionTree<SelectListWindowState, RootState> = {
             listItems.push(listInstance)
         }
         state.listItems = listItems;
+        state.zIndex = payload.zIndex
     },
 
     deactivateItems({ state, getters }) {
