@@ -12,7 +12,9 @@ export const mainWindowState = (): MainWindowState => {
             {
                 buttonId: 1,
                 buttonName: "Допечатная подготовка",
-                buttonImage: require("@/layouts/main_window_layout/img/move_icon.png")
+                activeButtonImage: require("@/layouts/main_window_layout/img/move_icon.png"),
+                buttonImage: require("@/layouts/main_window_layout/img/move_icon_disabled.svg")
+
             },
 
             {
@@ -24,7 +26,8 @@ export const mainWindowState = (): MainWindowState => {
             {
                 buttonId: 3,
                 buttonName: "Печать",
-                buttonImage: require("@/layouts/main_window_layout/img/print_icon.png")
+                buttonImage: require("@/layouts/main_window_layout/img/print_icon_disabled.svg"),
+                activeButtonImage: require("@/layouts/main_window_layout/img/print_icon.png")
             }
         ]
     }

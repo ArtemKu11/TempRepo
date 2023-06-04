@@ -1,7 +1,8 @@
 <template>
     <div class="log-holder">
         <span>{{ time }}</span>
-        <span @mouseover="moveHandler" @click="clickHandler" v-html="consoleEntry.message" class="command-holder" :class="{active: pointerFlag}"></span>
+        <span @mouseover="moveHandler" @click="clickHandler" v-html="consoleEntry.message" class="command-holder"
+            :class="{ active: pointerFlag }"></span>
     </div>
 </template>
 
@@ -12,12 +13,12 @@ import { Prop, Component, Vue } from 'vue-property-decorator';
 
 @Component({})
 export default class LogHolder extends Vue {
-    @Prop({default: ""})
+    @Prop({ default: "" })
     consoleEntry!: ConsoleEntry
 
     pointerFlag = false
 
-    
+
     get time(): string {
         const unixTime = this.consoleEntry.time;
         if (unixTime) {
@@ -30,13 +31,13 @@ export default class LogHolder extends Vue {
     convertToHumanTime(jsTime: Date): string {
         let hours = jsTime.getHours() + "";
         let minutes = jsTime.getMinutes() + "";
-        let seconds = jsTime.getSeconds() + "";
         if (hours.length === 1) {
             hours = "0" + hours;
         }
         if (minutes.length === 1) {
             minutes = "0" + minutes;
         }
+        let seconds = jsTime.getSeconds() + "";
         if (seconds.length === 1) {
             seconds = "0" + seconds;
         }

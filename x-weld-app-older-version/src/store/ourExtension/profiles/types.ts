@@ -41,7 +41,8 @@ export interface ProfilesMetadata {
     gas: string[],
     oscilationTypes: string[],
     weldTypes: string[],
-    wireDiameters: number[]
+    wireDiameters: number[],
+    materials: string[]
 }   
 
 export interface PrintingDiapason {

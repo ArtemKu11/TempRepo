@@ -25,6 +25,10 @@ export const getters: GetterTree<FilePreviewWindowState, RootState> = {
         }
     },
 
+    getFile: (state) => () => {
+        return state.fileData
+    },
+
     getSelectedDiapason: (state) => () => {
         return state.selectedDiapason
     }

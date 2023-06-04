@@ -2,7 +2,7 @@
     <div class="wrapper">
         <button @click="clickHandler" class="folder-button active">
             <div class="info-holder">
-                <img src="@/layouts/main_window_layout/img/folder.png">
+                <img src="@/layouts/main_window_layout/img/folder_fix.svg">
                 <span>{{ directoryData.name }}</span>
                 <div class="file-info">
                     <span>Дата: {{ directoryData.modified }}</span>

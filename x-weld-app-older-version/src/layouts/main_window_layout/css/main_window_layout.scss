@@ -86,6 +86,7 @@
         span {
             padding-top: 15px;
             display: block;
+            // color: rgba(199, 199, 199, 1);
             color: rgba(199, 199, 199, 1);
 
             @media (max-height:554px) {
@@ -97,9 +98,22 @@
         &:active {
             span {
                 color: white;
-
             }
         }
+
+        &.disabled {
+            span {
+                color: #4b4b4b;
+            }
+
+            &:active {
+                span {
+                    color: #4b4b4b;
+                }
+            }
+        }
+
+        
     }
 
     @media (max-height:634px) {

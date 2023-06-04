@@ -1,6 +1,6 @@
 <template>
     <div class="content-container fatal-error-alert">
-        <FatalSelectList :items="items" v-if="listFlag" @close="closeList" @selectItem="selectItem"/>
+        <FatalSelectList :items="items" v-if="listFlag" @close="closeList" @selectItem="selectItem" />
         <div class="alert-holder">
             <span class="header">
                 ФАТАЛЬНАЯ ОШИБКА!
@@ -36,8 +36,9 @@ export default class FatalErrorAlert extends Mixins(StateMixin, ServicesMixin, W
     listFlag = false
 
     get message(): string {
-        console.log('MESSAGE')
-        console.log(this.klippyStateMessage)
+        // return(`Internal error during connect: Unknown error: HTTPConnectionPool(host='192.168.1.108', port=80): Max retries exceeded with url: /onvif/device_service (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f128dda1320>: Failed to establish a new connection: [Errno 101] Network is unreachable'))<br /><br />Once the underlying issue is corrected, use the "RESTART"<br />command to reload the config and restart the host software.<br />Printer is halted`)
+        // console.log('MESSAGE')
+        // console.log(this.klippyStateMessage)
         return this.klippyStateMessage
     }
 
@@ -145,8 +146,10 @@ export default class FatalErrorAlert extends Mixins(StateMixin, ServicesMixin, W
 
         display: flex;
         flex-direction: column;
-        place-items: center;
-        max-width: 60%;
+        // place-items: center;
+        align-items: center;
+        justify-content: center;
+        max-width: 80%;
 
         .header {
             text-align: center;

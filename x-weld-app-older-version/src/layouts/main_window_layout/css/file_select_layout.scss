@@ -51,7 +51,8 @@
         }
 
         span {
-            color: rgba(107, 107, 107, 1);
+            // color: rgba(107, 107, 107, 1);
+            color: white;
             justify-self: start;
             font-size: 30px;
             font-weight: 700;
@@ -67,10 +68,11 @@
 
             span {
                 justify-self: center;
-                color: rgba(107, 107, 107, 1);
+                color: white;
+                // color: rgba(107, 107, 107, 1);
                 font-size: 18px;
                 font-weight: 400;
-            }   
+            }
         }
     }
 
@@ -115,7 +117,7 @@
     display: grid;
     grid-template-columns: $sidebarWidth auto;
     grid-template-rows: 1fr;
-    // backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
     background: rgba(21, 21, 21, 0.9);
     // display: none;
 
@@ -228,6 +230,10 @@
                 @include fileFolderButton();
 
                 .info-holder {
+                    span {
+                        color: white;
+                    }
+
                     img {
                         grid-row: 1/3;
                     }

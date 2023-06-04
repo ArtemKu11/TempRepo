@@ -22,7 +22,10 @@ export const getters: GetterTree<MoveWindowState, RootState> = {
     },
 
     getMaxCoordinates: (state, getters, rootState) => () => {
-        const maxCoordinates = rootState.printer.printer.toolhead.axis_maximum
+        let maxCoordinates = rootState.printer.printer.toolhead.axis_maximum
+        if (!maxCoordinates || !maxCoordinates.length) {
+            maxCoordinates = [1000, 1000, 1000]
+        }
         const newArr = []
         for (let coord of maxCoordinates) {
             newArr.push(round(coord))
@@ -31,9 +34,12 @@ export const getters: GetterTree<MoveWindowState, RootState> = {
     },
 
     getMinCoordinates: (state, getters, rootState) => () => {
-        const maxCoordinates = rootState.printer.printer.toolhead.axis_minimum
+        let minCoordinates = rootState.printer.printer.toolhead.axis_minimum
+        if (!minCoordinates || !minCoordinates.length) {
+            minCoordinates = [-1000, -1000, -1000]
+        }
         const newArr = []
-        for (let coord of maxCoordinates) {
+        for (let coord of minCoordinates) {
             newArr.push(round(coord))
         }
         return newArr

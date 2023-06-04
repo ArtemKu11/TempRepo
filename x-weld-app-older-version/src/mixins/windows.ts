@@ -63,19 +63,18 @@ export default class WindowsMixin extends Vue {
     }
 
     openExisitingPrintingWindow(needAlert = false) {
-        const hasFile = this.$store.getters['ourExtension/layoutsData/printingWindow/hasFile']()
+        let hasFile = this.$store.getters['ourExtension/layoutsData/printingWindow/hasFile']()
         const hasPrintingDiapason = this.$store.getters['ourExtension/layoutsData/printingWindow/hasPrintingDiapason']()
+        const printerFile = this.$store.state.printer.printer.current_file
+        const fileInWindow = this.$store.getters['ourExtension/layoutsData/printingWindow/getFile']() as FileData
+        if (hasFile && printerFile.filename && printerFile.filename !== fileInWindow.name) {  // Если вдруг случилась подмена файлов
+            hasFile = false
+        }
+
         if (!hasFile || !hasPrintingDiapason) {
             this.$store.dispatch('ourExtension/layoutsData/printingWindow/reset')
-        }
-
-        if (!hasFile) {
             const file = this.resolveFileForPrintingWindow()
             this.$store.dispatch('ourExtension/layoutsData/printingWindow/setFile', file)
-
-        }
-
-        if (!hasPrintingDiapason) {
             const diapasonForMoonraker: PrintingDiapasonForMoonraker = {
                 allLayersFlag: true,
                 firstLayer: null,
@@ -84,8 +83,27 @@ export default class WindowsMixin extends Vue {
             }
             const diapasonCopy = JSON.parse(JSON.stringify(diapasonForMoonraker))
             this.$store.dispatch('ourExtension/layoutsData/printingWindow/setPrintingDiapason', diapasonCopy)
-
         }
+
+        // if (!hasFile || !hasPrintingDiapason) {
+        //     this.$store.dispatch('ourExtension/layoutsData/printingWindow/reset')
+        // }
+
+        // if (!hasFile) {
+        // const file = this.resolveFileForPrintingWindow()
+        // this.$store.dispatch('ourExtension/layoutsData/printingWindow/setFile', file)
+        // }
+
+        // if (!hasPrintingDiapason) {
+        //     const diapasonForMoonraker: PrintingDiapasonForMoonraker = {
+        //         allLayersFlag: true,
+        //         firstLayer: null,
+        //         lastLayer: null,
+        //         profile: this.$store.getters['ourExtension/profiles/getLastPrintingProfile'](),
+        //     }
+        //     const diapasonCopy = JSON.parse(JSON.stringify(diapasonForMoonraker))
+        //     this.$store.dispatch('ourExtension/layoutsData/printingWindow/setPrintingDiapason', diapasonCopy)
+        // }
 
         this.$store.dispatch('ourExtension/windowFlags/openPrintingWindow')
 
@@ -103,12 +121,16 @@ export default class WindowsMixin extends Vue {
     resolveFileForPrintingWindow(): FileData {
         let file: FileData = this.$store.getters['ourExtension/files/getLastPrintingFile']()
         if (!file) {
-            return this.getFileMock()
+            file = this.getFileMock()
+        }
+        const printerFile = this.$store.state.printer.printer.current_file
+        if (printerFile.filename) {
+            file.name = printerFile.filename
         }
         return file
     }
 
-    getFileMock():FileData {
+    getFileMock(): FileData {
         const profiles: GcodePrintingProfiles = {
             profiles: this.$store.getters['ourExtension/profiles/getDefaultProfilesMap'],
             selectedDiapason: {

@@ -18,7 +18,7 @@
             </div>
 
             <KeyboardInput v-if="keyboardFlag" />
-            <ValcoderInput v-else />
+            <ValcoderInput @createValcoder="createValcoderHandler" @destroyValcoder="destroyValcoderHandler" v-else />
 
         </div>
     </div>
@@ -32,6 +32,7 @@ import KeyboardInput from './KeyboardInput.vue';
 import ValcoderInput from './ValcoderInput.vue';
 import DefaultInputInfo from './DefaultInputInfo.vue';
 import NotDefaultInputInfo from './NotDefaultInputInfo.vue';
+import { OnlineValcoderProcessor } from './onlineValcoderProcessor';
 
 @Component({
     components: {
@@ -39,6 +40,8 @@ import NotDefaultInputInfo from './NotDefaultInputInfo.vue';
     },
 })
 export default class InputWindow extends Vue {
+    onlineValcoderProcessor?: OnlineValcoderProcessor
+    
 
     get defaultImplementationFlag(): boolean {
         const flags = this.$store.getters['ourExtension/layoutsData/inputWindow/getFlags'] as FlagsObject
@@ -58,8 +61,36 @@ export default class InputWindow extends Vue {
         return this.$store.getters['ourExtension/layoutsData/inputWindow/getKeyboardFlag']()
     }
 
+    get inputWindowData(): InputWindowData {
+        return this.$store.getters['ourExtension/layoutsData/inputWindow/getInputWindowData']
+    }
+
     setKeyboardFLag(newFlag: boolean) {
         this.$store.commit('ourExtension/layoutsData/inputWindow/setKeyboardFlag', newFlag);
+    }
+
+    mounted() {
+        if (this.inputWindowData.isItOnlineValcoder) {
+            this.onlineValcoderProcessor = new OnlineValcoderProcessor(this.$store)
+        }
+    }
+
+    beforeDestroy() {
+        if (this.onlineValcoderProcessor) {
+            this.onlineValcoderProcessor.stopProcessing()
+        }
+    }
+
+    createValcoderHandler() {
+        if (this.onlineValcoderProcessor) {
+            this.onlineValcoderProcessor.startProcessing()
+        }
+    }
+
+    destroyValcoderHandler() {
+        if (this.onlineValcoderProcessor) {
+            this.onlineValcoderProcessor.stopProcessing()
+        }
     }
 }
 </script>

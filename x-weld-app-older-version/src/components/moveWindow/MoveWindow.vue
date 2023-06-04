@@ -71,11 +71,19 @@ export default class MoveWindow extends Mixins(StateMixin) {
     }
 
     get maxCoordinates(): number[] {
-        return this.$store.getters['ourExtension/layoutsData/moveWindow/getMaxCoordinates']()
+        let maxCoords = this.$store.getters['ourExtension/layoutsData/moveWindow/getMaxCoordinates']()
+        if (!maxCoords || !maxCoords.length) {
+            maxCoords = [1000, 1000, 1000]
+        }
+        return maxCoords
     }
 
     get minCoordinates(): number[] {
-        return this.$store.getters['ourExtension/layoutsData/moveWindow/getMinCoordinates']()
+        let minCoords = this.$store.getters['ourExtension/layoutsData/moveWindow/getMinCoordinates']()
+        if (!minCoords || !minCoords.length) {
+            minCoords = [-1000, -1000, -1000]
+        }
+        return minCoords
     }
 
     get currentStep(): number {
@@ -112,7 +120,8 @@ export default class MoveWindow extends Mixins(StateMixin) {
             dispachAfterConfirm: `void`,
             callbackAfterConfirm: confirmCallback,
             maxValue: maxValue,
-            minValue: minValue
+            minValue: minValue,
+            isItOnlineValcoder: true
         }
         const valcoderStep = this.$store.getters['ourExtension/layoutsData/moveWindow/getCurrentStep']
         const initInfo: InitInputWindowData = {
@@ -123,15 +132,23 @@ export default class MoveWindow extends Mixins(StateMixin) {
         this.$store.dispatch('ourExtension/windowFlags/openInputWindow');
     }
 
-    newValueReceiver(newValue: number) {
+    newValueReceiver(newValue: number) {  // то, насколько надо съехать (предполагает Online Valcoder)
         const inputWindowData = this.$store.getters['ourExtension/layoutsData/inputWindow/getInputWindowData'] as InputWindowData
         const axis = inputWindowData.coordName.toLowerCase();
-        const oldValue = this.resolveInitInputWindowValue(axis);
-        const distance = newValue - oldValue;
-        if (distance) {
-            this.sendMoveGcode(axis, distance + '');
+        if (newValue) {
+            this.sendMoveGcode(axis, newValue + '');
         }
     }
+
+    // newValueReceiver(newValue: number) {  // старая имплемантация
+    // const inputWindowData = this.$store.getters['ourExtension/layoutsData/inputWindow/getInputWindowData'] as InputWindowData
+    //     const axis = inputWindowData.coordName.toLowerCase();
+    //     const oldValue = this.resolveInitInputWindowValue(axis);
+    //     const distance = newValue - oldValue;
+    //     if (distance) {
+    //         this.sendMoveGcode(axis, distance + '');
+    //     }
+    // }
 
     resolveMinMaxValue(coordName: string): number[] { // min, max
         switch (coordName.toUpperCase()) {

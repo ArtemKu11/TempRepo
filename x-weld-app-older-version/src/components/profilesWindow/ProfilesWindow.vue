@@ -340,6 +340,7 @@ export default class ProfilesWindow extends Vue {
     }
 
     digitParameterNewValueReceiver(newValue: number) {
+        console.log(newValue)
         const holder = this.getRequiredParameterHolderByPath(this.processingParameterPath) as any
         const pathParts = this.processingParameterPath.split('.')
         const paramName = pathParts[pathParts.length - 1]
@@ -400,9 +401,9 @@ export default class ProfilesWindow extends Vue {
                 this.openSelectWindowWithoutIcon(callback, initList)
                 break;
             case 'material':
-                // this.processingParameterPath = 'profile.profileWeldParameters.material'
-                // initList = profilesMetadata.
-                // this.openSelectWindowWithoutIcon(callback, initList)
+                this.processingParameterPath = 'profile.profileWeldParameters.material'
+                initList = profilesMetadata.materials
+                this.openSelectWindowWithoutIcon(callback, initList)
                 break;
             case 'method':
                 this.processingParameterPath = 'profile.profileWeldParameters.method'

@@ -6,7 +6,8 @@ export const isSatisfiesProfilesMetadataType = (data: any): Boolean => {
         gas: [],
         oscilationTypes: [],
         weldTypes: [],
-        wireDiameters: []
+        wireDiameters: [],
+        materials: []
     }
     const keys = Object.keys(mockProfilesMetadata)
     for (const key in data) {
@@ -210,11 +211,11 @@ export const resolveParamNameByPath = (path: string) => {
 }
 
 const iconByProfileName = new Map([
-    ['Конструкционные стали', 'Fe-C'],
+    ['Стали', 'Fe-C'],
     ['Нержавеющие стали', 'Cr-Ni'],
     ['Никелевые сплавы', 'Ni'],
     ['Титановые сплавы', 'Ti'],
-    ['Алюминиево-магниевые сплавы', 'Al-Mg'],
+    ['Алюминивые сплавы', 'Al'],
     ['Медные сплавы', 'Cu']
 ])
 

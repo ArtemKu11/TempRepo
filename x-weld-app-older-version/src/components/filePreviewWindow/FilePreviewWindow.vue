@@ -1,8 +1,9 @@
 <template>
     <div class="content-container open-file-layout">
-        <div id="content-header"><img src="@/layouts/open_file_layout/img/xweld_logo.png"></div>
+        <div id="content-header"><img src="@/layouts/open_file_layout/img/xweld_logo.svg"></div>
         <div id="content-center">
-            <img src="@/layouts/open_file_layout/img/printing_file_icon.png">
+            <!-- <img src="@/layouts/open_file_layout/img/printing_file_icon.png"> -->
+            <div class="no-image-div"><img src="@/layouts/open_file_layout/img/xweld_logo.svg"></div>
             <div id="file-info-holder">
                 <span>{{ fileData.name }}</span>
                 <span>Время печати: {{ fileData.printingTime }}</span>
@@ -12,18 +13,30 @@
         </div>
         <div id="content-footer">
             <div class="one-button-wrapper">
-                <button @click="openPreviousWindow"><img
-                        src="@/layouts/open_file_layout/img/open_icon.png"><span>Открыть</span></button>
+                <button @click="openPreviousWindow">
+                    <div class="img-wrapper">
+                        <img src="@/layouts/open_file_layout/img/open_icon.png">
+                    </div>
+                    <span>Открыть</span></button>
             </div>
             <div class="two-buttons-wrapper">
-                <button @click="openPreprintingWindow"><img
-                        src="@/layouts/open_file_layout/img/move_icon.png"><span>Перемещение</span></button>
-                <button @click="openProfilesWindow"><img
-                        src="@/layouts/open_file_layout/img/profiles_icon.png"><span>Профили</span></button>
+                <button @click="openPreprintingWindow">
+                    <div class="img-wrapper">
+                        <img src="@/layouts/open_file_layout/img/move_icon.png">
+                    </div>
+                    <span>Допечатная подготовка</span></button>
+                <button @click="openProfilesWindow">
+                    <div class="img-wrapper">
+                        <img src="@/layouts/open_file_layout/img/profiles_icon.png">
+                    </div>
+                    <span>Профили</span></button>
             </div>
             <div class="one-button-wrapper">
-                <button @click="printClickHandler"><img
-                        src="@/layouts/open_file_layout/img/print_icon.png"><span>Печать</span></button>
+                <button @click="printClickHandler">
+                    <div class="img-wrapper">
+                        <img src="@/layouts/open_file_layout/img/print_icon.png">
+                    </div>
+                    <span>Печать</span></button>
             </div>
         </div>
     </div>
@@ -139,12 +152,12 @@ export default class FilePreviewWindow extends Mixins(FilesMixin, StateMixin) {
                 }
                 this.$store.commit('ourExtension/files/setLastPrintingFile', lastPrintingFile)
             }
-            this.startPrint(file)
+            // this.startPrint(file)
         }
     }
 
     startPrint(file: FileData) {
-        // SocketActions.printerPrintStart(file.pathForMoonraker)
+        SocketActions.printerPrintStart(file.pathForMoonraker)
     }
 
     openExsistingWindow() {
@@ -170,4 +183,5 @@ export default class FilePreviewWindow extends Mixins(FilesMixin, StateMixin) {
 
 <style lang="scss">
 @import '@/layouts/open_file_layout/css/open_file_layout.scss';
+
 </style>

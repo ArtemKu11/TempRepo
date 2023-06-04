@@ -2,7 +2,7 @@
     <div class="wrapper">
         <button @click="clickHandler" class="upper-folder-button">
             <div class="info-holder">
-                <img src="@/layouts/main_window_layout/img/upper_folder.png">
+                <img src="@/layouts/main_window_layout/img/upper_folder_fix.svg">
                 <span>На уровень выше</span>
             </div>
         </button>

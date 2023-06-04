@@ -7,8 +7,8 @@
                 <span>+</span>
             </div>
             <div ref="valcoderCircleHolder" id="valcoder-circle-holder">
-                <div @mousedown.prevent="mousedownFlag = true"
-                    @mousemove.prevent="mouseMoveHandler" @touchmove.prevent="touchHandler" id="valcoder-circle">
+                <div @mousedown.prevent="mousedownFlag = true" @mousemove.prevent="mouseMoveHandler"
+                    @touchmove.prevent="touchHandler" id="valcoder-circle">
                     <div ref="valcoder" id="valcoder-invisible-circle">
                         <div ref="valcoderPoint" id="valcoder-point"></div>
                     </div>
@@ -32,6 +32,7 @@ import { Vue, Component } from 'vue-property-decorator';
 import { TimeProcessor } from './timeProcessor';
 import { InfoAlertType } from '@/store/ourExtension/layoutsData/alerts/types';
 import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
+import { OnlineValcoderProcessor } from './onlineValcoderProcessor';
 
 @Component({})
 export default class ValcoderInput extends Vue {
@@ -60,6 +61,10 @@ export default class ValcoderInput extends Vue {
 
     get isItTime(): boolean {
         return Boolean(this.inputWindowData.isItTime)
+    }
+
+    get onlineValcoderFlag() {
+        return this.inputWindowData.isItOnlineValcoder
     }
 
     setBlur(e: MouseEvent) {
@@ -91,10 +96,17 @@ export default class ValcoderInput extends Vue {
             newValue = +this.processingValue + '';
         }
         this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue);
+
         // window.addEventListener('mouseup', () => {
         //     this.mousedownFlag = false
         // })
+        this.$emit('createValcoder')
     }
+
+    beforeDestroy() {
+        this.$emit('destroyValcoder')
+    }
+
 
     finalLengthCheck(newValue: string): string {
         const maxValue = this.inputWindowData.maxValue;
@@ -116,7 +128,11 @@ export default class ValcoderInput extends Vue {
     }
 
     confirmButtonClick() {
-        this.$store.dispatch('ourExtension/layoutsData/inputWindow/confirm')
+        if (!this.onlineValcoderFlag) {
+            this.$store.dispatch('ourExtension/layoutsData/inputWindow/confirm')
+        } else {
+            this.$store.dispatch('ourExtension/windowFlags/openPreviousWindow')
+        }
     }
 
     mouseMoveHandler(e: MouseEvent) {

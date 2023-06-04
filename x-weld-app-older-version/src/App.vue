@@ -35,6 +35,7 @@
 </template>
 
 <script lang="ts">
+
 import { Component, Mixins, Vue, Watch } from 'vue-property-decorator';
 // import FileBrowseWindow from './components/fileBrowseWindow/FileBrowseWindow.vue';
 import FileBrowseWindow from './components/newFileBrowseWindow/FileBrowseWindow.vue';
@@ -60,9 +61,10 @@ import { Profile } from './store/ourExtension/profiles/types'
 import { isSatisfiesProfilesMetadataType, isSatisfiesProfileType } from './store/ourExtension/profiles/helpers';
 import { AxiosResponse } from 'axios';
 import StateMixin from './mixins/state';
-import { AlertType } from './store/ourExtension/layoutsData/alerts/types';
+import { AlertType, InfoAlertType } from './store/ourExtension/layoutsData/alerts/types';
 import { SocketActions } from './api/socketActions';
 import WindowsMixin from './mixins/windows';
+import { Alerts } from './store/ourExtension/layoutsData/alerts/helpers';
 
 @Component({
     components: {
@@ -216,8 +218,8 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
         //     return
         // }
         this.openProfilesWindow()
-        // console.log(this.$store.state.printer)
-        // console.log(this.$store.state.files)
+        console.log(this.$store.state.printer)
+        console.log(this.$store.state.files)
     }
 
     openProfilesWindow() {
@@ -307,8 +309,17 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
     }
 
     cancelPrint() {
+        this.cancelPrintAlert()
         SocketActions.printerPrintCancel()
         this.addConsoleEntry('CANCEL_PRINT')
+    }
+
+    cancelPrintAlert() {
+        const alert: InfoAlertType = {
+            message: `Запрошена отмена печати`,
+            type: 'red'
+        }
+        Alerts.showInfoAlert(alert)
     }
 
     async parseGcodes(file: FileData) {

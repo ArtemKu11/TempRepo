@@ -40,6 +40,10 @@ export default class KeyboardInput extends Vue {
         return Boolean(this.inputWindowData.isItTime)
     }
 
+    get onlineValcoderFlag() {
+        return this.inputWindowData.isItOnlineValcoder
+    }
+
     lengthCheck() {
         const currentValue = this.processingValue;
         if (currentValue.includes(".")) {
@@ -86,7 +90,11 @@ export default class KeyboardInput extends Vue {
             newValue = this.finalMaxMinValueCheck(this.processingValue)
         }
         this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue)
-        this.$store.dispatch('ourExtension/layoutsData/inputWindow/confirm')
+        if (!this.onlineValcoderFlag) {
+            this.$store.dispatch('ourExtension/layoutsData/inputWindow/confirm')
+        } else {
+            this.$store.dispatch('ourExtension/windowFlags/openPreviousWindow')
+        }
     }
 
     digitButtonClick(digitValue: string) {

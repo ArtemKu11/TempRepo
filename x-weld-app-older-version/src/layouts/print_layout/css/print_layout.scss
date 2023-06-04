@@ -154,6 +154,25 @@ $minHeight: 615px; // Переопределено
                 display: flex;
                 justify-content: space-between;
 
+                .preview {
+                    width: 314px;
+                    height: 314px;
+                }
+
+                .no-image-div {
+                    border: 3px solid gray;
+                    border-radius: 10px;
+                    width: 314px;
+                    height: 314px;
+                    display: flex;
+                    justify-content: center;
+                
+                    img {
+                        object-fit: contain;
+                        width: 80%;
+                    }
+                }
+
                 #parameters-holder {
                     display: flex;
                     flex-direction: column;
@@ -304,19 +323,22 @@ $minHeight: 615px; // Переопределено
                                 // border: 2px solid white;
 
                                 #resume {
-                                    content: url('@/layouts/print_layout/img/resume_active.svg');
-                                    filter: drop-shadow(0px 0px 10px white);
+                                    content: url('@/layouts/print_layout/img/resume_active_fix.svg');
+                                    // content: url('@/layouts/print_layout/img/resume_active.svg');
+                                    // filter: drop-shadow(0px 0px 10px white);
                                     
                                 }
 
                                 #pause {
-                                    content: url('@/layouts/print_layout/img/pause_active.svg');
-                                    filter: drop-shadow(0px 0px 10px white);
+                                    content: url('@/layouts/print_layout/img/pause_active_fix.svg');
+                                    // content: url('@/layouts/print_layout/img/pause_active.svg');
+                                    // filter: drop-shadow(0px 0px 10px white);
                                 }
 
                                 #points {
-                                    content: url('@/layouts/print_layout/img/points_active.svg');
-                                    filter: drop-shadow(0px 0px 10px white);
+                                    content: url('@/layouts/print_layout/img/points_active_fix.svg');
+                                    // content: url('@/layouts/print_layout/img/points_active.svg');
+                                    // filter: drop-shadow(0px 0px 10px white);
                                 }
 
                                 // img {

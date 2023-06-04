@@ -44,6 +44,22 @@
             height: 236px;
         }
 
+        .no-image-div {
+            border: 3px solid gray;
+            border-radius: 10px;
+            width: 236px;
+            height: 236px;
+            display: flex;
+            justify-content: center;
+        
+            img {
+                object-fit: contain;
+                width: 80%;
+            }
+        }
+
+        
+
         #file-info-holder {
             margin-left: 50px;
 
@@ -79,16 +95,32 @@
             border: none;
             user-select: none;
             cursor: pointer;
+            max-width: 150px;
+            height: 230px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
 
-            img {
-                pointer-events: none;
+            .img-wrapper {
+
+                height: 150px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                img {
+                    pointer-events: none;
+                }
             }
+
+            
 
             span {
                 display: block;
                 color: rgba(199, 199, 199, 1);
                 font-size: 25px;
                 margin-top: 18px;
+                word-wrap: break-word;
             }
 
             &:active {

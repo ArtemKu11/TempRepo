@@ -69,7 +69,9 @@
                         </div>
 
                     </div>
-                    <img src="@/layouts/print_layout/img/tetka.svg">
+                    <!-- <img class="preview" src="@/layouts/print_layout/img/tetka.svg"> -->
+                    <div class="no-image-div"><img src="@/layouts/print_layout/img/xweld_logo.svg"></div>
+
                 </div>
                 <div id="progress-bar">
                     <div id="buttons-wrapper">
@@ -101,7 +103,7 @@
 
                             <div>
                                 <img src="@/layouts/print_layout/img/height.svg">
-                                <span>Высота, мм: 2000</span>
+                                <span>Высота, мм: 846</span>
                             </div>
                         </div>
                     </div>
@@ -121,6 +123,8 @@ import WindowsMixin from '@/mixins/windows';
 import { FileData } from '@/store/ourExtension/files/types';
 import StateMixin from '@/mixins/state';
 import { SocketActions } from '@/api/socketActions';
+import { InfoAlertState, InfoAlertType } from '@/store/ourExtension/layoutsData/alerts/types';
+import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
 
 @Component({
     components: {
@@ -142,7 +146,8 @@ export default class PrintingWindow extends Mixins(WindowsMixin, StateMixin) {
 
 
     get printProgress(): number {
-        const progress = this.$store.getters['printer/getPrintProgress']
+        let progress = this.$store.getters['printer/getPrintProgress']
+        progress = this.round(progress)
         const progressBar = this.$refs.progressBar as HTMLElement
         if (progressBar) {
             progressBar.style.width = `${progress}%`
@@ -252,6 +257,10 @@ export default class PrintingWindow extends Mixins(WindowsMixin, StateMixin) {
         return this.$store.getters['ourExtension/profiles/getProfilesMetadata']
     }
 
+    round(value: number) {
+        return Math.round(+value * 10) / 10;
+    }
+
     openPrintSettings() {
         this.$store.dispatch('ourExtension/windowFlags/openPrintSettingsWindow')
     }
@@ -300,12 +309,17 @@ export default class PrintingWindow extends Mixins(WindowsMixin, StateMixin) {
     clickHandler(buttonName: string) {
         switch (buttonName) {
             case 'resume':
-                if (this.printerState.toLowerCase() !== 'printing') {
+                if (this.printerState.toLowerCase() === 'ready' || this.printerState.toLowerCase() === 'idle') {
+                    this.startPrintAlert()
+                    this.startPrint(this.file)
+                } else if (this.printerState.toLowerCase() !== 'printing') {
+                    this.resumeAlert()
                     this.resumePrint()
                 }
                 break;
             case 'pause':
                 if (this.printerState.toLowerCase() !== 'paused') {
+                    this.pauseAlert()
                     this.pausePrint()
                 }
                 break;
@@ -314,9 +328,37 @@ export default class PrintingWindow extends Mixins(WindowsMixin, StateMixin) {
         }
     }
 
+    startPrint(file: FileData) {
+        SocketActions.printerPrintStart(file.pathForMoonraker)
+    }
+
+    resumeAlert() {
+        const alert: InfoAlertType = {
+            message: 'Запрошено возобновление печати',
+            type: 'green'
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    startPrintAlert() {
+        const alert: InfoAlertType = {
+            message: `Запрошено начало печати файла: ${this.file.pathForMoonraker}`,
+            type: 'green'
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
     pausePrint() {
         SocketActions.printerPrintPause()
         this.addConsoleEntry('PAUSE')
+    }
+
+    pauseAlert() {
+        const alert: InfoAlertType = {
+            message: `Запрошена пауза`,
+            type: 'green'
+        }
+        Alerts.showInfoAlert(alert)
     }
 
     resumePrint() {

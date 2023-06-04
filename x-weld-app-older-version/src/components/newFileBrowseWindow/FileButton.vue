@@ -2,7 +2,7 @@
     <div class="wrapper">
         <div @click="chooseFile" :class="{active: fileData.isSelected}" class="file-button">
             <div class="info-holder">
-                <img src="@/layouts/main_window_layout/img/disabled_checkbox.png">
+                <img src="@/layouts/main_window_layout/img/disabled_checkbox_fix.svg">
                 <span>{{ fileData.name }}</span>
                 <div class="file-info">
                     <span>Дата: {{ fileData.modified }}</span>

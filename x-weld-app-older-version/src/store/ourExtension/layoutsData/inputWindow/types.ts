@@ -4,7 +4,7 @@ export interface InitInputWindowData {
 }
 
 export interface InputWindowData {
-    initValue: number;
+    initValue: number;  // Значение, которым инициализируется окно
     coordName: string;
     dispachAfterConfirm: string;
     callbackAfterConfirm?: Function
@@ -13,6 +13,7 @@ export interface InputWindowData {
     rejectPointClick?: boolean
     coordUnits?: string
     isItTime?: boolean
+    isItOnlineValcoder?: boolean  // !! Не использовать вместе с isItTime. !! Написать под этот флаг соответствующий хандлер/процессор
 }
 
 export interface FlagsObject {
@@ -23,7 +24,7 @@ export interface FlagsObject {
 export interface InputWindowState {
     inputWindowData?: InputWindowData,
     processingValue: string,  // Здесь будет значение, которое отображается в шаблоне и визуально меняется
-    finalValue: number  // Это значение отдается в dispachAfterConfirm
+    finalValue: number  // Это значение отдается в dispachAfterConfirm / callbackAfterConfirm
     keyboardFlag: boolean 
     valcoderStep: number
     flags: FlagsObject

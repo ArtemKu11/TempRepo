@@ -186,7 +186,8 @@ export default class MovePreprinting extends Mixins(WindowsMixin) {
     get allowSelectFromFile(): boolean {
         const fileInitFlag = this.$store.getters['ourExtension/layoutsData/preprintingWindow/isFileInit']()
         const file = this.$store.getters['ourExtension/layoutsData/preprintingWindow/getFile']()
-        return (fileInitFlag && file)
+        // return (fileInitFlag && file)
+        return true
     }
 
     getCurrentCoordsClickHandler(point: string) {
