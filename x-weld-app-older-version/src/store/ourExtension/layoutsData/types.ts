@@ -10,6 +10,7 @@ import { PreprintingWindowState } from "./preprintingWindow/types";
 import { PrintingWindowState } from "./printingWindow/types";
 import { ProfilesWindowState } from "./profilesWindow/types";
 import { SelectListWindowState } from "./selectListWindow/types";
+import { SettingsWindowState } from "./settingsWindow/types";
 
 export interface LayoutsDataState {
     baseLayout: BaseLayoutState,
@@ -24,4 +25,5 @@ export interface LayoutsDataState {
     preprintingWindow: PreprintingWindowState
     printingWindow: PrintingWindowState
     alerts: AlertState
+    settingsWindow: SettingsWindowState
 }

@@ -5,9 +5,9 @@
             <div class="center-header"></div>
             <div class="right-header">
                 <div><img src="@/layouts/maintenance_screen/img/weld-icon.png"></div>
-                <div>X {{ coordinatesHolder[0] }}</div>
-                <div>Y {{ coordinatesHolder[1] }}</div>
-                <div>Z {{ coordinatesHolder[2] }}</div>
+                <div>X {{ fixedCoordinatesHolder[0] }}</div>
+                <div>Y {{ fixedCoordinatesHolder[1] }}</div>
+                <div>Z {{ fixedCoordinatesHolder[2] }}</div>
             </div>
 
         </div>
@@ -40,8 +40,7 @@
             </div>
 
             <div class="button-container">
-                <button @touchstart="feedForwardStart" @touchend="feedForwardEnd"
-                 class="get-forward-button">
+                <button @touchstart="feedForwardStart" @touchend="feedForwardEnd" class="get-forward-button">
                     <div class="picture-container">
                         <img src="@/layouts/maintenance_screen/img/get-forward.png">
                     </div>
@@ -54,7 +53,7 @@
                     <div class="picture-container">
                         <img src="@/layouts/maintenance_screen/img/zone-of-service.png">
                     </div>
-                    <span>Зона обслуживания</span>
+                    <span>{{ maintenanceAreaText }}</span>
                 </button>
             </div>
 
@@ -77,7 +76,7 @@
 import StateMixin from '@/mixins/state';
 import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
 import { InfoAlertType } from '@/store/ourExtension/layoutsData/alerts/types';
-import { Component, Mixins, Vue } from 'vue-property-decorator';
+import { Component, Mixins, Vue, Watch } from 'vue-property-decorator';
 
 @Component({
     components: {
@@ -85,8 +84,40 @@ import { Component, Mixins, Vue } from 'vue-property-decorator';
     },
 })
 export default class GorelkaMaintenanceWindow extends Mixins(StateMixin) {
-    get coordinatesHolder(): number[] {
-        return this.$store.getters['ourExtension/layoutsData/moveWindow/getCoordinates']()
+    
+
+    get lastCoords(): number[] {
+        return this.$store.getters['ourExtension/layoutsData/settingsWindow/getLastCoords']
+    }
+
+    get maintenanceFlag(): boolean {
+        return this.$store.getters['ourExtension/layoutsData/settingsWindow/getMaintenanceFlag']
+    }
+
+    get maintenanceAreaText(): string {
+        if (this.maintenanceFlag) {
+            return "Вернуть в исходное"
+        } else {
+            return "Зона обслуживания"
+        }
+    }
+
+    @Watch("coordinatesHolder", {deep: true})
+    coordinatesHolderWatcher() {
+        this.resolveMaintenanceFlag()
+    }
+
+    mounted() {
+        this.resolveMaintenanceFlag()
+    }
+
+    resolveMaintenanceFlag() {
+        const [currentX, currentY, currentZ] = this.coordinatesHolder
+        if (currentX === 500 && currentY === 0) {
+            this.$store.dispatch('ourExtension/layoutsData/settingsWindow/setMaintenanceFlag', true)
+        } else {
+            this.$store.dispatch('ourExtension/layoutsData/settingsWindow/setMaintenanceFlag', false)
+        }
     }
 
     feedForwardStart() {
@@ -170,10 +201,45 @@ export default class GorelkaMaintenanceWindow extends Mixins(StateMixin) {
     }
 
     maintenanceArea() {
+        if (this.maintenanceFlag) {
+            if (this.lastCoords.length) {
+                // this.$store.dispatch('ourExtension/layoutsData/settingsWindow/setMaintenanceFlag', false)
+                this.moveToSourcePosition()
+            } else {
+                this.showErrorAlert()
+            }
+        } else {
+            this.$store.dispatch('ourExtension/layoutsData/settingsWindow/setLastCoords', JSON.parse(JSON.stringify(this.coordinatesHolder)))
+            // this.$store.dispatch('ourExtension/layoutsData/settingsWindow/setMaintenanceFlag', true)
+            this.moveToMaintenancePosition()
+        }
+        
+    }
+
+    moveToMaintenancePosition() {
         this.sendGcode('G1 x500 y0 f6000')
         const alert: InfoAlertType = {
-            message: 'Выполняется перемещение в зону обслуэивания',
+            message: 'Выполняется перемещение в зону обслуживания',
             type: 'green',
+            time: 1500
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    moveToSourcePosition() {
+        this.sendGcode(`G1 x${this.lastCoords[0]} y${this.lastCoords[1]} f6000`)
+        const alert: InfoAlertType = {
+            message: 'Выполняется перемещение в исходную позицию',
+            type: 'green',
+            time: 1500
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    showErrorAlert() {
+        const alert: InfoAlertType = {
+            message: 'Ошибка! Не найдена исходная позиция',
+            type: 'red',
             time: 1500
         }
         Alerts.showInfoAlert(alert)

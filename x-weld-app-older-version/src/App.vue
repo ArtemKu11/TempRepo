@@ -6,7 +6,7 @@
                 <button @click="openMainWindow" class="sidebar-button menu"></button>
                 <button @click="openMoveWindow" class="sidebar-button move"></button>
                 <button @click="starClick" class="sidebar-button star"></button>
-                <button @click="openMainSettingsWindow" class="sidebar-button settings"></button>
+                <button @touchstart="blockingHandler" @touchend="blockingRejector" @click="openMainSettingsWindow" class="sidebar-button settings"></button>
                 <button @click="openPreviousWindow" class="sidebar-button back"></button>
             </div>
             <div id="sidebar-footer">
@@ -20,7 +20,7 @@
         <MoveWindow v-if="moveWindowFlag" />
         <InputWindow v-if="inputWindowFlag" />
         <MainSettingsWindow v-if="mainSettingsWindowFlag" />
-        <ConsoleWindow v-if="consoleWindowFlag" />
+        <ConsoleWindow v-model="backClickForConsole" v-if="consoleWindowFlag" />
         <ProfilesWindow v-if="profilesWindowFlag" />
         <SelectListWindow v-if="selectListWindowFlag" />
         <PreprintingWindow v-if="preprintingWindowFlag" />
@@ -29,7 +29,8 @@
         <SystemInfoWindow v-if="systemInfoWindowFlag" />
         <DefaultAlert v-if="alertFlag" />
         <InfoAlert v-if="infoAlertFlag" />
-        <FatalErrorAlert v-if="fatalErrorFlag" />
+        <BlockingWindow v-if="isBlocking" />
+        <!-- <FatalErrorAlert v-if="fatalErrorFlag" /> -->
 
     </div>
 </template>
@@ -54,6 +55,7 @@ import SystemInfoWindow from './components/systemInfoWindow/SystemInfoWindow.vue
 import DefaultAlert from './components/alerts/DefaultAluert.vue';
 import InfoAlert from './components/alerts/InfoAlert.vue';
 import FatalErrorAlert from '@/components/alerts/FatalErrorAlert.vue'
+import BlockingWindow from './components/blockingWindow/BlockingWindow.vue';
 import { FileData, FileSystem, DirectoryData } from './store/ourExtension/files/types';
 import FilesMixin from './mixins/files';
 import { parseGcode } from './workers/xWeldParser';
@@ -70,10 +72,15 @@ import { Alerts } from './store/ourExtension/layoutsData/alerts/helpers';
     components: {
         MainWindow, FileBrowseWindow, FilePreviewWindow, MoveWindow, InputWindow, MainSettingsWindow, ConsoleWindow,
         ProfilesWindow, SelectListWindow, PreprintingWindow, PrintingWindow, DefaultAlert, InfoAlert,
-        GorelkaMaintenanceWindow, SystemInfoWindow, FatalErrorAlert
+        GorelkaMaintenanceWindow, SystemInfoWindow, FatalErrorAlert, BlockingWindow
     },
 })
 export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
+    isBlocking = false
+    blockingTime = 0
+    blockingTimeout: null | number = null
+    backClickForConsole = false
+
     get mainWindowFlag(): boolean {
         return this.$store.getters['ourExtension/windowFlags/getMainWindowFlag'];
     }
@@ -150,6 +157,41 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
         return !this.klippyReady || !this.klippyConnected
     }
 
+    blockingHandler() {
+        this.blockingTimeout = setTimeout(() => {
+            this.handleScreenBlocking()
+        }, 1000)
+    }
+
+    blockingRejector() {
+        if (this.blockingTimeout) {
+            clearTimeout(this.blockingTimeout)
+        }
+    }
+
+    handleScreenBlocking() {
+        this.isBlocking = !this.isBlocking
+        if (this.isBlocking) {
+            const alert: InfoAlertType = {
+                message: `<span>Экран заблокирован. Для разблокировки удерживайте кнопку настроек в течение 1 секунды</span>
+                <style>
+                .info-alert span {
+                    text-align: center;
+                }
+                </style>`,
+                type: 'green'
+            }
+            Alerts.showInfoAlert(alert)
+        } else {
+            const alert: InfoAlertType = {
+                message: 'Экран разблокирован',
+                time: 1500,
+                type: 'green'
+            }
+            Alerts.showInfoAlert(alert)
+        }
+    }
+
     warningClickHandler() {
         const message = this.klippyStateMessage + '<style>.message-holder {text-align:start !important;}</style>'
         const alert: AlertType = {
@@ -217,6 +259,10 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
         //     this.printerIsPrintingAlert('', true)
         //     return
         // }
+        if (this.isBlocking) {
+            this.screenIsBlockingAlert()
+            return
+        }
         this.openProfilesWindow()
         console.log(this.$store.state.printer)
         console.log(this.$store.state.files)
@@ -239,6 +285,16 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
     }
 
     openPreviousWindow() {
+        if (this.isBlocking) {
+            this.screenIsBlockingAlert()
+            return
+        }
+
+        if (this.consoleWindowFlag) {
+            this.backClickForConsole = true
+            return
+        }
+
         if (this.printingWindowFlag && !this.inputWindowFlag && !this.printSettingsFLag && !this.selectListWindowFlag) {
             this.printerIsPrintingAlert('ourExtension/windowFlags/openPreviousWindow')
             return
@@ -251,6 +307,11 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
         //     this.printerIsPrintingAlert('ourExtension/windowFlags/openMainWindow')
         //     return
         // }
+
+        if (this.isBlocking) {
+            this.screenIsBlockingAlert()
+            return
+        }
 
         if (this.printerPrinting) {
             this.openExisitingPrintingWindow()
@@ -265,6 +326,11 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
         //     this.printerIsPrintingAlert('ourExtension/windowFlags/openMoveWindow')
         //     return
         // }
+
+        if (this.isBlocking) {
+            this.screenIsBlockingAlert()
+            return
+        }
         if (!this.moveWindowFlag) {
             this.$store.dispatch('ourExtension/windowFlags/openMoveWindow');
         }
@@ -275,6 +341,11 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
         //     this.printerIsPrintingAlert('ourExtension/windowFlags/openMainSettingsWindow')
         //     return
         // }
+
+        if (this.isBlocking) {
+            this.screenIsBlockingAlert()
+            return
+        }
         if (!this.mainSettingsWindowFlag) {
             this.$store.dispatch('ourExtension/windowFlags/openMainSettingsWindow');
         }

@@ -1,5 +1,6 @@
 import { FileData, GcodePrintingProfiles } from '@/store/ourExtension/files/types'
-import { AlertType } from '@/store/ourExtension/layoutsData/alerts/types'
+import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers'
+import { AlertType, InfoAlertType } from '@/store/ourExtension/layoutsData/alerts/types'
 import { InitInputWindowData, InputWindowData } from '@/store/ourExtension/layoutsData/inputWindow/types'
 import { SelectListInitData } from '@/store/ourExtension/layoutsData/selectListWindow/types'
 import { PrintingDiapasonForMoonraker } from '@/store/ourExtension/profiles/types'
@@ -153,5 +154,18 @@ export default class WindowsMixin extends Vue {
             sizeInKb: '0',
             profiles: profiles
         }
+    }
+
+    screenIsBlockingAlert() {
+        const alert: InfoAlertType = {
+            message: `<span>Экран заблокирован. Для разблокировки удерживайте кнопку настроек в течение 1 секунды</span>
+                <style>
+                .info-alert span {
+                    text-align: center;
+                }
+                </style>`,
+            type: 'red',
+        }
+        Alerts.showInfoAlert(alert)
     }
 }

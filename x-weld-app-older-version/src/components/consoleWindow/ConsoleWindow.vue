@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import LogHolder from './LogHolder.vue';
-import { Component, Vue, Mixins } from 'vue-property-decorator';
+import { Component, Vue, Mixins, Prop, Watch, Model } from 'vue-property-decorator';
 import { ConsoleEntry } from '@/store/console/types';
 import { SocketActions } from '@/api/socketActions';
 import StateMixin from '@/mixins/state';
@@ -32,6 +32,9 @@ import SimpleKeyboard from "./SimpleKeyboard.vue";
     },
 })
 export default class ConsoleWindow extends Mixins(StateMixin) {
+    @Model('update:modelValue', { type: Boolean })
+    modelValue!: boolean
+
     inputValue = ''
     logs: Array<string> = []
     keyboardFlag = false;
@@ -39,6 +42,20 @@ export default class ConsoleWindow extends Mixins(StateMixin) {
     get consoleEntries(): Array<ConsoleEntry> {
         setTimeout(() => this.scrollToLatest(), 200)
         return this.$store.getters['console/getConsoleEntries']
+    }
+
+    @Watch('modelValue', { deep: true })
+    backClickWatcher() {
+        console.log(this.modelValue)
+        if (this.modelValue) {
+            if (this.keyboardFlag) {
+                this.keyboardFlag = false
+                this.$emit('update:modelValue', false)
+            } else {
+                this.$emit('update:modelValue', false)
+                this.$store.dispatch('ourExtension/windowFlags/openPreviousWindow');
+            }
+        }
     }
 
     mounted() {
@@ -86,12 +103,16 @@ export default class ConsoleWindow extends Mixins(StateMixin) {
 
     clickOnInput() {
         this.keyboardFlag = !this.keyboardFlag
+        if (!this.keyboardFlag) {
+            this.keyboardFlag = !this.keyboardFlag
+            setTimeout(() => {
+                if (this.keyboardFlag) {
+                    this.scrollToLatest()
+                }
+            }, 100)
+        }
 
-        setTimeout(() => {
-            if (this.keyboardFlag) {
-                this.scrollToLatest()
-            }
-        }, 100)
+
     }
 
     virtualKeyboardClick(key: string) {
@@ -117,20 +138,53 @@ export default class ConsoleWindow extends Mixins(StateMixin) {
 
     deleteSymbol() {
         if (this.inputValue) {
-            this.inputValue = this.inputValue.slice(0, -1)
+            const input = this.$refs.input as HTMLInputElement
+            if (input && input.selectionStart !== null && input.selectionEnd !== null) {
+                const startPos = input.selectionStart;
+                const endPos = input.selectionEnd;
+                if (!endPos) {
+                    return
+                }
+                if (startPos === endPos) {
+                    this.inputValue = this.inputValue.slice(0, startPos - 1) + this.inputValue.slice(endPos, this.inputValue.length)
+                    setTimeout(() => {
+                        input.setSelectionRange(startPos - 1, startPos - 1)
+                    }, 10)
+                } else {
+                    this.inputValue = this.inputValue.slice(0, startPos) + this.inputValue.slice(endPos, this.inputValue.length)
+                    setTimeout(() => {
+                        input.setSelectionRange(startPos, startPos)
+                    }, 10)
+                }
+            } else {
+                this.inputValue = this.inputValue.slice(0, -1)
+            }
         }
     }
 
     spaceClick() {
-        this.inputValue += ' '
+        this.addSymbol(' ')
     }
 
     symbolClick(symbol: string) {
         if (!symbol.startsWith('{')) {
-            this.inputValue += symbol
+            this.addSymbol(symbol)
         }
     }
 
+    addSymbol(symbol: string) {
+        const input = this.$refs.input as HTMLInputElement
+        if (input && input.selectionStart !== null && input.selectionEnd !== null) {
+            const startPos = input.selectionStart;
+            const endPos = input.selectionEnd;
+            this.inputValue = this.inputValue.substring(0, startPos) + symbol + this.inputValue.substring(endPos, this.inputValue.length);
+            setTimeout(() => {
+                input.setSelectionRange(startPos + 1, startPos + 1)
+            }, 10)
+        } else {
+            this.inputValue += symbol
+        }
+    }
 }
 </script>
 

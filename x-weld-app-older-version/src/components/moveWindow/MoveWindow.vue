@@ -4,15 +4,15 @@
             <div id="name-container">Перемещение горелки</div>
             <div id="coordinates-container">
                 <img src="@/layouts/move_layout/img/gorelka_logo.svg" />
-                <span id="x-coords">{{ coordinatesHolder[0] }}</span>
-                <span id="y-coords">{{ coordinatesHolder[1] }}</span>
-                <span id="z-coords">{{ coordinatesHolder[2] }}</span>
+                <span id="x-coords">{{ fixedCoordinatesHolder[0] }}</span>
+                <span id="y-coords">{{ fixedCoordinatesHolder[1] }}</span>
+                <span id="z-coords">{{ fixedCoordinatesHolder[2] }}</span>
             </div>
         </div>
         <div id="content-center">
             <div id="buttons-container">
                 <div id="two-control-buttons">
-                    <button @click="sendGcode('set_kinematic_position x=0 y=0 z=0')"><img
+                    <button @click="resetAxises"><img
                             src="@/layouts/move_layout/img/axis_refresh.png" height="50" /><span>Сброс
                             осей</span></button>
                     <button @click="sendGcode('G28', $waits.onHomeAll)"><img src="@/layouts/move_layout/img/park.png"
@@ -27,19 +27,19 @@
                 <div class="coord-label-div x">
                     <button @click="openInputWindow('X')"><img
                             src="@/layouts/move_layout/img/keyboard_button.svg" /></button>
-                    <span>{{ coordinatesHolder[0] }}</span>
+                    <span>{{ fixedCoordinatesHolder[0] }}</span>
                     <span>мм</span>
                 </div>
                 <div class="coord-label-div y">
                     <button @click="openInputWindow('Y')"><img
                             src="@/layouts/move_layout/img/keyboard_button.svg" /></button>
-                    <span>{{ coordinatesHolder[1] }}</span>
+                    <span>{{ fixedCoordinatesHolder[1] }}</span>
                     <span>мм</span>
                 </div>
                 <div class="coord-label-div z">
                     <button @click="openInputWindow('Z')"><img
                             src="@/layouts/move_layout/img/keyboard_button.svg" /></button>
-                    <span>{{ coordinatesHolder[2] }}</span>
+                    <span>{{ fixedCoordinatesHolder[2] }}</span>
                     <span>мм</span>
                 </div>
             </div>
@@ -66,10 +66,7 @@ import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
     },
 })
 export default class MoveWindow extends Mixins(StateMixin) {
-    get coordinatesHolder(): number[] {
-        return this.$store.getters['ourExtension/layoutsData/moveWindow/getCoordinates']()
-    }
-
+  
     get maxCoordinates(): number[] {
         let maxCoords = this.$store.getters['ourExtension/layoutsData/moveWindow/getMaxCoordinates']()
         if (!maxCoords || !maxCoords.length) {
@@ -88,6 +85,37 @@ export default class MoveWindow extends Mixins(StateMixin) {
 
     get currentStep(): number {
         return this.$store.getters['ourExtension/layoutsData/moveWindow/getCurrentStep'];
+    }
+
+    resetAxises() {
+        this.unlockZBrake()
+        this.sendGcode('set_kinematic_position x=0 y=0 z=0')
+        const alert: InfoAlertType = {
+            message: 'Запрошен сброс осей',
+            time: 2000,
+            type: "green"
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    unlockZBrake() {
+        const currentZ = this.coordinatesHolder[2]
+        const maxZ = this.maxCoordinates[2]
+        const minZ = this.minCoordinates[2]
+        if (maxZ - currentZ >= 0.1) {
+            this.sendMoveGcode('z', '0.1')
+            this.sendMoveGcode('z', '-0.1')    
+        } else if (currentZ - minZ >= 0.1) {
+            this.sendMoveGcode('z', '-0.1') 
+            this.sendMoveGcode('z', '0.1')
+        } else {
+            const alert: InfoAlertType = {
+                message: "Не удалось разблокировать тормоза z-оси",
+                time: 2000,
+                type: 'red'
+            }
+            Alerts.showInfoAlert(alert)
+        }
     }
 
     // get moveAfterInputWindow() {
@@ -220,7 +248,7 @@ export default class MoveWindow extends Mixins(StateMixin) {
         }
     }
 
-    sendMoveGcode(axis: string, distance: string, negative = false) {
+    sendMoveGcode(axis: string, distance: string, negative = false) {  // G91 - относительные координаты (0 в точке, где сейчас горелка), G90 - абс. коорд. (0 в 0 станка)
         axis = axis.toLowerCase()
         const rate = (axis.toLowerCase() === 'z')
             ? this.$store.state.config.uiSettings.general.defaultToolheadZSpeed

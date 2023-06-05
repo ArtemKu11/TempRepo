@@ -10,6 +10,7 @@ import { preprintingWindow } from "./preprintingWindow";
 import { printingWindow } from "./printingWindow";
 import { profilesWindow } from "./profilesWindow";
 import { selectListWindow } from "./selectListWindow";
+import { settingsWindow } from "./settingsWindow";
 
 const namespaced = true;
 
@@ -29,6 +30,7 @@ export default {
         selectListWindow,
         preprintingWindow,
         printingWindow,
-        alerts
+        alerts,
+        settingsWindow
     }
 }

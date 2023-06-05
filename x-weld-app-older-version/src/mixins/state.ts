@@ -118,4 +118,18 @@ export default class StateMixin extends Vue {
             SocketActions.printerEmergencyStop()
         }
     }
+
+    // ДОПИСАНО:
+
+    get coordinatesHolder(): number[] {
+        return this.$store.getters['ourExtension/layoutsData/moveWindow/getCoordinates']()
+    }
+
+    get fixedCoordinatesHolder(): string[] {
+        const newCoords = []
+        for (const coord of this.coordinatesHolder) {
+            newCoords.push(coord.toFixed(1))
+        }
+        return newCoords
+    }
 }

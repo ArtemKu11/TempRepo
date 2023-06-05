@@ -10,9 +10,9 @@
             </div>
             <div class="coordinates-container">
                 <img src="@/layouts/print_layout/img/gorelka_logo.svg" />
-                <span id="x-coords">{{ coordinatesHolder[0] }}</span>
-                <span id="y-coords">{{ coordinatesHolder[1] }}</span>
-                <span id="z-coords">{{ coordinatesHolder[2] }}</span>
+                <span id="x-coords">{{ fixedCoordinatesHolder[0] }}</span>
+                <span id="y-coords">{{ fixedCoordinatesHolder[1] }}</span>
+                <span id="z-coords">{{ fixedCoordinatesHolder[2] }}</span>
             </div>
         </div>
         <div id="content-center">
@@ -247,10 +247,6 @@ export default class PrintingWindow extends Mixins(WindowsMixin, StateMixin) {
 
     set shift(newValue: number) {
         this.$store.state.ourExtension.layoutsData.printingWindow.shift = newValue
-    }
-
-    get coordinatesHolder(): number[] {
-        return this.$store.getters['ourExtension/layoutsData/moveWindow/getCoordinates']()
     }
 
     get profilesMetadata(): ProfilesMetadata {

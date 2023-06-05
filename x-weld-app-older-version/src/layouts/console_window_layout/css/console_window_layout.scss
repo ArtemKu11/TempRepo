@@ -61,12 +61,15 @@
     }
 
     .keyboard-wrapper {
-        padding: 0px 50px;
-        
+        // padding: 0px 50px;
 
         /*
   Theme: myTheme1
 */
+        // .simple-keyboard {
+        //     height: 400px;
+        // }
+
         .simple-keyboard.myTheme1 {
             background-color: black;
             border-radius: 0;
@@ -75,7 +78,7 @@
         }
 
         .simple-keyboard.myTheme1 .hg-button {
-            height: 50px;
+            height: 80px;
             display: flex;
             justify-content: center;
             align-items: center;

@@ -11,7 +11,6 @@
 
 
 <script lang="ts">
-import { CoordinatesHolder } from '@/store/ourExtension/layoutsData/moveWindow/types';
 import { Component, Vue } from 'vue-property-decorator';
 
 @Component({})
