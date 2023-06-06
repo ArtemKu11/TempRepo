@@ -2,7 +2,8 @@
     <div ref="layersBar" class="layouts-holder">
         <span>Слои</span>
         <div @mousemove="mousemoveHandler" class="layouts-icon-holder">
-            <div @touchmove="touchmoveHandler" @touchstart="touchmoveHandler" @mousemove="mousemoveHandler" @mousedown="mousedownHandler" ref="rangeHolder" class="layouts-icon">
+            <div @touchmove="touchmoveHandler" @touchstart="touchmoveHandler" @mousemove="mousemoveHandler"
+                @mousedown="mousedownHandler" ref="rangeHolder" class="layouts-icon">
                 <div class="invisible-clickable-div"></div>
                 <div ref="range" class="range">
                     <div class="point up"></div>
@@ -42,7 +43,7 @@ export default class LayersBar extends Vue {
     }
 
     @Watch('modelValue', { deep: true })
-    modelWather() {
+    modelWatcher() {
         if (!this.mousedownFlagKostyl) {
             const firstLayer = 0;
             const lastLayer = +this.file.layers
@@ -52,8 +53,38 @@ export default class LayersBar extends Vue {
             const downDiff = Math.abs(firstLayer - requiredFirstLayer)
             const range = this.range
             if (range) {
-                range.style.top = `${(upperDiff / lastLayer) * 100}%`
-                range.style.bottom = `${((downDiff / lastLayer) * 100)}%`
+                let upperPercent = (upperDiff / lastLayer) * 100
+                let downPercent = (downDiff / lastLayer) * 100
+                // if (downPercent < 0) {
+                //     downPercent = 0
+                // } 
+
+                // if (upperPercent < 0) {
+                //     upperPercent = 0
+                // }
+                // if (upperPercent + downPercent > 95) {
+                //     if (downPercent > 2.5) {
+                //         downPercent = downPercent - 5
+                //     } 
+                //     if (upperPercent > 2.5) {
+                //         upperPercent = upperPercent - 5
+                //     }
+                // }
+                range.style.top = `${upperPercent}%`
+                range.style.bottom = `${downPercent}%`
+                // if (requiredFirstLayer === requiredLastLayer) {
+                //     if (doubleRangeProcessor.processingPoint === "up") {
+                //         range.style.top = `${((upperDiff / lastLayer) * 100) - 5}%`
+                //         range.style.bottom = `${((downDiff / lastLayer) * 100)}%`
+                //     }
+                //     else {
+                //         range.style.top = `${(upperDiff / lastLayer) * 100}%`
+                //         range.style.bottom = `${((downDiff / lastLayer) * 100) - 5}%`
+                //     }
+                // } else {
+                //     range.style.top = `${(upperDiff / lastLayer) * 100}%`
+                //     range.style.bottom = `${((downDiff / lastLayer) * 100)}%`
+                // }
             }
         }
     }
@@ -70,7 +101,7 @@ export default class LayersBar extends Vue {
             this.mousedownFlagKostyl = false;
             doubleRangeProcessor.processingPoint = null
         })
-        this.modelWather()
+        this.modelWatcher()
     }
 
     mousedownHandler() {
@@ -87,7 +118,10 @@ export default class LayersBar extends Vue {
             const lastLayer = +this.file.layers
             const newLastLayer = Math.round(lastLayer - (topPercent / 100 * lastLayer))
             const newFirstLayer = Math.round(firstLayer + (bottomPersent / 100 * lastLayer))
-            this.$emit('update:modelValue', {cachedFirstLayer: newFirstLayer, cachedLastLayer: newLastLayer})
+            if (newLastLayer !== this.modelValue.cachedLastLayer || newFirstLayer !== this.modelValue.cachedFirstLayer) {
+                this.$emit('update:modelValue', { cachedFirstLayer: newFirstLayer, cachedLastLayer: newLastLayer })
+            }
+            // this.$emit('update:modelValue', { cachedFirstLayer: newFirstLayer, cachedLastLayer: newLastLayer })
         }
     }
 
@@ -101,12 +135,15 @@ export default class LayersBar extends Vue {
             const lastLayer = +this.file.layers
             const newLastLayer = Math.round(lastLayer - (topPercent / 100 * lastLayer))
             const newFirstLayer = Math.round(firstLayer + (bottomPersent / 100 * lastLayer))
-            this.$emit('update:modelValue', {cachedFirstLayer: newFirstLayer, cachedLastLayer: newLastLayer})
+            if (newLastLayer !== this.modelValue.cachedLastLayer || newFirstLayer !== this.modelValue.cachedFirstLayer) {
+                this.$emit('update:modelValue', { cachedFirstLayer: newFirstLayer, cachedLastLayer: newLastLayer })
+            }
+            // this.$emit('update:modelValue', { cachedFirstLayer: newFirstLayer, cachedLastLayer: newLastLayer })
         }
     }
 
     checkBorders() {
-        
+
     }
 
     getAllParams(element: HTMLElement) {

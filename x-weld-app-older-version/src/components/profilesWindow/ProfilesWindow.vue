@@ -214,7 +214,6 @@ export default class ProfilesWindow extends Mixins(StateMixin) {
     }
 
     mounted() {
-        // console.log(this.file)
         this.refreshModelLayers()
     }
 
@@ -280,10 +279,6 @@ export default class ProfilesWindow extends Mixins(StateMixin) {
             }
 
         }
-        // const target = e.target as HTMLElement
-        // if (!this.isLayoutsHolderInParents(target)) {
-        // this.$store.commit('ourExtension/layoutsData/profilesWindow/closeLayersSetupWindow')
-        // }
     }
 
     isLayoutsHolderInParents(element: HTMLElement | null): boolean {

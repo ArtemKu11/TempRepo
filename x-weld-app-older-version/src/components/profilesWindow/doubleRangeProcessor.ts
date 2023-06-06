@@ -23,20 +23,27 @@ export class DoubleRangeProcessor {
             this.resolveProcessingPoint()
         }
 
+        let [topPercent, bottomPercent] = [this.getTopPercent(), this.getBottomPercent()]
+
         if (this.borderCheck()) {
             const diff = this.getDiffBetweenHolderAndClick()
             if (this.crashCheck(diff)) {
                 if (this.processingPoint) {
                     if (this.processingPoint === 'up') {
-                        this.setUpperPersent(diff)
+                        topPercent = diff
+                        // this.setUpperPersent(diff)
                     } else {
-                        this.setDownPersent(diff)
+                        bottomPercent = diff
+                        // this.setDownPersent(diff)
                     }
                 }
             }
         }
 
-        return [this.getTopPercent(), this.getBottomPercent()]
+
+        // return [this.getTopPercent(), this.getBottomPercent()]
+        return [topPercent, bottomPercent]
+
     }
 
     crashCheck(diff: number): boolean {
@@ -97,7 +104,6 @@ export class DoubleRangeProcessor {
                 }
             }
         }
-        console.log('HEREEE')
         return false
     }
 
@@ -118,7 +124,13 @@ export class DoubleRangeProcessor {
         if (this.rangeUpperY && this.requiredY && this.rangeDownY) {
             const upperDiff = Math.abs(this.rangeUpperY - this.requiredY)
             const downDiff = Math.abs(this.rangeDownY - this.requiredY)
-            if (upperDiff < downDiff) {
+            if (upperDiff === downDiff) {
+                if (this.requiredY < this.rangeUpperY) {
+                    this.processingPoint = 'up'
+                } else {
+                    this.processingPoint = 'down'
+                }
+            } else if (upperDiff < downDiff) {
                 this.processingPoint = 'up'
             } else {
                 this.processingPoint = 'down'

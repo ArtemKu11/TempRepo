@@ -49,7 +49,7 @@ import { Waits } from '@/globals';
 import { FileData } from '@/store/ourExtension/files/types';
 import { InputWindowData, InitInputWindowData } from '@/store/ourExtension/layoutsData/inputWindow/types';
 import { printingDiapasonProcessor } from '@/store/ourExtension/profiles/helpers';
-import { PrintingDiapason } from '@/store/ourExtension/profiles/types';
+import { PrintingDiapason, Profile } from '@/store/ourExtension/profiles/types';
 import { Component, Model, Prop, Vue, Watch } from 'vue-property-decorator';
 
 @Component({
@@ -90,8 +90,6 @@ export default class LayersSetup extends Vue {
 
     mounted() {
         this.selectedDiapason = this.getSelectedDiapason()
-
-        // this.addDiapasonFlag = false
         this.refreshLayers()
     }
 
@@ -154,14 +152,6 @@ export default class LayersSetup extends Vue {
             this.firstLayer = newValue
             this.modelValue.cachedFirstLayer = newValue
         }
-
-        // if (newValue === this.getInitFirstLayer()) {
-        //     this.addDiapasonFlag = false
-        // } else {
-        //     this.addDiapasonFlag = true
-        // }
-
-
     }
 
     newLastLayerReceiver(newValue: number) {
@@ -169,41 +159,20 @@ export default class LayersSetup extends Vue {
             this.lastLayer = newValue
             this.modelValue.cachedLastLayer = newValue
         }
-
-        // if (newValue === this.getInitLastLayer()) {
-        //     this.addDiapasonFlag = false
-        // } else {
-        //     this.addDiapasonFlag = true
-        // }
-
-
     }
 
     addDiapason() {
         this.$store.dispatch('ourExtension/layoutsData/profilesWindow/addDiapason', { firstLayer: this.firstLayer, lastLayer: this.lastLayer })
         this.forceUpdate()
-
-        // if (this.addDiapasonFlag) {
-        //     this.$store.dispatch('ourExtension/layoutsData/profilesWindow/addDiapason', { firstLayer: this.firstLayer, lastLayer: this.lastLayer })
-        //     this.addDiapasonFlag = false;
-        //     this.forceUpdate()
-        // }
     }
 
     prevDiapason() {
         this.$store.dispatch('ourExtension/layoutsData/profilesWindow/prevDiapason')
         this.forceUpdate()
-
-        // if (this.selectedDiapason.prevDiapason) {
-        //     this.addDiapasonFlag = false;
-        //     this.$store.dispatch('ourExtension/layoutsData/profilesWindow/prevDiapason')
-        //     this.forceUpdate()
-        // }
     }
 
     nextDiapason() {
         if (this.selectedDiapason.nextDiapason) {
-            // this.addDiapasonFlag = false;
             this.$store.dispatch('ourExtension/layoutsData/profilesWindow/nextDiapason')
             this.forceUpdate()
         }
@@ -212,7 +181,6 @@ export default class LayersSetup extends Vue {
 
     deleteCurrent() {
         if (!this.selectedDiapason.isRootDiapason) {
-            // this.addDiapasonFlag = false;
             this.$store.dispatch('ourExtension/layoutsData/profilesWindow/deleteCurrent')
             this.forceUpdate()
         }
@@ -220,7 +188,6 @@ export default class LayersSetup extends Vue {
 
     deleteAll() {
         if (this.selectedDiapason.nextDiapason || this.selectedDiapason.prevDiapason) {
-            // this.addDiapasonFlag = false;
             this.$store.dispatch('ourExtension/layoutsData/profilesWindow/deleteAll')
             this.forceUpdate()
         }

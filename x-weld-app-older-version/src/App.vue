@@ -38,7 +38,6 @@
 <script lang="ts">
 
 import { Component, Mixins, Vue, Watch } from 'vue-property-decorator';
-// import FileBrowseWindow from './components/fileBrowseWindow/FileBrowseWindow.vue';
 import FileBrowseWindow from './components/newFileBrowseWindow/FileBrowseWindow.vue';
 import FilePreviewWindow from './components/filePreviewWindow/FilePreviewWindow.vue';
 import MainWindow from './components/mainWindow/MainWindow.vue';
