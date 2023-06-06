@@ -186,7 +186,6 @@ export default class RotatePreprinting extends Mixins(WindowsMixin) {
             defaultImplementation = true
         }
         const initValue = this.resolveInitValue(parameterName)
-        console.log(initValue, parameterName)
         this.processingParameter = parameterName
         this.openInputWindow(defaultImplementation, coordName, initValue, valcoderStep, 'void', confirmCallback, 5000, -45, true)
     }
@@ -200,7 +199,6 @@ export default class RotatePreprinting extends Mixins(WindowsMixin) {
                 case 'Поворот':
                     return state.rotateAngle
                 case 'Масштаб':
-                    console.log('here')
                     return state.scale
                 default:
                     break;

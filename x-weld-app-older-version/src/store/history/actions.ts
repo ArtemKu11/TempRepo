@@ -48,7 +48,6 @@ export const actions: ActionTree<HistoryState, RootState> = {
    * Update the store with history
    */
   async onHistoryList ({ commit, rootGetters }, payload) {
-    console.log("HISTORY")
     if (payload) {
       commit('setHistoryList', payload)
 

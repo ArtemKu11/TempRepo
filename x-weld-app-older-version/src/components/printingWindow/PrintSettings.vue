@@ -111,7 +111,6 @@ export default class PrintSettings extends Mixins(WindowsMixin) {
         let isItTime = false
         if (setter === 'pauseValue') {
             isItTime = true
-            console.log(TimeProcessor.deleteButton('11:11'))
         }
         const valcoderStep = 1
         let rejectPoint = true
@@ -133,7 +132,6 @@ export default class PrintSettings extends Mixins(WindowsMixin) {
         if (this.processingSetter in this) {
             const context = this as any
             if (this.processingSetter === 'pauseValue') {
-                console.log(newValue)
                 context[this.processingSetter] = TimeProcessor.toTime(newValue)
             } else {
                 context[this.processingSetter] = newValue

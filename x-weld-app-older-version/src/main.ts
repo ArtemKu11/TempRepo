@@ -22,7 +22,6 @@ Vue.use(HttpClientPlugin, {
 
 appInit()
     .then((config: InitConfig) => {
-        console.log(config)
         Vue.use(SocketPlugin, {
             url: config.apiConfig.socketUrl,
             reconnectEnabled: true,

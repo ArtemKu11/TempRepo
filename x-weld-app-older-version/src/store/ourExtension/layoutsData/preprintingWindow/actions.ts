@@ -6,7 +6,6 @@ import { FileData } from "../../files/types";
 
 export const actions: ActionTree<PreprintingWindowState, RootState> = {
     reset({ state }) {
-        console.log('reset')
         Object.assign(state, defaultState())
         state.file = null
     },

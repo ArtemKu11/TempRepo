@@ -132,7 +132,6 @@ export const TimeProcessor = {
     },
 
     deleteButton(timeValue: string) {
-        console.log('here')
         let index = timeValue.indexOf('-')
         if (index === -1) {
             timeValue = this.replaceAt(timeValue, timeValue.length - 1, '-')

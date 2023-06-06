@@ -332,7 +332,6 @@ export default class ProfilesWindow extends Mixins(StateMixin) {
     }
 
     digitParameterNewValueReceiver(newValue: number) {
-        console.log(newValue)
         const holder = this.getRequiredParameterHolderByPath(this.processingParameterPath) as any
         const pathParts = this.processingParameterPath.split('.')
         const paramName = pathParts[pathParts.length - 1]

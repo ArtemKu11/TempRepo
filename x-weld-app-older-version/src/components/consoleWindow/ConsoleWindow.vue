@@ -46,7 +46,6 @@ export default class ConsoleWindow extends Mixins(StateMixin) {
 
     @Watch('modelValue', { deep: true })
     backClickWatcher() {
-        console.log(this.modelValue)
         if (this.modelValue) {
             if (this.keyboardFlag) {
                 this.keyboardFlag = false

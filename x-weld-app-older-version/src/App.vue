@@ -263,8 +263,6 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
             return
         }
         this.openProfilesWindow()
-        console.log(this.$store.state.printer)
-        console.log(this.$store.state.files)
     }
 
     openProfilesWindow() {
