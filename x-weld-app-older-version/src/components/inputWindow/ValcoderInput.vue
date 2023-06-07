@@ -65,12 +65,12 @@ export default class ValcoderInput extends Vue {
         this.$emit('createValcoder')
         this.valcoderProcessor = new ValcoderProcessor(this.isItTime)
 
-        window.addEventListener('keypress', this.keyboardEventHandler)
+        // window.addEventListener('keypress', this.keyboardEventHandler)
     }
 
     beforeDestroy() {
         this.$emit('destroyValcoder')
-        window.removeEventListener('keypress', this.keyboardEventHandler)
+        // window.removeEventListener('keypress', this.keyboardEventHandler)
     }
 
     cancelButtonClick() {
@@ -86,7 +86,7 @@ export default class ValcoderInput extends Vue {
         }
     }
 
-    async keyboardEventHandler(e: KeyboardEvent) {
+    async keyboardEventHandler(e: KeyboardEvent) {  // Не использовать в обычном интерфейсе. Только для пульта
         const valcoderElement = this.$refs.valcoder as HTMLBaseElement;
         let newValue = null
         if (e.key === 'f') {
