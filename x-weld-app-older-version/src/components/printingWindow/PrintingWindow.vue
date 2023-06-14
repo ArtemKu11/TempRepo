@@ -136,6 +136,18 @@ export default class PrintingWindow extends Mixins(WindowsMixin, StateMixin) {
     noGasFlag = false
     processingSetter: string = ''
 
+    mounted() {
+        setTimeout(() => {this.setPrintProgress()}, 100)
+    }
+
+    setPrintProgress() {
+        const progress = this.printProgress
+        const progressBar = this.$refs.progressBar as HTMLElement
+        if (progressBar) {
+            progressBar.style.width = `${progress}%`
+        }
+    }
+
     get resume(): boolean {
         return this.printerState.toLowerCase() === 'printing'
     }
@@ -147,7 +159,7 @@ export default class PrintingWindow extends Mixins(WindowsMixin, StateMixin) {
 
     get printProgress(): number {
         let progress = this.$store.getters['printer/getPrintProgress']
-        progress = this.round(progress)
+        progress = +(progress * 100).toFixed(0)
         const progressBar = this.$refs.progressBar as HTMLElement
         if (progressBar) {
             progressBar.style.width = `${progress}%`
@@ -305,7 +317,7 @@ export default class PrintingWindow extends Mixins(WindowsMixin, StateMixin) {
     clickHandler(buttonName: string) {
         switch (buttonName) {
             case 'resume':
-                if (this.printerState.toLowerCase() === 'ready' || this.printerState.toLowerCase() === 'idle') {
+                if (this.printerState.toLowerCase() === 'ready' || this.printerState.toLowerCase() === 'idle' || this.printerState.toLowerCase() === 'cancelled') {
                     this.startPrintAlert()
                     this.startPrint(this.file)
                 } else if (this.printerState.toLowerCase() !== 'printing') {

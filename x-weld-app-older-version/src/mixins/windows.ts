@@ -127,6 +127,7 @@ export default class WindowsMixin extends Vue {
         const printerFile = this.$store.state.printer.printer.current_file
         if (printerFile.filename) {
             file.name = printerFile.filename
+            file.pathForMoonraker = printerFile.filename
         }
         return file
     }

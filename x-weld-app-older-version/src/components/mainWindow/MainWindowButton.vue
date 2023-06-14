@@ -64,12 +64,12 @@ export default class MainWindowButton extends Mixins(StateMixin, FilesMixin, Ser
                 return;
             }
 
-            if (this.printerPrinting) {
+            if (this.printerPrinting || this.printerPaused) {
                 this.openExisitingPrintingWindow()
                 return
             }
-
-            if (this.printerBusy) {
+            const printerState = this.printerState.toLowerCase()
+            if (printerState === 'busy') {
                 this.showBusyAlert()
                 return
             }

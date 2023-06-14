@@ -12,8 +12,8 @@
         <div id="content-center">
             <div id="buttons-container">
                 <div id="two-control-buttons">
-                    <button @click="resetAxises"><img
-                            src="@/layouts/move_layout/img/axis_refresh.png" height="50" /><span>Сброс
+                    <button @click="resetAxises"><img src="@/layouts/move_layout/img/axis_refresh.png"
+                            height="50" /><span>Сброс
                             осей</span></button>
                     <button @click="sendGcode('G28', $waits.onHomeAll)"><img src="@/layouts/move_layout/img/park.png"
                             height="50" /><span>Парковка</span></button>
@@ -37,7 +37,7 @@
                     <span>мм</span>
                 </div>
                 <div class="coord-label-div z">
-                    <button @click="openInputWindow('Z')"><img
+                    <button @click="openInputWindow('Z')" @touchstart="unlockHandler" @touchend="unlockRejector"><img
                             src="@/layouts/move_layout/img/keyboard_button.svg" /></button>
                     <span>{{ fixedCoordinatesHolder[2] }}</span>
                     <span>мм</span>
@@ -66,7 +66,8 @@ import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
     },
 })
 export default class MoveWindow extends Mixins(StateMixin) {
-  
+    unlockTimeout = 0
+
     get maxCoordinates(): number[] {
         let maxCoords = this.$store.getters['ourExtension/layoutsData/moveWindow/getMaxCoordinates']()
         if (!maxCoords || !maxCoords.length) {
@@ -88,8 +89,9 @@ export default class MoveWindow extends Mixins(StateMixin) {
     }
 
     resetAxises() {
-        this.unlockZBrake()
-        this.sendGcode('set_kinematic_position x=0 y=0 z=0')
+        // this.unlockZBrake()
+        // this.sendGcode('set_kinematic_position x=0 y=0 z=0')
+        this.sendGcode('G92 x0 y0 z0')
         const alert: InfoAlertType = {
             message: 'Запрошен сброс осей',
             time: 2000,
@@ -98,24 +100,48 @@ export default class MoveWindow extends Mixins(StateMixin) {
         Alerts.showInfoAlert(alert)
     }
 
+    unlockHandler() {
+        this.unlockTimeout = setTimeout(() => {
+            this.unlockZBrake()
+        }, 1000)
+    }
+
+    unlockRejector() {
+        if (this.unlockTimeout) {
+            clearTimeout(this.unlockTimeout)
+        }
+    }
+
     unlockZBrake() {
+        this.sendGcode('set_kinematic_position x=0 y=0 z=0')
         const currentZ = this.coordinatesHolder[2]
         const maxZ = this.maxCoordinates[2]
         const minZ = this.minCoordinates[2]
         if (maxZ - currentZ >= 0.1) {
             this.sendMoveGcode('z', '0.1')
-            this.sendMoveGcode('z', '-0.1')    
+            this.sendMoveGcode('z', '-0.1')
+            this.successUnlockAlert()
         } else if (currentZ - minZ >= 0.1) {
-            this.sendMoveGcode('z', '-0.1') 
+            this.sendMoveGcode('z', '-0.1')
             this.sendMoveGcode('z', '0.1')
+            this.successUnlockAlert()
         } else {
             const alert: InfoAlertType = {
-                message: "Не удалось разблокировать тормоза z-оси",
+                message: "Не удалось разблокировать тормоза z-оси. Проблемы максимума/минимума",
                 time: 2000,
                 type: 'red'
             }
             Alerts.showInfoAlert(alert)
         }
+    }
+
+    successUnlockAlert() {
+        const alert: InfoAlertType = {
+            message: "Тормоза разблокированы!",
+            time: 2000,
+            type: 'green'
+        }
+        Alerts.showInfoAlert(alert)
     }
 
     // get moveAfterInputWindow() {

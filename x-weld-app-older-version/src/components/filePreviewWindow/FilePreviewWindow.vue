@@ -17,26 +17,30 @@
                     <div class="img-wrapper">
                         <img src="@/layouts/open_file_layout/img/open_icon.png">
                     </div>
-                    <span>Открыть</span></button>
+                    <span>Открыть</span>
+                </button>
             </div>
             <div class="two-buttons-wrapper">
                 <button @click="openPreprintingWindow">
                     <div class="img-wrapper">
                         <img src="@/layouts/open_file_layout/img/move_icon.png">
                     </div>
-                    <span>Допечатная подготовка</span></button>
+                    <span>Допечатная подготовка</span>
+                </button>
                 <button @click="openProfilesWindow">
                     <div class="img-wrapper">
                         <img src="@/layouts/open_file_layout/img/profiles_icon.png">
                     </div>
-                    <span>Профили</span></button>
+                    <span>Профили</span>
+                </button>
             </div>
             <div class="one-button-wrapper">
                 <button @click="printClickHandler">
                     <div class="img-wrapper">
                         <img src="@/layouts/open_file_layout/img/print_icon.png">
                     </div>
-                    <span>Печать</span></button>
+                    <span>Печать</span>
+                </button>
             </div>
         </div>
     </div>
@@ -47,13 +51,14 @@
 import { SocketActions } from '@/api/socketActions';
 import FilesMixin from '@/mixins/files';
 import StateMixin from '@/mixins/state';
+import WindowsMixin from '@/mixins/windows';
 import { FileData, LastPrintingFile } from '@/store/ourExtension/files/types';
 import { AlertType, InfoAlertType } from '@/store/ourExtension/layoutsData/alerts/types';
 import { PrintingDiapason, PrintingDiapasonForMoonraker, Profile } from '@/store/ourExtension/profiles/types';
 import { Component, Mixins, Vue } from 'vue-property-decorator';
 
 @Component({})
-export default class FilePreviewWindow extends Mixins(FilesMixin, StateMixin) {
+export default class FilePreviewWindow extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
 
     get selectedDiapason(): PrintingDiapason {
         return this.$store.getters['ourExtension/layoutsData/filePreviewWindow/getSelectedDiapason']()
@@ -90,11 +95,17 @@ export default class FilePreviewWindow extends Mixins(FilesMixin, StateMixin) {
     }
 
     async printClickHandler() {
-        if (this.printerPrinting) {
-            this.openExsistingWindow()
+        if (this.printerPrinting || this.printerPaused) {
+            const alert: AlertType = {
+                message: 'Принтер уже печатает. Открыто окно текущей печати',
+                type: 'ok'
+            }
+            this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
+            this.openExisitingPrintingWindow()
             return
         }
-        if (this.printerBusy) {
+        const printerState = this.printerState.toLowerCase()
+        if (printerState === 'busy') {
             this.showBusyAlert()
             return
         }
@@ -181,7 +192,4 @@ export default class FilePreviewWindow extends Mixins(FilesMixin, StateMixin) {
 </script>
 
 
-<style lang="scss">
-@import '@/layouts/open_file_layout/css/open_file_layout.scss';
-
-</style>
+<style lang="scss">@import '@/layouts/open_file_layout/css/open_file_layout.scss';</style>

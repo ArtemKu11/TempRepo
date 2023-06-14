@@ -6,7 +6,8 @@
                 <button @click="openMainWindow" class="sidebar-button menu"></button>
                 <button @click="openMoveWindow" class="sidebar-button move"></button>
                 <button @click="starClick" class="sidebar-button star"></button>
-                <button @touchstart="blockingHandler" @touchend="blockingRejector" @click="openMainSettingsWindow" class="sidebar-button settings"></button>
+                <button @touchstart="blockingHandler" @touchend="blockingRejector" @click="openMainSettingsWindow"
+                    class="sidebar-button settings"></button>
                 <button @click="openPreviousWindow" class="sidebar-button back"></button>
             </div>
             <div id="sidebar-footer">
@@ -30,7 +31,7 @@
         <DefaultAlert v-if="alertFlag" />
         <InfoAlert v-if="infoAlertFlag" />
         <BlockingWindow v-if="isBlocking" />
-        <!-- <FatalErrorAlert v-if="fatalErrorFlag" /> -->
+        <FatalErrorAlert v-if="fatalErrorFlag" />
 
     </div>
 </template>
@@ -251,6 +252,17 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
 
     mounted() {
         this.$store.dispatch('ourExtension/layoutsData/baseLayout/startTimeRefreshing');
+        setTimeout(() => {
+            if (this.printerPrinting || this.printerPaused) {
+                const alert: AlertType = {
+                    message: 'Принтер уже печатает. Открыто окно текущей печати',
+                    type: 'ok'
+                }
+                this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
+                this.openExisitingPrintingWindow()
+            }
+        }, 1000)
+
     }
 
     starClick() {
@@ -310,7 +322,7 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
             return
         }
 
-        if (this.printerPrinting) {
+        if (this.printerPrinting || this.printerPaused) {
             this.openExisitingPrintingWindow()
             return
         } else {
