@@ -93,7 +93,7 @@ export default class KeyboardInput extends Vue {
         if (!this.onlineValcoderFlag) {
             this.$store.dispatch('ourExtension/layoutsData/inputWindow/confirm')
         } else {
-            this.$store.dispatch('ourExtension/windowFlags/openPreviousWindow')
+            this.$emit('confirm')
         }
     }
 

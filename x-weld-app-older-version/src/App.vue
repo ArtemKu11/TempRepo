@@ -3,12 +3,16 @@
         <div id="sidebar">
             <div id="sidebar-time-holder">{{ actualTime }}</div>
             <div id="sidebar-button-holder">
-                <button @click="openMainWindow" class="sidebar-button menu"></button>
-                <button @click="openMoveWindow" class="sidebar-button move"></button>
-                <button @click="starClick" class="sidebar-button star"></button>
-                <button @touchstart="blockingHandler" @touchend="blockingRejector" @click="openMainSettingsWindow"
-                    class="sidebar-button settings"></button>
-                <button @click="openPreviousWindow" class="sidebar-button back"></button>
+                <button @touchstart="openMainWindow" @touchend="disableButton('mainButton')" class="sidebar-button menu"
+                    :class="{ 'active': buttonFlags.mainButton }"></button>
+                <button @touchstart="openMoveWindow" @touchend="disableButton('moveButton')" class="sidebar-button move"
+                    :class="{ 'active': buttonFlags.moveButton }"></button>
+                <button @touchstart="starClick" @touchend="disableButton('starButton')" class="sidebar-button star"
+                    :class="{ 'active': buttonFlags.starButton }"></button>
+                <button @touchstart="blockingHandler" @touchend="blockingRejector"
+                    :class="{ 'active': buttonFlags.settingsButton }" class="sidebar-button settings"></button>
+                <button @touchstart="openPreviousWindow" @touchend="disableButton('backButton')" class="sidebar-button back"
+                    :class="{ 'active': buttonFlags.backButton }"></button>
             </div>
             <div id="sidebar-footer">
                 <!-- <span v-if="warningFlag" @click="warningClickHandler">WARN</span> -->
@@ -80,6 +84,14 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
     blockingTime = 0
     blockingTimeout: null | number = null
     backClickForConsole = false
+
+    buttonFlags = {
+        mainButton: false,
+        moveButton: false,
+        starButton: false,
+        settingsButton: false,
+        backButton: false
+    }
 
     get mainWindowFlag(): boolean {
         return this.$store.getters['ourExtension/windowFlags/getMainWindowFlag'];
@@ -157,15 +169,31 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
         return !this.klippyReady || !this.klippyConnected
     }
 
+    disableButton(name: string) {
+        if (name in this.buttonFlags) {
+            const costyl = this.buttonFlags as any
+            costyl[name] = false
+        }
+    }
+
     blockingHandler() {
+        this.buttonFlags.settingsButton = true
+
         this.blockingTimeout = setTimeout(() => {
             this.handleScreenBlocking()
         }, 1000)
+        setTimeout(() => {
+            if (!this.blockingTimeout) {
+                this.openMainSettingsWindow()
+            }
+        }, 100)
     }
 
     blockingRejector() {
+        this.disableButton('settingsButton')
         if (this.blockingTimeout) {
             clearTimeout(this.blockingTimeout)
+            this.blockingTimeout = null
         }
     }
 
@@ -266,6 +294,7 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
     }
 
     starClick() {
+        this.buttonFlags.starButton = true
         // if (this.printingWindowFlag) {
         //     this.printerIsPrintingAlert('', true)
         //     return
@@ -281,6 +310,7 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
         // this.$store.dispatch('ourExtension/windowFlags/clearStack')
         if (this.profilesWindowFlag) {
             this.openPreviousWindow()
+            this.buttonFlags.backButton = false
             setTimeout(() => {
                 this.$store.dispatch('ourExtension/layoutsData/profilesWindow/reset')
                 this.$store.dispatch('ourExtension/layoutsData/profilesWindow/initWithGlobalProfiles')
@@ -294,6 +324,8 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
     }
 
     openPreviousWindow() {
+        this.buttonFlags.backButton = true
+
         if (this.isBlocking) {
             this.screenIsBlockingAlert()
             return
@@ -312,6 +344,7 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
     }
 
     openMainWindow() {
+        this.buttonFlags.mainButton = true
         // if (this.printingWindowFlag) {
         //     this.printerIsPrintingAlert('ourExtension/windowFlags/openMainWindow')
         //     return
@@ -331,6 +364,8 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
     }
 
     openMoveWindow() {
+        this.buttonFlags.moveButton = true
+
         // if (this.printingWindowFlag) {
         //     this.printerIsPrintingAlert('ourExtension/windowFlags/openMoveWindow')
         //     return

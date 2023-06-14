@@ -101,17 +101,20 @@ export default class ConsoleWindow extends Mixins(StateMixin) {
     }
 
     clickOnInput() {
-        this.keyboardFlag = !this.keyboardFlag
-        if (!this.keyboardFlag) {
-            this.keyboardFlag = !this.keyboardFlag
-            setTimeout(() => {
-                if (this.keyboardFlag) {
-                    this.scrollToLatest()
-                }
-            }, 100)
-        }
-
-
+        this.keyboardFlag = true
+        setTimeout(() => {
+            if (this.keyboardFlag) {
+                this.scrollToLatest()
+            }
+        }, 200)
+        // if (!this.keyboardFlag) {
+        //     this.keyboardFlag = !this.keyboardFlag
+        // setTimeout(() => {
+        //     if (this.keyboardFlag) {
+        //         this.scrollToLatest()
+        //     }
+        // }, 200)
+        // }
     }
 
     virtualKeyboardClick(key: string) {

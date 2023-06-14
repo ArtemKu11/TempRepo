@@ -124,7 +124,7 @@ body {
         background-position: center;
         background-repeat: no-repeat;
 
-        &:active {
+        &.active, &:active {
             background-image: $menuBtnActive;
         }
     }
@@ -134,7 +134,7 @@ body {
         background-position: center;
         background-repeat: no-repeat;
 
-        &:active {
+        &.active, &:active {
             background-image: $moveBtnActive;
         }
     }
@@ -144,7 +144,7 @@ body {
         background-position: center;
         background-repeat: no-repeat;
 
-        &:active {
+        &.active, &:active {
             background-image: $starBtnActive;
         }
     }
@@ -154,7 +154,7 @@ body {
         background-position: center;
         background-repeat: no-repeat;
 
-        &:active {
+        &.active, &:active {
             background-image: $settingsBtnActive;
         }
     }
@@ -164,7 +164,7 @@ body {
         background-position: center;
         background-repeat: no-repeat;
 
-        &:active {
+        &.active, &:active {
             background-image: $backBtnActive;
         }
     }

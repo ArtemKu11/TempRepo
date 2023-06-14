@@ -13,7 +13,7 @@ export interface InputWindowData {
     rejectPointClick?: boolean
     coordUnits?: string
     isItTime?: boolean
-    isItOnlineValcoder?: boolean  // !! Не использовать вместе с isItTime. !! Написать под этот флаг соответствующий хандлер/процессор
+    isItOnlineValcoder?: boolean  // !! Не использовать вместе с isItTime. !! Написать под этот флаг соответствующий хандлер/процессор !! Не использовать где-либо, кроме окна "Перемещение"
 }
 
 export interface FlagsObject {

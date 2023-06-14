@@ -17,8 +17,8 @@
                 </div>
             </div>
 
-            <KeyboardInput v-if="keyboardFlag" />
-            <ValcoderInput @createValcoder="createValcoderHandler" @destroyValcoder="destroyValcoderHandler" v-else />
+            <KeyboardInput @confirm="keyboardConfirm" v-if="keyboardFlag" />
+            <ValcoderInput @createValcoder="createValcoderHandler" @destroyValcoder="destroyValcoderHandler" :onlineValcoderProcessor="fixedProcessor" v-else />
 
         </div>
     </div>
@@ -32,7 +32,7 @@ import KeyboardInput from './KeyboardInput.vue';
 import ValcoderInput from './ValcoderInput.vue';
 import DefaultInputInfo from './DefaultInputInfo.vue';
 import NotDefaultInputInfo from './NotDefaultInputInfo.vue';
-import { OnlineValcoderProcessor } from './onlineValcoderProcessor';
+import { FinalOnlineValcoderProcessor, FixedOnlineValcoderProcessor, OnlineValcoderProcessor } from './onlineValcoderProcessor';
 
 @Component({
     components: {
@@ -40,8 +40,8 @@ import { OnlineValcoderProcessor } from './onlineValcoderProcessor';
     },
 })
 export default class InputWindow extends Vue {
-    onlineValcoderProcessor?: OnlineValcoderProcessor
-    
+    // onlineValcoderProcessor?: OnlineValcoderProcessor
+    fixedProcessor?: FinalOnlineValcoderProcessor
 
     get defaultImplementationFlag(): boolean {
         const flags = this.$store.getters['ourExtension/layoutsData/inputWindow/getFlags'] as FlagsObject
@@ -71,26 +71,31 @@ export default class InputWindow extends Vue {
 
     mounted() {
         if (this.inputWindowData.isItOnlineValcoder) {
-            this.onlineValcoderProcessor = new OnlineValcoderProcessor(this.$store)
+            this.fixedProcessor = new FinalOnlineValcoderProcessor(this.$store)
         }
     }
 
     beforeDestroy() {
-        if (this.onlineValcoderProcessor) {
-            this.onlineValcoderProcessor.stopProcessing()
-        }
+        // if (this.onlineValcoderProcessor) {
+        //     this.onlineValcoderProcessor.stopProcessing()
+        // }
     }
 
     createValcoderHandler() {
-        if (this.onlineValcoderProcessor) {
-            this.onlineValcoderProcessor.startProcessing()
+        if (this.fixedProcessor) {
+            this.fixedProcessor.switchOnValcoderWindow()
         }
     }
 
     destroyValcoderHandler() {
-        if (this.onlineValcoderProcessor) {
-            this.onlineValcoderProcessor.stopProcessing()
+        if (this.fixedProcessor) {
+            this.fixedProcessor.switchOnKeyboardWindow()
         }
+    }
+    
+    keyboardConfirm() {
+        this.fixedProcessor?.keyboardConfirm()
+        this.$store.dispatch('ourExtension/windowFlags/openPreviousWindow')
     }
 }
 </script>

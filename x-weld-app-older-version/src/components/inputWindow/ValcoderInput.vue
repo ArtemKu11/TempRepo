@@ -26,13 +26,17 @@
 
 <script lang="ts">
 import { InputWindowData } from '@/store/ourExtension/layoutsData/inputWindow/types';
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-property-decorator';
 import { TimeProcessor } from './timeProcessor';
 import { ValcoderProcessor } from './valcoderProcessor';
+import { FinalOnlineValcoderProcessor, FixedOnlineValcoderProcessor } from './onlineValcoderProcessor';
 
 @Component({})
 export default class ValcoderInput extends Vue {
+    @Prop()
+    onlineValcoderProcessor!: FinalOnlineValcoderProcessor
     valcoderProcessor!: ValcoderProcessor
+
 
     get processingValue(): string {
         return this.$store.getters['ourExtension/layoutsData/inputWindow/getProcessingValue']
@@ -101,22 +105,34 @@ export default class ValcoderInput extends Vue {
 
     mouseMoveHandler(e: MouseEvent) {
         if (this.valcoderProcessor) {
+            if (this.onlineValcoderProcessor) {
+                this.onlineValcoderProcessor.rotateHandler()
+            }
             const valcoderElement = this.$refs.valcoder as HTMLBaseElement;
             const targetElement = e.target as HTMLBaseElement;
             const newValue = this.valcoderProcessor.mouseMoveProcessing(e, valcoderElement, targetElement, this.processingValue, this.valcoderStep, this.inputWindowData)
             if (newValue !== null) {
                 this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue)
+                if (this.onlineValcoderProcessor) {
+                    this.onlineValcoderProcessor.tickHandler()
+                }
             }
         }
     }
 
     touchHandler(e: TouchEvent) {
         if (this.valcoderProcessor) {
+            if (this.onlineValcoderProcessor) {
+                this.onlineValcoderProcessor.rotateHandler()
+            }
             const valcoderElement = this.$refs.valcoder as HTMLBaseElement;
             const valcoderCircleHolder = this.$refs.valcoderCircleHolder as HTMLBaseElement;
             const newValue = this.valcoderProcessor.touchMoveProcessing(e, valcoderElement, valcoderCircleHolder, this.processingValue, this.valcoderStep, this.inputWindowData)
             if (newValue !== null) {
                 this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue)
+                if (this.onlineValcoderProcessor) {
+                    this.onlineValcoderProcessor.tickHandler()
+                }
             }
         }
     }
