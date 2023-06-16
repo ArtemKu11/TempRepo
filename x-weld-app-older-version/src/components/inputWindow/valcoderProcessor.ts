@@ -1,6 +1,13 @@
 import { InputWindowData } from "@/store/ourExtension/layoutsData/inputWindow/types"
 import { TimeProcessor } from "./timeProcessor"
 
+export interface ReturnedValcoderData {
+    newValue: string | null
+    degDiff: number
+    touchX: number
+    touchY: number
+}
+
 export class ValcoderProcessor {
     private angle: number = 0
     private lastBorderAngle: number = 0
@@ -30,7 +37,7 @@ export class ValcoderProcessor {
 
     touchMoveProcessing(e: TouchEvent, valcoderElement: HTMLBaseElement | undefined,
         valcoderCircleHolder: HTMLBaseElement | undefined, processingValue: string,
-        valcoderStep: number, inputWindowData: InputWindowData): string | null {
+        valcoderStep: number, inputWindowData: InputWindowData): ReturnedValcoderData | null {
         if (!valcoderElement || !valcoderCircleHolder) {
             return null;
         }
@@ -38,8 +45,30 @@ export class ValcoderProcessor {
         this.processingValue = processingValue
         this.valcoderStep = valcoderStep
         this.inputWindowData = inputWindowData
-        const [touchX, touchY, pointX, pointY, valcoderDiameter] = this.resolveTouchCoord(e, valcoderElement, valcoderCircleHolder);
-        return this.startValcoderProcess(touchX, touchY, pointX, pointY, valcoderDiameter, valcoderElement);
+        const [touchX, touchY, pointX, pointY, valcoderDiameter, defaultTouchX, defaultTouchY] = this.resolveTouchCoord(e, valcoderElement, valcoderCircleHolder);
+        if (this.isCenterOfValcoderTouched(valcoderDiameter, defaultTouchX, defaultTouchY)) {
+            return null
+        }
+        const newValue = this.startValcoderProcess(touchX, touchY, pointX, pointY, valcoderDiameter, valcoderElement);
+        let angleDiff = this.getAngleDiff(0, 0, pointX, pointY, touchX, touchY);
+        if (!this.isClockwiseDirection(touchX, touchY, pointX, pointY, valcoderDiameter)) {
+            angleDiff = -angleDiff
+        }
+        if (isNaN(angleDiff)) {
+            return null
+        }
+        return {
+            newValue: newValue,
+            degDiff: angleDiff,
+            touchX: defaultTouchX,
+            touchY: defaultTouchY
+        }
+    }
+
+    private isCenterOfValcoderTouched(valcoderDiameter: number, defaultTouchX: number, defaultTouchY: number): boolean {
+        const forbiddenZone = valcoderDiameter / 5
+        const touchRadius = Math.sqrt(Math.pow(defaultTouchX, 2) + Math.pow(defaultTouchY, 2))
+        return touchRadius < forbiddenZone
     }
 
     private resolveTouchCoord(e: TouchEvent, valcoderElement: HTMLBaseElement, valcoderCircleHolder: HTMLBaseElement): number[] {
@@ -50,8 +79,14 @@ export class ValcoderProcessor {
         let pointX = valcoderDiameter * 8 / 100 - Math.round(valcoderDiameter / 2) + pointRadius;
         let pointY = Math.round(valcoderDiameter / 2) - valcoderDiameter * 60 / 100 - pointRadius;
         // параметры клика (слайда):
-        let absoluteTouchX = e.touches[0].clientX;
-        let absoluteTouchY = e.touches[0].clientY;
+        let absoluteTouchX, absoluteTouchY;
+        if (e.type === 'touchend') {
+            absoluteTouchX = e.changedTouches[0].clientX;
+            absoluteTouchY = e.changedTouches[0].clientY;
+        } else {
+            absoluteTouchX = e.touches[0].clientX;
+            absoluteTouchY = e.touches[0].clientY;
+        }
         // относительно дефолтных осей координат:
         let valcoderAbsoluteCenterX = valcoderCircleHolder.getBoundingClientRect().x + valcoderCircleHolder.offsetWidth / 2
         let valcoderAbsoluteCenterY = valcoderCircleHolder.getBoundingClientRect().y + valcoderCircleHolder.offsetHeight / 2
@@ -60,7 +95,7 @@ export class ValcoderProcessor {
         // с учетом поворота:
         let touchX = defaultTouchX * Math.cos(-this.angle * Math.PI / 180) + defaultTouchY * Math.sin(-this.angle * Math.PI / 180)
         let touchY = defaultTouchY * Math.cos(-this.angle * Math.PI / 180) - defaultTouchX * Math.sin(-this.angle * Math.PI / 180)
-        return [touchX, touchY, pointX, pointY, valcoderDiameter];
+        return [touchX, touchY, pointX, pointY, valcoderDiameter, defaultTouchX, defaultTouchY];
     }
 
     private setNull() {

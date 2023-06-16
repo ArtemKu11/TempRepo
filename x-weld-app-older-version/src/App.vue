@@ -35,7 +35,7 @@
         <DefaultAlert v-if="alertFlag" />
         <InfoAlert v-if="infoAlertFlag" />
         <BlockingWindow v-if="isBlocking" />
-        <FatalErrorAlert v-if="fatalErrorFlag" />
+        <!-- <FatalErrorAlert v-if="fatalErrorFlag" /> -->
 
     </div>
 </template>

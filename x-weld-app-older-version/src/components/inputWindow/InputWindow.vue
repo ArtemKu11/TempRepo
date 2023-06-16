@@ -32,7 +32,7 @@ import KeyboardInput from './KeyboardInput.vue';
 import ValcoderInput from './ValcoderInput.vue';
 import DefaultInputInfo from './DefaultInputInfo.vue';
 import NotDefaultInputInfo from './NotDefaultInputInfo.vue';
-import { FinalOnlineValcoderProcessor, FixedOnlineValcoderProcessor, OnlineValcoderProcessor } from './onlineValcoderProcessor';
+import { FinalOnlineValcoderProcessor, FixedOnlineValcoderProcessor, OnlineValcoderProcessor, UltraFinalOnlineValcoderProcessor } from './onlineValcoderProcessor';
 
 @Component({
     components: {
@@ -41,7 +41,7 @@ import { FinalOnlineValcoderProcessor, FixedOnlineValcoderProcessor, OnlineValco
 })
 export default class InputWindow extends Vue {
     // onlineValcoderProcessor?: OnlineValcoderProcessor
-    fixedProcessor?: FinalOnlineValcoderProcessor
+    fixedProcessor?: UltraFinalOnlineValcoderProcessor
 
     get defaultImplementationFlag(): boolean {
         const flags = this.$store.getters['ourExtension/layoutsData/inputWindow/getFlags'] as FlagsObject
@@ -71,7 +71,7 @@ export default class InputWindow extends Vue {
 
     mounted() {
         if (this.inputWindowData.isItOnlineValcoder) {
-            this.fixedProcessor = new FinalOnlineValcoderProcessor(this.$store)
+            this.fixedProcessor = new UltraFinalOnlineValcoderProcessor(this.$store)
         }
     }
 
