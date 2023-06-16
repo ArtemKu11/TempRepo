@@ -173,12 +173,14 @@ export class FixedOnlineValcoderProcessor {  // Использовать иск�
 export class FinalOnlineValcoderProcessor {  // Использовать исключительно для окна "Перемещение".
     readonly MAX_SPEED = 7800; // мм/мин
     readonly MIN_SPEED = 10;
-    readonly TIME_SHIFT = 500 // горелка поедет либо с tickTimeDiff + TIME_SHIFT, либо с MAX_SPEED, либо с MIN_SPEED
-    readonly TOUCH_TIMEOUT = 2000
+    readonly TIME_SHIFT = 200 // горелка поедет либо с tickTimeDiff + TIME_SHIFT, либо с MAX_SPEED, либо с MIN_SPEED. TIME_SHIFT для первого тика
+    readonly TIME_SHIFT_IN_PERCENT = 1
+    readonly TOUCH_TIMEOUT = 1000
     $store: Store<RootState>
     lastSendedValue: number
     lastValcoderTickTime = 0
     lastUsualTouchTime = 0
+    isItFirstTick = true
 
 
     constructor(store: Store<RootState>) {
@@ -202,22 +204,30 @@ export class FinalOnlineValcoderProcessor {  // Использовать иск�
         const currentTime = new Date().getTime()
         if (currentTime - this.lastUsualTouchTime > this.TOUCH_TIMEOUT) {
             this.lastValcoderTickTime = currentTime
+            this.isItFirstTick = true
         }
         this.lastUsualTouchTime = currentTime
     }
 
-    tickHandler() {
+    tickHandler(newValue: string) {
         const currentTime = new Date().getTime()
         const tickTimeDiff = currentTime - this.lastValcoderTickTime
         this.lastValcoderTickTime = currentTime
-        const distance = this.valcoderStep
+        const distance = +newValue - +this.lastSendedValue
         const [speed, requiredTime] = this.resolveSpeedAndTime(tickTimeDiff, distance)
         this.sendConfigureableMoveGCode(distance + '', speed + '')
-        this.lastSendedValue = +this.processingValue
+        this.lastSendedValue = +newValue
     }
 
+
     private resolveSpeedAndTime(tickTimeDiff: number, distance: number) {
-        let requiredTime = tickTimeDiff + this.TIME_SHIFT
+        distance = Math.abs(distance)
+        let requiredTime = tickTimeDiff
+        if (this.isItFirstTick) {
+            requiredTime = tickTimeDiff + this.TIME_SHIFT
+            // requiredTime = tickTimeDiff * (this.TIME_SHIFT_IN_PERCENT / 100)
+            this.isItFirstTick = false
+        }
         let speed = +((distance / requiredTime) * 60 * 1000).toFixed(0);
         if (speed > this.MAX_SPEED) {
             speed = this.MAX_SPEED

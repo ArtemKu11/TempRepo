@@ -260,8 +260,8 @@ $minHeightForFont: 600px;
                     -webkit-tap-highlight-color: transparent;
                     background: none;
                     border: none;
-                    height: 60%;
-                    width: 60%;
+                    // height: 60%;
+                    // width: 60%;
                     align-self: center;
                     justify-self: center;
                     min-height: 25px;
@@ -270,24 +270,24 @@ $minHeightForFont: 600px;
                     align-items: center;
                     justify-content: center;
                     user-select: none;
-
-
                     cursor: pointer;
 
-                    &:active {
+                    img {
+                        pointer-events: none;
+                        width: 50px;
+                    }
 
+                    &:active, .active {
                         img {
-                            width: 125%;
-                            height: 125%;
+                            width: 62px;
+                            // width: 125%;
+                            // height: 125%;
 
                             content: url('@/layouts/move_layout/img/keyboard_button_active.svg');
                         }
                     }
 
-                    img {
-                        pointer-events: none;
-                        width: 100%;
-                    }
+
                 }
 
                 span {

@@ -25,19 +25,19 @@
             </div>
             <div id="lables-container">
                 <div class="coord-label-div x">
-                    <button @click="openInputWindow('X')"><img
+                    <button @touchstart="openInputWindow('X')"><img
                             src="@/layouts/move_layout/img/keyboard_button.svg" /></button>
                     <span>{{ fixedCoordinatesHolder[0] }}</span>
                     <span>мм</span>
                 </div>
                 <div class="coord-label-div y">
-                    <button @click="openInputWindow('Y')"><img
+                    <button @touchstart="openInputWindow('Y')"><img
                             src="@/layouts/move_layout/img/keyboard_button.svg" /></button>
                     <span>{{ fixedCoordinatesHolder[1] }}</span>
                     <span>мм</span>
                 </div>
                 <div class="coord-label-div z">
-                    <button @click="openInputWindow('Z')" @touchstart="unlockHandler" @touchend="unlockRejector"><img
+                    <button @touchstart="unlockHandler" @touchend="unlockRejector"><img
                             src="@/layouts/move_layout/img/keyboard_button.svg" /></button>
                     <span>{{ fixedCoordinatesHolder[2] }}</span>
                     <span>мм</span>
@@ -66,7 +66,7 @@ import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
     },
 })
 export default class MoveWindow extends Mixins(StateMixin) {
-    unlockTimeout = 0
+    unlockTimeout: number | null = null
 
     get maxCoordinates(): number[] {
         let maxCoords = this.$store.getters['ourExtension/layoutsData/moveWindow/getMaxCoordinates']()
@@ -104,11 +104,17 @@ export default class MoveWindow extends Mixins(StateMixin) {
         this.unlockTimeout = setTimeout(() => {
             this.unlockZBrake()
         }, 1000)
+        setTimeout(() => {
+            if (!this.unlockTimeout) {
+                this.openInputWindow('Z')
+            }
+        }, 100)
     }
 
     unlockRejector() {
         if (this.unlockTimeout) {
             clearTimeout(this.unlockTimeout)
+            this.unlockTimeout = null
         }
     }
 
@@ -162,6 +168,7 @@ export default class MoveWindow extends Mixins(StateMixin) {
     // }
 
     openInputWindow(coordName: string) {
+
         const confirmCallback = this.newValueReceiver.bind(this)
 
         const [minValue, maxValue] = this.resolveMinMaxValue(coordName)

@@ -114,7 +114,7 @@ export default class ValcoderInput extends Vue {
             if (newValue !== null) {
                 this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue)
                 if (this.onlineValcoderProcessor) {
-                    this.onlineValcoderProcessor.tickHandler()
+                    this.onlineValcoderProcessor.tickHandler(newValue)
                 }
             }
         }
@@ -131,7 +131,7 @@ export default class ValcoderInput extends Vue {
             if (newValue !== null) {
                 this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue)
                 if (this.onlineValcoderProcessor) {
-                    this.onlineValcoderProcessor.tickHandler()
+                    this.onlineValcoderProcessor.tickHandler(newValue)
                 }
             }
         }
