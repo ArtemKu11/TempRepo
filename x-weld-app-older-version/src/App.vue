@@ -35,7 +35,7 @@
         <DefaultAlert v-if="alertFlag" />
         <InfoAlert v-if="infoAlertFlag" />
         <BlockingWindow v-if="isBlocking" />
-        <!-- <FatalErrorAlert v-if="fatalErrorFlag" /> -->
+        <FatalErrorAlert v-if="fatalErrorFlag" />
 
     </div>
 </template>
@@ -53,7 +53,9 @@ import ConsoleWindow from './components/consoleWindow/ConsoleWindow.vue';
 import ProfilesWindow from './components/profilesWindow/ProfilesWindow.vue';
 import SelectListWindow from './components/selectListWindow/SelectListWindow.vue';
 import PreprintingWindow from './components/preprintingWindow/PreprintingWindow.vue';
-import PrintingWindow from './components/printingWindow/PrintingWindow.vue';
+// import PrintingWindow from './components/printingWindow/PrintingWindow.vue';
+import PrintingWindow from './components/printingWindow/NewPrintingWindow.vue';
+
 import GorelkaMaintenanceWindow from './components/gorelkaMaintenanceWindow/GorelkaMaintenanceWindow.vue';
 import SystemInfoWindow from './components/systemInfoWindow/SystemInfoWindow.vue';
 import DefaultAlert from './components/alerts/DefaultAluert.vue';
@@ -337,8 +339,10 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
         }
 
         if (this.printingWindowFlag && !this.inputWindowFlag && !this.printSettingsFLag && !this.selectListWindowFlag) {
-            this.printerIsPrintingAlert('ourExtension/windowFlags/openPreviousWindow')
-            return
+            // this.printerIsPrintingAlert('ourExtension/windowFlags/openPreviousWindow')
+            if (this.printerPrinting || this.printerPaused) {
+                return
+            }
         }
         this.$store.dispatch('ourExtension/windowFlags/openPreviousWindow');
     }
@@ -455,5 +459,5 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
 </script>
 
 <style lang="scss">
-@import '@/layouts/base_layout/css/base_layout.scss'
+@import '@/layouts/base_layout/css/base_layout.scss';
 </style>

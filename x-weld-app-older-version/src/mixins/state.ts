@@ -132,4 +132,8 @@ export default class StateMixin extends Vue {
         }
         return newCoords
     }
+
+    get printerAllowedToStartPrint() {
+        return this.printerState.toLowerCase() === 'ready' || this.printerState.toLowerCase() === 'idle' || this.printerState.toLowerCase() === 'cancelled'
+    }
 }

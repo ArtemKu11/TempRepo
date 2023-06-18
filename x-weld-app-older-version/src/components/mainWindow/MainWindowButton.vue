@@ -59,7 +59,6 @@ export default class MainWindowButton extends Mixins(StateMixin, FilesMixin, Ser
             this.$store.dispatch('ourExtension/layoutsData/preprintingWindow/reset')
             this.$store.dispatch('ourExtension/windowFlags/openPreprintingWindow');
         } else {
-            // this.openExisitingPrintingWindow()
             if (!this.isFileSelected) {
                 return;
             }

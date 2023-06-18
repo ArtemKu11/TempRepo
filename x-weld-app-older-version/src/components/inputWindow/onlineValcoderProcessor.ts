@@ -291,24 +291,24 @@ export class FinalOnlineValcoderProcessor {  // Использовать иск�
 }
 
 export class UltraFinalOnlineValcoderProcessor {  // Использовать исключительно для окна "Перемещение".
-    readonly MAX_SPEED = 7800; // мм/мин
-    readonly MIN_SPEED = 10;
-    readonly TIME_SHIFT = 200 // горелка поедет либо с tickTimeDiff + TIME_SHIFT, либо с MAX_SPEED, либо с MIN_SPEED. TIME_SHIFT для первого тика
-    readonly TIME_SHIFT_IN_PERCENT = 1
-    readonly TOUCH_TIMEOUT = 500
-    $store: Store<RootState>
-    lastSendedValue: number
-    lastStartTouchTime = 0
-    lastUsualTouchTime = 0
-    isItFirstTick = true
-    touchPixels = 0
-    readonly SEND_PIXELS_BORDER = 50
-    lastTouchCoords = {
+    private readonly MAX_SPEED = 7800; // мм/мин
+    private readonly MIN_SPEED = 10;
+    private readonly TIME_SHIFT = 200 // горелка поедет либо с tickTimeDiff + TIME_SHIFT, либо с MAX_SPEED, либо с MIN_SPEED. TIME_SHIFT для первого тика
+    private readonly TIME_SHIFT_IN_PERCENT = 1
+    private readonly TOUCH_TIMEOUT = 500
+    private readonly SEND_PIXELS_BORDER = 50
+    private $store: Store<RootState>
+    private lastSendedValue: number
+    private lastStartTouchTime = 0
+    private lastUsualTouchTime = 0
+    private isItFirstTick = true
+    private touchPixels = 0
+    private lastTouchCoords = {
         x: 0,
         y: 0
     }
-    valcoderData!: ReturnedValcoderData
-    clockwiseDirection = true
+    private valcoderData!: ReturnedValcoderData
+    private clockwiseDirection = true
 
 
     constructor(store: Store<RootState>) {
