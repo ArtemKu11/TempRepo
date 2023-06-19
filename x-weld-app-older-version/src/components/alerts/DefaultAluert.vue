@@ -5,7 +5,6 @@
                 {{ alert.header }}
             </span>
             <div class="message-holder" v-if="alert.message" v-html="alert.message">
-                <!-- {{ alert.message }} -->
             </div>
             <div class="buttons-holder yes-no" v-if="alert.type.toLowerCase() === 'yes_no'">
                 <button @click="confirmClick">ДА</button>
