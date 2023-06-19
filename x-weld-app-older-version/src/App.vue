@@ -1,67 +1,16 @@
 <template>
     <div @contextmenu.prevent="" id="app-child">
-        <div id="sidebar">
-            <div id="sidebar-time-holder">{{ actualTime }}</div>
-            <div id="sidebar-button-holder">
-                <button @touchstart="openMainWindow" @touchend="disableButton('mainButton')" class="sidebar-button menu"
-                    :class="{ 'active': buttonFlags.mainButton }"></button>
-                <button @touchstart="openMoveWindow" @touchend="disableButton('moveButton')" class="sidebar-button move"
-                    :class="{ 'active': buttonFlags.moveButton }"></button>
-                <button @touchstart="starClick" @touchend="disableButton('starButton')" class="sidebar-button star"
-                    :class="{ 'active': buttonFlags.starButton }"></button>
-                <button @touchstart="blockingHandler" @touchend="blockingRejector"
-                    :class="{ 'active': buttonFlags.settingsButton }" class="sidebar-button settings"></button>
-                <button @touchstart="openPreviousWindow" @touchend="disableButton('backButton')" class="sidebar-button back"
-                    :class="{ 'active': buttonFlags.backButton }"></button>
-            </div>
-            <div id="sidebar-footer">
-                <!-- <span v-if="warningFlag" @click="warningClickHandler">WARN</span> -->
-            </div>
-        </div>
-
-        <MainWindow v-if="mainWindowFlag" />
-        <FileBrowseWindow v-if="fileBrowseWindowFlag" />
-        <FilePreviewWindow v-if="filePreviewWindowFlag" />
-        <MoveWindow v-if="moveWindowFlag" />
-        <InputWindow v-if="inputWindowFlag" />
-        <MainSettingsWindow v-if="mainSettingsWindowFlag" />
-        <ConsoleWindow v-model="backClickForConsole" v-if="consoleWindowFlag" />
-        <ProfilesWindow v-if="profilesWindowFlag" />
-        <SelectListWindow v-if="selectListWindowFlag" />
-        <PreprintingWindow v-if="preprintingWindowFlag" />
-        <PrintingWindow v-if="printingWindowFlag" />
-        <GorelkaMaintenanceWindow v-if="gorelkaMaintenanceWindowFlag" />
-        <SystemInfoWindow v-if="systemInfoWindowFlag" />
-        <DefaultAlert v-if="alertFlag" />
-        <InfoAlert v-if="infoAlertFlag" />
-        <BlockingWindow v-if="isBlocking" />
-        <FatalErrorAlert v-if="fatalErrorFlag" />
-
+        
     </div>
 </template>
 
 <script lang="ts">
 
 import { Component, Mixins, Vue, Watch } from 'vue-property-decorator';
-import FileBrowseWindow from './components/newFileBrowseWindow/FileBrowseWindow.vue';
-import FilePreviewWindow from './components/filePreviewWindow/FilePreviewWindow.vue';
-import MainWindow from './components/mainWindow/MainWindow.vue';
-import MoveWindow from './components/moveWindow/MoveWindow.vue';
-import InputWindow from './components/inputWindow/InputWindow.vue';
-import MainSettingsWindow from './components/mainSettingsWindow/MainSettingsWindow.vue'
-import ConsoleWindow from './components/consoleWindow/ConsoleWindow.vue';
-import ProfilesWindow from './components/profilesWindow/ProfilesWindow.vue';
-import SelectListWindow from './components/selectListWindow/SelectListWindow.vue';
-import PreprintingWindow from './components/preprintingWindow/PreprintingWindow.vue';
-// import PrintingWindow from './components/printingWindow/PrintingWindow.vue';
-import PrintingWindow from './components/printingWindow/NewPrintingWindow.vue';
 
-import GorelkaMaintenanceWindow from './components/gorelkaMaintenanceWindow/GorelkaMaintenanceWindow.vue';
-import SystemInfoWindow from './components/systemInfoWindow/SystemInfoWindow.vue';
 import DefaultAlert from './components/alerts/DefaultAluert.vue';
 import InfoAlert from './components/alerts/InfoAlert.vue';
 import FatalErrorAlert from '@/components/alerts/FatalErrorAlert.vue'
-import BlockingWindow from './components/blockingWindow/BlockingWindow.vue';
 import { FileData, FileSystem, DirectoryData } from './store/ourExtension/files/types';
 import FilesMixin from './mixins/files';
 import { parseGcode } from './workers/xWeldParser';
@@ -76,9 +25,7 @@ import { Alerts } from './store/ourExtension/layoutsData/alerts/helpers';
 
 @Component({
     components: {
-        MainWindow, FileBrowseWindow, FilePreviewWindow, MoveWindow, InputWindow, MainSettingsWindow, ConsoleWindow,
-        ProfilesWindow, SelectListWindow, PreprintingWindow, PrintingWindow, DefaultAlert, InfoAlert,
-        GorelkaMaintenanceWindow, SystemInfoWindow, FatalErrorAlert, BlockingWindow
+        DefaultAlert, InfoAlert, FatalErrorAlert
     },
 })
 export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
