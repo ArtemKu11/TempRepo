@@ -1,12 +1,18 @@
 <template>
     <div @contextmenu.prevent="" id="app-child">
-        
+        <FileSelectWindow  v-if="fileSelect"/>
+        <OscillationWindow v-if="osc" />
+        <PrintWindow v-if="print" />
     </div>
 </template>
 
 <script lang="ts">
 
 import { Component, Mixins, Vue, Watch } from 'vue-property-decorator';
+
+import FileSelectWindow from './components/fileSelectWindow/FileSelectWindow.vue'
+import PrintWindow from './components/printWindow/PrintWindow.vue'
+import OscillationWindow from './components/oscillationWindow/OscillationWindow.vue'
 
 import DefaultAlert from './components/alerts/DefaultAluert.vue';
 import InfoAlert from './components/alerts/InfoAlert.vue';
@@ -25,10 +31,11 @@ import { Alerts } from './store/ourExtension/layoutsData/alerts/helpers';
 
 @Component({
     components: {
-        DefaultAlert, InfoAlert, FatalErrorAlert
+        DefaultAlert, InfoAlert, FatalErrorAlert, OscillationWindow, FileSelectWindow, PrintWindow
     },
 })
 export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
+
     isBlocking = false
     blockingTime = 0
     blockingTimeout: null | number = null
@@ -40,6 +47,18 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
         starButton: false,
         settingsButton: false,
         backButton: false
+    }
+
+    get fileSelect(): boolean {
+        return this.$store.getters['ourExtension/temp/fileSelectWindowFlag']
+    }
+
+    get print(): boolean {
+        return this.$store.getters['ourExtension/temp/printWindowFlag']
+    }
+
+    get osc(): boolean {
+        return this.$store.getters['ourExtension/temp/oscillationWindowFlag']
     }
 
     get mainWindowFlag(): boolean {
@@ -406,5 +425,5 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
 </script>
 
 <style lang="scss">
-@import '@/layouts/base_layout/css/base_layout.scss';
+@import '@/style/baseLayout/css/base_layout.scss';
 </style>

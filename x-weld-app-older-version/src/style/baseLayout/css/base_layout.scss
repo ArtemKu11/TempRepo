@@ -1,0 +1,23 @@
+@import "@/style/baseLayout/css/normalize.css";
+@import "@/style/baseLayout/css/variablesAndMixins.scss";
+
+* {
+    @include fontMixin();
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    background: linear-gradient(black, rgb(44, 44, 44), black);
+}
+
+#app-child {
+    height: 100%;
+    position: relative;
+}

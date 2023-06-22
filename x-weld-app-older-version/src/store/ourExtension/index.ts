@@ -6,6 +6,7 @@ import layoutsData from "./layoutsData";
 import { profiles } from "./profiles";
 import { OurExtensionState } from "./types";
 import windowFlags from "./windowFlags";
+import { temp } from "./temp";
 
 const namespaced = true;
 
@@ -15,7 +16,8 @@ export const ourExtension: Module<OurExtensionState, RootState> = {
         layoutsData,
         windowFlags,
         files,
-        profiles
+        profiles,
+        temp
     },
     actions: {
         reset() {

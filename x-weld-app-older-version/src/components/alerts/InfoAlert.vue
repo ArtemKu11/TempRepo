@@ -7,7 +7,6 @@
     </div> -->
     <div @click="clickHandler" ref="infoAlert" class="info-alert" :class="{ 'green': green, 'red': red }">
         <span class="message-holder" v-html="infoAlert.message">
-            <!-- {{ infoAlert.message }} -->
         </span>
     </div>
 </template>

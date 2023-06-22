@@ -1,0 +1,136 @@
+$normalFontSize: 25px;
+$smallFontSize: 20px;
+$headerHeight: 80px;
+
+
+@mixin resetButton() {
+    border: none;
+    background: none;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+}
+
+@mixin controlButton() {
+    @include resetButton();
+    display: flex;
+    align-items: center;
+
+    .img-wrapper {
+        width: 55px;
+        height: 55px;
+        min-width: 55px;
+        min-height: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    span {
+        margin-left: 18px;
+        color: #C7C7C7;
+        font-weight: 400;
+        font-size: $normalFontSize;
+    }
+
+    &.revert {
+        span {
+            margin-left: 0px;
+            margin-right: 18px;
+        }
+    }
+
+    &:active {
+
+        span {
+            color: white;
+        }
+    }
+}
+
+@mixin fontMixin() {
+    font-family: 'Arial';
+    font-style: normal;
+    font-weight: 400;
+    font-size: $normalFontSize;
+}
+
+@mixin aIcon() {
+    height: 39px;
+    width: 39px;
+    border-radius: 50%;
+    background-color: #0470C8;
+    text-align: center;
+    line-height: 39px;
+    font-weight: 700;
+    font-size: $normalFontSize;
+    color: white
+}
+
+
+@mixin bIcon() {
+    height: 39px;
+    width: 39px;
+    border-radius: 50%;
+    background-color: #FB6612;
+    text-align: center;
+    line-height: 39px;
+    font-weight: 700;
+    font-size: $normalFontSize;
+    color: white
+}
+
+@mixin aIconMini() {
+    height: 29px;
+    width: 29px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 29px;
+    font-weight: 700;
+    font-size: $smallFontSize;
+    color: white;
+    background-color: #0470C8;
+}
+
+
+@mixin bIconMini() {
+    height: 29px;
+    width: 29px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 29px;
+    font-weight: 700;
+    font-size: $smallFontSize;
+    color: white;
+    background-color: #FB6612;
+}
+
+@mixin greenIndicator() {
+    left: 7px;
+    top: 253px;
+    position: absolute;
+    width: 7px;
+    height: 83px;
+    background: #52D566;
+    box-shadow: 0px 0px 10px #FFFFFF;
+    border-radius: 3px;
+}
+
+@mixin redIndicator() {
+    left: 7px;
+    top: 405px;
+    position: absolute;
+    width: 7px;
+    height: 83px;
+    background: #DD725C;
+    box-shadow: 0px 0px 10px #FFFFFF;
+    border-radius: 3px;
+}
+
+@mixin whiteIndicator() {
+    position: absolute;
+    width: 7px;
+    height: 83px;
+    background: #D9D9D9;
+    box-shadow: 0px 0px 10px #FFFFFF;
+    border-radius: 3px;
+}
