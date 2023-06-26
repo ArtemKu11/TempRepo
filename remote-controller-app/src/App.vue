@@ -27,7 +27,7 @@
 // setProfilesForAllGcodes сетает профили в FileData каждого gcode в состояние по умолчанию (lastSelectedDiapason = undefined, для каждого профиля только один диапазон)
 
 
-import { Component, Mixins, Vue, Watch } from 'vue-property-decorator';
+import { Component, Mixins, Watch } from 'vue-property-decorator';
 
 import DefaultAlert from './components/alerts/DefaultAluert.vue';
 import InfoAlert from './components/alerts/InfoAlert.vue';
@@ -39,10 +39,8 @@ import { Profile } from './store/ourExtension/profiles/types'
 import { isSatisfiesProfilesMetadataType, isSatisfiesProfileType } from './store/ourExtension/profiles/helpers';
 import { AxiosResponse } from 'axios';
 import StateMixin from './mixins/state';
-import { AlertType, InfoAlertType } from './store/ourExtension/layoutsData/alerts/types';
-import { SocketActions } from './api/socketActions';
+import { AlertType } from './store/ourExtension/layoutsData/alerts/types';
 import WindowsMixin from './mixins/windows';
-import { Alerts } from './store/ourExtension/layoutsData/alerts/helpers';
 
 @Component({
     components: {
@@ -50,11 +48,6 @@ import { Alerts } from './store/ourExtension/layoutsData/alerts/helpers';
     },
 })
 export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
-
-    isBlocking = false
-    blockingTime = 0
-    blockingTimeout: null | number = null
-    backClickForConsole = false
 
     buttonFlags = {
         mainButton: false,
@@ -68,68 +61,8 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
         return this.$store.getters['ourExtension/temp/fileSelectWindowFlag']
     }
 
-    get print(): boolean {
-        return this.$store.getters['ourExtension/temp/printWindowFlag']
-    }
-
     get osc(): boolean {
         return this.$store.getters['ourExtension/temp/oscillationWindowFlag']
-    }
-
-    get mainWindowFlag(): boolean {
-        return this.$store.getters['ourExtension/windowFlags/getMainWindowFlag'];
-    }
-
-    get fileBrowseWindowFlag(): boolean {
-        return this.$store.getters['ourExtension/windowFlags/getFileBrowseWindowFlag'];
-    }
-
-    get filePreviewWindowFlag(): boolean {
-        return this.$store.getters['ourExtension/windowFlags/getFilePreviewWindowFlag'];
-    }
-
-    get moveWindowFlag(): boolean {
-        return this.$store.getters['ourExtension/windowFlags/getMoveWindowFlag'];
-    }
-
-    get inputWindowFlag(): boolean {
-        return this.$store.getters['ourExtension/windowFlags/getInputWindowFlag'];
-    }
-
-    get mainSettingsWindowFlag(): boolean {
-        return this.$store.getters['ourExtension/windowFlags/getMainSettingsWindowFlag'];
-    }
-
-    get consoleWindowFlag(): boolean {
-        return this.$store.getters['ourExtension/windowFlags/getConsoleWindowFlag'];
-    }
-
-    get profilesWindowFlag(): boolean {
-        return this.$store.getters['ourExtension/windowFlags/getProfilesWindowFlag'];
-    }
-
-    get selectListWindowFlag(): boolean {
-        return this.$store.getters['ourExtension/windowFlags/getSelectListWindowFlag'];
-    }
-
-    get preprintingWindowFlag(): boolean {
-        return this.$store.getters['ourExtension/windowFlags/getPreprintingWindowFlag']
-    }
-
-    get printingWindowFlag(): boolean {
-        return this.$store.getters['ourExtension/windowFlags/getPrintingWindowFlag']
-    }
-
-    get gorelkaMaintenanceWindowFlag(): boolean {
-        return this.$store.getters['ourExtension/windowFlags/getGorelkaMaintenanceWindowFlag']
-    }
-
-    get systemInfoWindowFlag(): boolean {
-        return this.$store.getters['ourExtension/windowFlags/getSystemInfoWindowFlag']
-    }
-
-    get printSettingsFLag() {
-        return this.$store.getters['ourExtension/windowFlags/getPrintSettingsWindowFlag']
     }
 
     get actualTime(): string {
@@ -152,65 +85,39 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
         return !this.klippyReady || !this.klippyConnected
     }
 
-    disableButton(name: string) {
-        if (name in this.buttonFlags) {
-            const costyl = this.buttonFlags as any
-            costyl[name] = false
-        }
+    get isProfilesDownloadingFinished(): Boolean {
+        return this.$store.getters['ourExtension/files/getProfilesDownloadingFinishedFlag']
     }
 
-    blockingHandler() {
-        this.buttonFlags.settingsButton = true
+    get fatalErrorFlag(): Boolean {
+        return !this.klippyReady || !this.klippyConnected
+    }
 
-        this.blockingTimeout = setTimeout(() => {
-            this.handleScreenBlocking()
-        }, 1000)
+    mounted() {
+        this.$store.dispatch('ourExtension/layoutsData/baseLayout/startTimeRefreshing');
         setTimeout(() => {
-            if (!this.blockingTimeout) {
-                this.openMainSettingsWindow()
-            }
-        }, 100)
-    }
-
-    blockingRejector() {
-        this.disableButton('settingsButton')
-        if (this.blockingTimeout) {
-            clearTimeout(this.blockingTimeout)
-            this.blockingTimeout = null
-        }
-    }
-
-    handleScreenBlocking() {
-        this.isBlocking = !this.isBlocking
-        if (this.isBlocking) {
-            const alert: InfoAlertType = {
-                message: `<span>Экран заблокирован. Для разблокировки удерживайте кнопку настроек в течение 1 секунды</span>
-                <style>
-                .info-alert span {
-                    text-align: center;
+            if (this.printerPrinting || this.printerPaused) {
+                const alert: AlertType = {
+                    message: 'Принтер уже печатает. Открыто окно текущей печати',
+                    type: 'ok'
                 }
-                </style>`,
-                type: 'green'
+                this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
+                this.initExisitingPrintingWindow()
             }
-            Alerts.showInfoAlert(alert)
-        } else {
-            const alert: InfoAlertType = {
-                message: 'Экран разблокирован',
-                time: 1500,
-                type: 'green'
-            }
-            Alerts.showInfoAlert(alert)
-        }
+        }, 1000)
+
     }
 
-    warningClickHandler() {
-        const message = this.klippyStateMessage + '<style>.message-holder {text-align:start !important;}</style>'
-        const alert: AlertType = {
-            message: message,
-            type: 'ok',
-            header: 'ОШИБКА!'
+    @Watch("printerPrinting")
+    printerPrintingWather() {
+        if (this.printerPrinting) {
+            setTimeout(() => {
+                if (this.printerPrinting || this.printerPaused && this.$route.path !== "/print") {
+                    this.initExisitingPrintingWindow()
+                    this.$router.push('/print')
+                }
+            }, 2000)
         }
-        this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
     }
 
     @Watch('isFilesLoadingFinished', { deep: true })
@@ -223,14 +130,6 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
                 })
             }
         }
-    }
-
-    get isProfilesDownloadingFinished(): Boolean {
-        return this.$store.getters['ourExtension/files/getProfilesDownloadingFinishedFlag']
-    }
-
-    get fatalErrorFlag(): Boolean {
-        return !this.klippyReady || !this.klippyConnected
     }
 
     @Watch('isProfilesDownloadingFinished', { deep: true })
@@ -261,167 +160,6 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
         }
     }
 
-    mounted() {
-        this.$store.dispatch('ourExtension/layoutsData/baseLayout/startTimeRefreshing');
-        setTimeout(() => {
-            if (this.printerPrinting || this.printerPaused) {
-                const alert: AlertType = {
-                    message: 'Принтер уже печатает. Открыто окно текущей печати',
-                    type: 'ok'
-                }
-                this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
-                this.initExisitingPrintingWindow()
-            }
-        }, 1000)
-
-    }
-
-    starClick() {
-        this.buttonFlags.starButton = true
-        // if (this.printingWindowFlag) {
-        //     this.printerIsPrintingAlert('', true)
-        //     return
-        // }
-        if (this.isBlocking) {
-            this.screenIsBlockingAlert()
-            return
-        }
-        this.openProfilesWindow()
-    }
-
-    openProfilesWindow() {
-        // this.$store.dispatch('ourExtension/windowFlags/clearStack')
-        if (this.profilesWindowFlag) {
-            this.openPreviousWindow()
-            this.buttonFlags.backButton = false
-            setTimeout(() => {
-                this.$store.dispatch('ourExtension/layoutsData/profilesWindow/reset')
-                this.$store.dispatch('ourExtension/layoutsData/profilesWindow/initWithGlobalProfiles')
-                this.$store.dispatch('ourExtension/windowFlags/openProfilesWindow')
-            }, 1);
-        } else {
-            this.$store.dispatch('ourExtension/layoutsData/profilesWindow/reset')
-            this.$store.dispatch('ourExtension/layoutsData/profilesWindow/initWithGlobalProfiles')
-            this.$store.dispatch('ourExtension/windowFlags/openProfilesWindow')
-        }
-    }
-
-    openPreviousWindow() {
-        this.buttonFlags.backButton = true
-
-        if (this.isBlocking) {
-            this.screenIsBlockingAlert()
-            return
-        }
-
-        if (this.consoleWindowFlag) {
-            this.backClickForConsole = true
-            return
-        }
-
-        if (this.printingWindowFlag && !this.inputWindowFlag && !this.printSettingsFLag && !this.selectListWindowFlag) {
-            // this.printerIsPrintingAlert('ourExtension/windowFlags/openPreviousWindow')
-            if (this.printerPrinting || this.printerPaused) {
-                return
-            }
-        }
-        this.$store.dispatch('ourExtension/windowFlags/openPreviousWindow');
-    }
-
-    openMainWindow() {
-        this.buttonFlags.mainButton = true
-        // if (this.printingWindowFlag) {
-        //     this.printerIsPrintingAlert('ourExtension/windowFlags/openMainWindow')
-        //     return
-        // }
-
-        if (this.isBlocking) {
-            this.screenIsBlockingAlert()
-            return
-        }
-
-        if (this.printerPrinting || this.printerPaused) {
-            this.initExisitingPrintingWindow()
-            return
-        } else {
-            this.$store.dispatch('ourExtension/windowFlags/openMainWindow');
-        }
-    }
-
-    openMoveWindow() {
-        this.buttonFlags.moveButton = true
-
-        // if (this.printingWindowFlag) {
-        //     this.printerIsPrintingAlert('ourExtension/windowFlags/openMoveWindow')
-        //     return
-        // }
-
-        if (this.isBlocking) {
-            this.screenIsBlockingAlert()
-            return
-        }
-        if (!this.moveWindowFlag) {
-            this.$store.dispatch('ourExtension/windowFlags/openMoveWindow');
-        }
-    }
-
-    openMainSettingsWindow() {
-        // if (this.printingWindowFlag) {
-        //     this.printerIsPrintingAlert('ourExtension/windowFlags/openMainSettingsWindow')
-        //     return
-        // }
-
-        if (this.isBlocking) {
-            this.screenIsBlockingAlert()
-            return
-        }
-        if (!this.mainSettingsWindowFlag) {
-            this.$store.dispatch('ourExtension/windowFlags/openMainSettingsWindow');
-        }
-    }
-
-    printerIsPrintingAlert(dispatch: string, isItStarClick = false) {
-        let callback = this.cancelPrintAndApplyDispatch.bind(this, dispatch)
-        let alert: AlertType;
-        if (isItStarClick) {
-            callback = this.cancelPrintAndOpenProfilesWindow.bind(this)
-        } else {
-            callback = this.cancelPrintAndApplyDispatch.bind(this, dispatch)
-        }
-        alert = {
-            header: 'ВНИМАНИЕ!',
-            message: 'Принтер печатает/готовится печатать. Отменить печать?',
-            type: 'yes_no',
-            confirmCallback: callback
-        }
-        this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
-
-    }
-
-    cancelPrintAndApplyDispatch(dispatch: string) {
-        this.cancelPrint()
-        this.$store.dispatch(dispatch);
-    }
-
-    cancelPrintAndOpenProfilesWindow() {
-        this.cancelPrint()
-        this.openProfilesWindow()
-    }
-
-    cancelPrint() {
-        this.cancelPrintAlert()
-        SocketActions.printerPrintCancel()
-        this.addConsoleEntry('CANCEL_PRINT')
-    }
-
-    cancelPrintAlert() {
-        const alert: InfoAlertType = {
-            message: `Запрошена отмена печати`,
-            type: 'red'
-        }
-        Alerts.showInfoAlert(alert)
-    }
-
     async parseGcodes(file: FileData) {
         this.getGcode(file)
             .then(response => response?.data)
@@ -434,6 +172,23 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
             .finally(() => {
                 this.$store.dispatch('files/removeFileDownload')
             })
+    }
+
+    disableButton(name: string) {
+        if (name in this.buttonFlags) {
+            const costyl = this.buttonFlags as any
+            costyl[name] = false
+        }
+    }
+
+    warningClickHandler() {
+        const message = this.klippyStateMessage + '<style>.message-holder {text-align:start !important;}</style>'
+        const alert: AlertType = {
+            message: message,
+            type: 'ok',
+            header: 'ОШИБКА!'
+        }
+        this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
     }
 
 }
