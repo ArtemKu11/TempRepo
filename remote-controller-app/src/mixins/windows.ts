@@ -1,3 +1,4 @@
+import { mockHelper } from '@/helpers/mockHelper'
 import { FileData, GcodePrintingProfiles } from '@/store/ourExtension/files/types'
 import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers'
 import { AlertType, InfoAlertType } from '@/store/ourExtension/layoutsData/alerts/types'
@@ -63,7 +64,7 @@ export default class WindowsMixin extends Vue {
         this.$store.dispatch('ourExtension/windowFlags/openSelectListWindow')
     }
 
-    openExisitingPrintingWindow(needAlert = false) {
+    initExisitingPrintingWindow(needAlert = false) {
         let hasFile = this.$store.getters['ourExtension/layoutsData/printingWindow/hasFile']()
         const hasPrintingDiapason = this.$store.getters['ourExtension/layoutsData/printingWindow/hasPrintingDiapason']()
         const printerFile = this.$store.state.printer.printer.current_file
@@ -74,37 +75,13 @@ export default class WindowsMixin extends Vue {
 
         if (!hasFile || !hasPrintingDiapason) {
             this.$store.dispatch('ourExtension/layoutsData/printingWindow/reset')
-            const file = this.resolveFileForPrintingWindow()
+            const file = this.resolveFileForExistingPrintingWindow()
             this.$store.dispatch('ourExtension/layoutsData/printingWindow/setFile', file)
-            const diapasonForMoonraker: PrintingDiapasonForMoonraker = {
-                allLayersFlag: true,
-                firstLayer: null,
-                lastLayer: null,
-                profile: this.$store.getters['ourExtension/profiles/getLastPrintingProfile'](),
-            }
+
+            const diapasonForMoonraker: PrintingDiapasonForMoonraker = this.resolveDiapasonForExistingPrintingWindow(file)
             const diapasonCopy = JSON.parse(JSON.stringify(diapasonForMoonraker))
             this.$store.dispatch('ourExtension/layoutsData/printingWindow/setPrintingDiapason', diapasonCopy)
         }
-
-        // if (!hasFile || !hasPrintingDiapason) {
-        //     this.$store.dispatch('ourExtension/layoutsData/printingWindow/reset')
-        // }
-
-        // if (!hasFile) {
-        // const file = this.resolveFileForPrintingWindow()
-        // this.$store.dispatch('ourExtension/layoutsData/printingWindow/setFile', file)
-        // }
-
-        // if (!hasPrintingDiapason) {
-        //     const diapasonForMoonraker: PrintingDiapasonForMoonraker = {
-        //         allLayersFlag: true,
-        //         firstLayer: null,
-        //         lastLayer: null,
-        //         profile: this.$store.getters['ourExtension/profiles/getLastPrintingProfile'](),
-        //     }
-        //     const diapasonCopy = JSON.parse(JSON.stringify(diapasonForMoonraker))
-        //     this.$store.dispatch('ourExtension/layoutsData/printingWindow/setPrintingDiapason', diapasonCopy)
-        // }
 
         this.$store.dispatch('ourExtension/windowFlags/openPrintingWindow')
 
@@ -119,7 +96,23 @@ export default class WindowsMixin extends Vue {
 
     }
 
-    resolveFileForPrintingWindow(): FileData {
+    resolveDiapasonForExistingPrintingWindow(file: FileData): PrintingDiapasonForMoonraker {
+        let lastPrintingProfile = file.profiles?.selectedDiapason?.profile  // Тут как правило getLastPrintingProfile()
+        if (!lastPrintingProfile) {
+            lastPrintingProfile = this.$store.getters['ourExtension/profiles/getLastPrintingProfile']()
+            if (!lastPrintingProfile) {
+                lastPrintingProfile = mockHelper.getProfileMock()
+            }
+        }
+        return {
+            allLayersFlag: true,
+            firstLayer: null,
+            lastLayer: null,
+            profile: lastPrintingProfile,
+        }
+    }
+
+    resolveFileForExistingPrintingWindow(): FileData {
         let file: FileData = this.$store.getters['ourExtension/files/getLastPrintingFile']()  // TODO убрать
         if (!file) {
             file = this.getFileMock()
@@ -133,28 +126,32 @@ export default class WindowsMixin extends Vue {
     }
 
     getFileMock(): FileData {
+        const fileData = mockHelper.getFileDataMock()
+        let lastPrintingFile = this.$store.getters['ourExtension/profiles/getLastPrintingProfile']()
+        if (!lastPrintingFile) {
+            lastPrintingFile = mockHelper.getProfileMock()
+        }
+        let profilesMap = this.$store.getters['ourExtension/profiles/getDefaultProfilesMap']
+        if (!profilesMap) {
+            profilesMap = mockHelper.getProfilesMapMock()
+        }
         const profiles: GcodePrintingProfiles = {
-            profiles: this.$store.getters['ourExtension/profiles/getDefaultProfilesMap'],
+            profiles: profilesMap,
             selectedDiapason: {
                 isRootDiapason: true,
-                profile: this.$store.getters['ourExtension/profiles/getLastPrintingProfile'](),
+                profile: lastPrintingFile,
             }
         }
+        fileData.profiles = profiles
+        return fileData
+    }
 
-        return {
-            computedSize: '0',
-            dirnameForMoonraker: '',
-            isSelected: false,
-            layers: "?",
-            modified: '--.--.----',
-            name: 'some_file.gcode',
-            pathForMoonraker: 'some_file.gcode',
-            permissions: 'rw',
-            printingTime: "?h ?m",
-            size: 0,
-            sizeInKb: '0',
-            profiles: profiles
-        }
+    initNewPrintingWindow(diapasonForMoonraker: PrintingDiapasonForMoonraker, file: FileData) {
+        this.$store.commit('ourExtension/profiles/setLastPrintingProfile', diapasonForMoonraker.profile)
+        this.$store.dispatch('ourExtension/layoutsData/printingWindow/reset')
+        const diapasonCopy = JSON.parse(JSON.stringify(diapasonForMoonraker))
+        this.$store.dispatch('ourExtension/layoutsData/printingWindow/setPrintingDiapason', diapasonCopy)
+        this.$store.dispatch('ourExtension/layoutsData/printingWindow/setFile', file)
     }
 
     screenIsBlockingAlert() {

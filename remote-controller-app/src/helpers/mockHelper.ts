@@ -50,11 +50,15 @@ export class MockHelper {
     }
 
     getGcodePrintingProfilesMock(): GcodePrintingProfiles {
+        return {
+            profiles: this.getProfilesMapMock(),
+        }
+    }
+
+    getProfilesMapMock(): Map<string, PrintingDiapason> {
         const profiles = new Map()
         profiles.set(this.getProfileMock().name, this.getPrintingDiapasonMock())
-        return {
-            profiles: profiles
-        }
+        return profiles
     }
 
     getPrintingDiapasonMock(): PrintingDiapason {
@@ -64,3 +68,5 @@ export class MockHelper {
         }
     }
 }
+
+export const mockHelper = new MockHelper()

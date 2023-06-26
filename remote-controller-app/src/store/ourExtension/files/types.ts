@@ -9,6 +9,7 @@ export interface LightFilesState {
     isProfilesDownloadingFinished: boolean
     isProfiesSetupFinished: boolean
     selectedFile: FileData | null
+    lastPrintingFile?: LastPrintingFile
 }
 
 export interface DirectoryData {

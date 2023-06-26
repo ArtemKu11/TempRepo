@@ -5,7 +5,11 @@
             <span>Прокрутка файлов</span>
         </div>
 
-        <div class="files-wrapper">
+        <div v-if="absolutelyEmpty" class="files-not-found">
+            <span>Файлов не найдено</span>
+        </div>
+
+        <div v-else class="files-wrapper">
             <button v-if="isDirectorySelected" @touchstart="openPreviousDirectory" class="upper-folder">
                 <div class="description">
                     <img src="@/style/fileSelectWindow/img/upper_folder.svg" alt="">
@@ -73,12 +77,17 @@
 
 
 <script lang="ts">
-import { DirectoryData, FileData } from '@/store/ourExtension/files/types';
-import { Component, Vue } from 'vue-property-decorator';
+import { DirectoryData, FileData, LastPrintingFile } from '@/store/ourExtension/files/types';
+import { Component, Mixins, Vue } from 'vue-property-decorator';
 import FileButton from './FileButton.vue';
 import FolderButton from './FolderButton.vue';
 import { AlertType, InfoAlertType } from '@/store/ourExtension/layoutsData/alerts/types';
 import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
+import { mockHelper } from '@/helpers/mockHelper';
+import StateMixin from '@/mixins/state';
+import WindowsMixin from '@/mixins/windows';
+import { PrintingDiapasonForMoonraker } from '@/store/ourExtension/profiles/types';
+import FilesMixin from '@/mixins/files';
 
 
 
@@ -87,7 +96,7 @@ import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
         FileButton, FolderButton
     },
 })
-export default class FileSelectWindow extends Vue {
+export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, FilesMixin) {
 
     buttonsState = {  // флаги для бинда .active класса для мнгновенной подмены картинок по touchstart
         firstButton: false,  // Информация о файле
@@ -96,6 +105,10 @@ export default class FileSelectWindow extends Vue {
         fourthButton: false,  // Выбор
         fifthButton: false,  // Отмена
         sixthButton: false  // Главное меню
+    }
+
+    get absolutelyEmpty(): boolean {
+        return !this.isDirectorySelected && Boolean(this.fileList) && Boolean(this.directoryList)
     }
 
     get fileList(): Array<FileData> {
@@ -114,7 +127,7 @@ export default class FileSelectWindow extends Vue {
         return this.$store.getters['ourExtension/layoutsData/newFileBrowseWindow/getUsualSelectedDirectory']
     }
 
-    get selectedFile(): DirectoryData | null {
+    get selectedFile(): FileData | null {
         return this.$store.getters['ourExtension/layoutsData/newFileBrowseWindow/getUsualSelectedFile']
     }
 
@@ -149,7 +162,7 @@ export default class FileSelectWindow extends Vue {
     resolveButtonClick(button: string) {
         switch (button) {
             case "fourthButton":  // Выбор
-                this.openPrint()
+                this.selectButtonClick()
                 return;
             default:
                 return;
@@ -163,15 +176,17 @@ export default class FileSelectWindow extends Vue {
         }
     }
 
-    openPrint() {
+    selectButtonClick() {
         const selectedFile = this.selectedFile
         const selectedDirectory = this.selectedDirectory
         if (selectedFile) {
-            this.$router.push('/print')
+            this.tryToStartPrint()
             return
         }
         if (selectedDirectory) {
-            this.$router.push('/print')
+            this.$store.commit('ourExtension/layoutsData/newFileBrowseWindow/deactivateFiles');
+            const newPath = this.currentPath + "/" + selectedDirectory.name
+            this.$store.dispatch('ourExtension/layoutsData/newFileBrowseWindow/setCurrentPath', newPath);
             return
         }
         const alert: InfoAlertType = {
@@ -179,6 +194,75 @@ export default class FileSelectWindow extends Vue {
             type: 'red'
         }
         Alerts.showInfoAlert(alert)
+    }
+
+    tryToStartPrint() {
+        if (this.printerPrinting || this.printerPaused) {
+            const alert: AlertType = {
+                message: 'Принтер уже печатает. Открыто окно текущей печати',
+                type: 'ok'
+            }
+            this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
+            this.initExisitingPrintingWindow()
+            this.$router.push('/print')
+            return
+        } else {
+            this.startNewPrint()
+        }
+    }
+
+    fileMustBeSelectedAlert() {
+        const alert: InfoAlertType = {
+            message: "Ничего не выбрано",
+            type: 'red'
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    startNewPrint() {
+        // const selectedFile = mockHelper.getFileDataMock()
+        const selectedFile = this.selectedFile
+        if (selectedFile) {
+
+            this.$store.commit('ourExtension/files/setSelectedFile', selectedFile)
+
+            let diapasonForMoonraker: PrintingDiapasonForMoonraker;
+            let allLayersFlag = true
+            let firstLayer = null
+            let lastLayer = null
+            let profile = this.$store.getters['ourExtension/profiles/getLastPrintingProfile']()  // TODO учесть логику выбора профилей
+            if (!profile) {
+                profile = mockHelper.getProfileMock()
+            }
+            diapasonForMoonraker = {
+                profile: JSON.parse(JSON.stringify(profile)),
+                allLayersFlag: true,
+                firstLayer: null,
+                lastLayer: null
+            }
+            this.printFile(diapasonForMoonraker, selectedFile)
+        } else {
+            this.fileMustBeSelectedAlert()
+        }
+    }
+
+    async printFile(diapasonForMoonraker: PrintingDiapasonForMoonraker, file: FileData) {
+        const response = await this.sendProfile(diapasonForMoonraker)
+        if (response.status && response.status === 201) {
+            const lastPrintingFile: LastPrintingFile = {
+                diapason: diapasonForMoonraker,
+                file: file
+            }
+            this.$store.commit('ourExtension/files/setLastPrintingFile', lastPrintingFile)
+            this.initNewPrintingWindow(diapasonForMoonraker, file)
+            this.$router.push('/print')
+        } else {
+            const alert: InfoAlertType = {
+                message: "Не удалось отправить профиль печати",
+                type: 'red'
+            }
+            Alerts.showInfoAlert(alert)
+        }
     }
 
     openPreviousDirectory() {

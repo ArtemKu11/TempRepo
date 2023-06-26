@@ -37,5 +37,14 @@ export const getters: GetterTree<LightFilesState, RootState> = {
 
     getSelectedFile(state): FileData | null {
         return state.selectedFile
+    },
+
+    isFileSelected(state): boolean {
+        return Boolean(state.selectedFile)
+    },
+
+    
+    getLastPrintingFile: (state) => () => {
+        return state.lastPrintingFile
     }
-}
+ }

@@ -36,12 +36,6 @@ export default class FolderButton extends Vue {
         return this.$store.getters['ourExtension/layoutsData/newFileBrowseWindow/getCurrentPath']
     }
 
-    clickHandler() {  // TODO убрать
-        this.$store.commit('ourExtension/layoutsData/newFileBrowseWindow/deactivateFiles');
-        const newPath = this.currentPath + "/" + this.directoryData.name
-        this.$store.dispatch('ourExtension/layoutsData/newFileBrowseWindow/setCurrentPath', newPath);
-    }
-
     touchStartHandler() {
         this.$store.commit('ourExtension/layoutsData/newFileBrowseWindow/deactivateFiles');
         this.directoryData.isSelected = true;

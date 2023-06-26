@@ -8,20 +8,22 @@
 
         <div class="header">
             <div class="time-and-operation">
-                <div @click="$router.go(-1)" class="time-holder">12:39</div>
-                <div class="operation-container">Пауза...</div>
+                <div @click="$router.go(-1)" class="time-holder">{{ actualTime }}</div>
+                <div class="operation-container">{{ localPrinterState }}...</div>
             </div>
             <div class="warnings-container">
-                <span>WARNING</span>
+                <span v-if="warningFlag">WARNING</span>
+                <span v-if="noGasFlag">NO GAS</span>
+                <!-- <span>WARNING</span>
                 <span>NO GAS</span>
-                <span>COLLISION</span>
+                <span>COLLISION</span> -->
             </div>
         </div>
 
         <div class="center">
             <div class="rejim">
                 <span>Параметры режима: </span>
-                <span>алюминиево-магниевые сплавы</span>
+                <span>{{ printingDiapason.profile.name }}</span>
             </div>
             <div class="print-params-buttons">
                 <div class="colorful-buttons">
@@ -30,7 +32,7 @@
                             <div class="a-icon">a</div>
                         </div>
                         <div class="button-info">
-                            <span>215</span>
+                            <span>{{ current }}</span>
                             <div class="underline"></div>
                             <span>Ток, А</span>
                         </div>
@@ -41,13 +43,13 @@
                             <div class="b-icon">b</div>
                         </div>
                         <div class="button-info">
-                            <span>380</span>
+                            <span>{{ voltage }}</span>
                             <div class="underline"></div>
                             <span>Напряжение, В</span>
                         </div>
                     </button>
                     <button class="parameter-button">
-                        <span>0.6</span>
+                        <span>{{ feedRate }}</span>
                         <div class="underline"></div>
                         <span>V подачи, м/мин</span>
                     </button>
@@ -60,14 +62,14 @@
                         <div class="img-wrapper">
                             <img src="@/style/printWindow/img/oscillation.svg" width="105" height="1">
                         </div>
-                        <span>Тип: Обычная</span>
+                        <span>Тип: {{ oscillationType }}</span>
                     </button>
                     <button class="parameter-button">
-                        <span>16.0</span>
+                        <span>{{ weldingSpeed }}</span>
                         <span>V печати, м/мин</span>
                     </button>
                     <button class="parameter-button">
-                        <span>1.2</span>
+                        <span>{{ shift }}</span>
                         <span>Сдвиг Z, мм</span>
                     </button>
                 </div>
@@ -82,11 +84,11 @@
                     <span>Напряжение источника</span>
                 </div>
                 <div class="control-print img layers">
-                    <span>Слои: 241/399</span>
+                    <span>Слои: {{ printLayer }}/{{ file.layers }}</span>
                     <img src="@/style/printWindow/img/layers.svg" alt="">
                 </div>
                 <div class="control-print img heigth">
-                    <span>Высота, мм: 2000</span>
+                    <span>Высота, мм: 846</span>
                     <img src="@/style/printWindow/img/heigth.svg" alt="">
                 </div>
             </div>
@@ -94,9 +96,9 @@
 
         <div class="control-buttons">
 
-            <div v-if="!pause" class="big-round-button-wrapper">
+            <div v-if="isPrinting" class="big-round-button-wrapper">
                 <button class="big-round-button">
-                    <span class="percent">45%</span>
+                    <span class="percent">{{ printProgress }}%</span>
                     <svg>
                         <defs>
                             <linearGradient id="grad1">
@@ -111,7 +113,7 @@
                 </button>
             </div>
 
-            <button v-if="pause" :class="{ 'active': buttonsState.firstButton }"
+            <button v-if="!isPrinting" :class="{ 'active': buttonsState.firstButton }"
                 @touchstart="touchStartHandler($event, 'firstButton')" @touchend="touchEndHandler('firstButton')"
                 class="control-button move">
                 <div class="img-wrapper">
@@ -120,7 +122,7 @@
                 <span>Перемещение</span>
             </button>
 
-            <button v-if="pause" :class="{ 'active': buttonsState.secondButton }"
+            <button v-if="!isPrinting" :class="{ 'active': buttonsState.secondButton }"
                 @touchstart="touchStartHandler($event, 'secondButton')" @touchend="touchEndHandler('secondButton')"
                 class="control-button layer-settings">
                 <div class="img-wrapper">
@@ -129,7 +131,7 @@
                 <span>Параметры слоя</span>
             </button>
 
-            <button v-if="pause" :class="{ 'active': buttonsState.thirdButton }"
+            <button v-if="!isPrinting" :class="{ 'active': buttonsState.thirdButton }"
                 @touchstart="touchStartHandler($event, 'thirdButton')" @touchend="touchEndHandler('thirdButton')"
                 class="control-button settings">
                 <div class="img-wrapper">
@@ -138,27 +140,24 @@
                 <span>Настройки</span>
             </button>
 
-            <button :class="{ 'active': buttonsState.fourthButton }"
-                @touchstart="touchStartHandler($event, 'fourthButton')" @touchend="touchEndHandler('fourthButton')"
-                class="control-button revert shift-plus">
+            <button :class="{ 'active': buttonsState.fourthButton }" @touchstart="touchStartHandler($event, 'fourthButton')"
+                @touchend="touchEndHandler('fourthButton')" class="control-button revert shift-plus">
                 <span>Сдвиг +</span>
                 <div class="img-wrapper">
                     <img src="@/style/printWindow/img/shift_plus.svg" alt="">
                 </div>
             </button>
-            
-            <button :class="{ 'active': buttonsState.fifthButton }"
-                @touchstart="touchStartHandler($event, 'fifthButton')" @touchend="touchEndHandler('fifthButton')"
-                class="control-button revert shift-minus">
+
+            <button :class="{ 'active': buttonsState.fifthButton }" @touchstart="touchStartHandler($event, 'fifthButton')"
+                @touchend="touchEndHandler('fifthButton')" class="control-button revert shift-minus">
                 <span>Сдвиг -</span>
                 <div class="img-wrapper">
                     <img src="@/style/printWindow/img/shift_minus.svg" alt="">
                 </div>
             </button>
 
-            <button :class="{ 'active': buttonsState.sixthButton }"
-                @touchstart="touchStartHandler($event, 'sixthButton')" @touchend="touchEndHandler('sixthButton')"
-                class="control-button revert arc">
+            <button :class="{ 'active': buttonsState.sixthButton }" @touchstart="touchStartHandler($event, 'sixthButton')"
+                @touchend="touchEndHandler('sixthButton')" class="control-button revert arc">
                 <span>Дуга неизвестна</span>
                 <div class="img-wrapper">
                     <img src="@/style/printWindow/img/arc.svg" alt="">
@@ -166,29 +165,29 @@
             </button>
         </div>
 
-        <div v-if="pause" class="footer">
+        <div v-if="!isPrinting" class="footer">
             <div class="file-info">
                 <div class="filename">
                     <img src="@/style/printWindow/img/file_icon.svg" alt="">
-                    <span>3D_Printer_test_fixed_stl_3rd_gen...</span>
+                    <span>{{ fileName }}</span>
                 </div>
                 <div class="progress">
                     <img src="@/style/printWindow/img/progress.svg" alt="">
-                    <span>Прогресс: 45%</span>
+                    <span>Прогресс: {{ printProgress }}%</span>
                 </div>
             </div>
 
             <div class="progress-bar-wrapper">
                 <img src="@/style/printWindow/img/progress_bar.svg" alt="">
                 <div class="progress-wrapper">
-                    <div class="progress"></div>
+                    <div ref="progressBar" class="progress"></div>
                 </div>
             </div>
         </div>
 
-        <div v-if="!pause" class="only-filename">
+        <div v-if="isPrinting" class="only-filename">
             <img src="@/style/printWindow/img/big_file_icon.svg" alt="">
-            <span>3D_Printer_test_fixed_stl_3rd_gen...</span>
+            <span>{{ fileName }}</span>
         </div>
 
     </div>
@@ -196,15 +195,24 @@
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { SocketActions } from '@/api/socketActions';
+import StateMixin from '@/mixins/state';
+import WindowsMixin from '@/mixins/windows';
+import { FileData } from '@/store/ourExtension/files/types';
+import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
+import { InfoAlertType, AlertType } from '@/store/ourExtension/layoutsData/alerts/types';
+import { PrintingDiapasonForMoonraker, ProfilesMetadata } from '@/store/ourExtension/profiles/types';
+import { Component, Mixins, Vue } from 'vue-property-decorator';
 
 @Component({
     components: {
 
     },
 })
-export default class PrintWindow extends Vue {
-    pause = false
+export default class PrintWindow extends Mixins(WindowsMixin, StateMixin) {
+    warningFlag = false
+    noGasFlag = false
+    processingSetter: string = ''
 
     buttonsState = {  // флаги для бинда .active класса для мнгновенной подмены картинок по touchstart
         firstButton: false,  // Перемещение
@@ -215,6 +223,32 @@ export default class PrintWindow extends Vue {
         sixthButton: false  // Дуга
     }
 
+    mounted() {
+        setTimeout(() => { this.setPrintProgress() }, 100)
+    }
+
+    setPrintProgress() {
+        const progress = this.printProgress
+        const circleBar = this.$refs.circleBar as SVGElement
+        const progressBar = this.$refs.progressBar as HTMLElement
+        if (circleBar) {
+            this.setPercent(progress, circleBar)
+        }
+        if (progressBar) {
+            this.setProgressBarPercent(progress, progressBar)
+        }
+    }
+
+    setProgressBarPercent(percent: number, progressBar: HTMLElement) {
+        progressBar.style.width = `${percent}%;`
+    }
+
+    setPercent(percent: number, circleBar: SVGElement) {
+        const circleLength = 2 * Math.PI * 130
+        const progressPercent = circleLength * percent / 100
+        const probelPercent = circleLength - progressPercent
+        circleBar.style.strokeDasharray = `${progressPercent} ${probelPercent}`
+    }
 
     touchStartHandler(e: TouchEvent, button: string) {
         if (button in this.buttonsState) {
@@ -230,14 +264,23 @@ export default class PrintWindow extends Vue {
 
     resolveButtonClick(button: string) {
         switch (button) {
-            case "fourthButton":
+            case "fourthButton":  // Сдвиг +
+                this.shiftPlus()
                 return;
-            case "sixthButton":
-                this.changePause()
+            case "fifthButton":  // Сдвиг -
+                this.shiftMinus()
                 return;
             default:
                 return;
         }
+    }
+
+    shiftPlus() {
+        this.shift = +(this.shift + 0.1).toFixed(1)
+    }
+
+    shiftMinus() {
+        this.shift = +(this.shift - 0.1).toFixed(1)
     }
 
     touchEndHandler(button: string) {
@@ -247,20 +290,298 @@ export default class PrintWindow extends Vue {
         }
     }
 
-    changePause() {
-        this.pause = !this.pause
+    get actualTime(): string {
+        return this.$store.getters['ourExtension/layoutsData/baseLayout/getActualTime']();
     }
 
-    openFileSelect() {
-        // this.$router.push('/')
+    get isPrinting(): boolean {
+        return this.printerState.toLowerCase() === 'printing'
     }
 
-    openOscillation() {
-        this.$router.push('/osc')
+    get pause(): boolean {
+        return this.printerState.toLowerCase() === 'paused'
+    }
+
+
+    get printProgress(): number {  // В процентах
+        let progress = this.$store.getters['printer/getPrintProgress']
+        progress = +(progress * 100).toFixed(0)
+        const circleBar = this.$refs.circleBar as SVGElement
+        if (circleBar) {
+            this.setPercent(progress, circleBar)
+        }
+        const progressBar = this.$refs.progressBar as HTMLElement
+        if (progressBar) {
+            this.setProgressBarPercent(progress, progressBar)
+        }
+        return progress
+    }
+
+    get printLayer(): number {
+        return this.$store.getters['printer/getPrintLayer']
+    }
+
+    get localPrinterState(): string {
+        switch (this.printerState.toLowerCase()) {
+            case 'loading':
+                return 'Загрузка'
+            case 'printing':
+                return 'Печатается'
+            case 'paused':
+                return 'Приостановлено'
+            case 'busy':
+                return 'Принтер занят'
+            case 'cancelled':
+                return 'Отменено'
+            case 'ready':
+                return 'Готов к печати'
+            case 'idle':
+                return 'Бездействует'
+            default:
+                break;
+        }
+        return this.printerState.toLowerCase()
+    }
+
+    get file(): FileData {
+        return this.$store.getters['ourExtension/layoutsData/printingWindow/getFile']()
+    }
+
+    get fileName(): string {
+        let name = this.file.name
+        if (name.length > 30) {
+            name = name.slice(0, 30) + '...'
+        }
+        return name
+    }
+
+    get printSettingsFLag() {
+        return this.$store.getters['ourExtension/windowFlags/getPrintSettingsWindowFlag']
+    }
+
+    get printingDiapason(): PrintingDiapasonForMoonraker {
+        return this.$store.getters['ourExtension/layoutsData/printingWindow/getPrintingDiapason']()
+    }
+
+    get current(): number {
+        return this.printingDiapason.profile.profileMainParameters.current
+    }
+
+    set current(newValue: number) {
+        this.printingDiapason.profile.profileMainParameters.current = newValue
+    }
+
+    get voltage(): number {
+        return this.printingDiapason.profile.profileMainParameters.voltage
+    }
+
+    set voltage(newValue: number) {
+        this.printingDiapason.profile.profileMainParameters.voltage = newValue
+    }
+
+    get feedRate(): number {
+        return this.printingDiapason.profile.profileMainParameters.feedRate
+    }
+
+    set feedRate(newValue: number) {
+        this.printingDiapason.profile.profileMainParameters.feedRate = newValue
+    }
+
+    get oscillationType(): string {
+        return this.printingDiapason.profile.profileOscilationParameters.type
+    }
+
+    set oscillationType(newValue: string) {
+        this.printingDiapason.profile.profileOscilationParameters.type = newValue
+    }
+
+    get weldingSpeed(): number {
+        return this.printingDiapason.profile.profileAdditionalParameters.weldingSpeed
+    }
+
+    set weldingSpeed(newValue: number) {
+        this.printingDiapason.profile.profileAdditionalParameters.weldingSpeed = newValue
+    }
+
+    get shift(): number {
+        return this.$store.getters['ourExtension/layoutsData/printingWindow/getShift']
+    }
+
+    set shift(newValue: number) {
+        this.$store.state.ourExtension.layoutsData.printingWindow.shift = newValue
+    }
+
+    get profilesMetadata(): ProfilesMetadata {
+        return this.$store.getters['ourExtension/profiles/getProfilesMetadata']
+    }
+
+
+
+    round(value: number) {
+        return Math.round(+value * 10) / 10;
+    }
+
+    openPrintSettings() {
+        this.$store.dispatch('ourExtension/windowFlags/openPrintSettingsWindow')
+    }
+
+    parameterClickHandler(parameterName: string, setter: string, valcoderStep: number) {
+        let rejectPoint = true
+        this.processingSetter = setter
+        let initValue = 0
+        if (setter in this) {
+            const context = this as any
+            initValue = context[setter]
+        }
+        const callback = this.newValueReceiver.bind(this)
+        if (valcoderStep / valcoderStep !== 1) {
+            rejectPoint = false
+        }
+        this.openInputWindow(false, parameterName, initValue, valcoderStep, 'void', callback, 2000, -2000, rejectPoint, '')
+    }
+
+    newValueReceiver(newValue: number) {
+        if (this.processingSetter in this) {
+            const context = this as any
+            context[this.processingSetter] = newValue
+        }
+        this.processingSetter = ''
+    }
+
+    listClickHandler(setter: string) {
+        let initList: string[] = []
+        const callback = this.newStringValueReceiver.bind(this)
+        if (setter === 'oscillationType') {
+            initList = this.profilesMetadata.oscilationTypes
+        }
+        this.processingSetter = setter
+        this.openSelectWindowWithoutIcon(callback, initList)
+    }
+
+    newStringValueReceiver(newValue: string) {
+        if (this.processingSetter in this) {
+            const context = this as any
+            context[this.processingSetter] = newValue
+        }
+        this.processingSetter = ''
+    }
+
+    bigButtonHandler() {
+        if (this.printerAllowedToStartPrint) {
+            this.startPrintAlert()
+            this.startPrint(this.file)
+        } else if (this.printerState.toLowerCase() !== 'printing') {
+            this.pauseAlert()
+            this.pausePrint()
+        } else {
+            this.resumeAlert()
+            this.resumePrint()
+        }
+    }
+
+    clickHandler(buttonName: string) {
+        switch (buttonName) {
+            case 'resume':
+                if (this.printerState.toLowerCase() === 'ready' || this.printerState.toLowerCase() === 'idle' || this.printerState.toLowerCase() === 'cancelled') {
+                    this.startPrintAlert()
+                    this.startPrint(this.file)
+                } else if (this.printerState.toLowerCase() !== 'printing') {
+                    this.resumeAlert()
+                    this.resumePrint()
+                }
+                break;
+            case 'pause':
+                if (this.printerState.toLowerCase() !== 'paused') {
+                    this.pauseAlert()
+                    this.pausePrint()
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    startPrint(file: FileData) {
+        SocketActions.printerPrintStart(file.pathForMoonraker)
+    }
+
+    resumeAlert() {
+        const alert: InfoAlertType = {
+            message: 'Запрошено возобновление печати',
+            type: 'green'
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    startPrintAlert() {
+        const alert: InfoAlertType = {
+            message: `Запрошено начало печати файла: ${this.file.pathForMoonraker}`,
+            type: 'green'
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    pausePrint() {
+        SocketActions.printerPrintPause()
+        this.addConsoleEntry('PAUSE')
+    }
+
+    pauseAlert() {
+        const alert: InfoAlertType = {
+            message: `Запрошена пауза`,
+            type: 'green'
+        }
+        Alerts.showInfoAlert(alert)
+    }
+
+    resumePrint() {
+        SocketActions.printerPrintResume()
+        this.addConsoleEntry('RESUME')
+    }
+
+    resetFile() {
+        this.sendGcode('SDCARD_RESET_FILE')
+    }
+
+    throwCancelPrintRequest() {
+        if (this.printerPaused || this.printerPrinting) {
+            const callback = this.cancelPrint.bind(this)
+            const alert: AlertType = {
+                header: 'ВНИМАНИЕ!',
+                message: 'Принтер печатает/готовится печатать. Отменить печать?',
+                type: 'yes_no',
+                confirmCallback: callback
+            }
+            this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
+        } else {
+            const alert: InfoAlertType = {
+                message: 'Принтер не печатает',
+                time: 1500,
+                type: 'red'
+            }
+            Alerts.showInfoAlert(alert)
+        }
+
+    }
+
+    cancelPrint() {
+        this.cancelPrintAlert()
+        SocketActions.printerPrintCancel()
+        this.addConsoleEntry('CANCEL_PRINT')
+    }
+
+    cancelPrintAlert() {
+        const alert: InfoAlertType = {
+            message: `Запрошена отмена печати`,
+            type: 'red'
+        }
+        Alerts.showInfoAlert(alert)
     }
 
 }
 </script>
 
 
-<style lang="scss">@import '@/style/printWindow/css/printWindow.scss';</style>
+<style lang="scss">
+@import '@/style/printWindow/css/printWindow.scss';
+</style>

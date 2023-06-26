@@ -360,18 +360,11 @@ export default class FilesMixin extends Vue {
 
     /// Дописано
 
-    async sendProfileAndOpenPrintingWindow(diapasonForMoonraker: PrintingDiapasonForMoonraker, file: FileData) {
-        const response = await this.sendDiapasonForServer(diapasonForMoonraker)
-        if (response.status && response.status === 201) {
-            this.$store.commit('ourExtension/profiles/setLastPrintingProfile', diapasonForMoonraker.profile)
-            this.$store.dispatch('ourExtension/layoutsData/printingWindow/reset')
-            const diapasonCopy = JSON.parse(JSON.stringify(diapasonForMoonraker))
-            this.$store.dispatch('ourExtension/layoutsData/printingWindow/setPrintingDiapason', diapasonCopy)
-            this.$store.dispatch('ourExtension/layoutsData/printingWindow/setFile', file)
-            this.$store.dispatch('ourExtension/windowFlags/openPrintingWindow')
-        }
-        return response
+    async sendProfile(diapasonForMoonraker: PrintingDiapasonForMoonraker) {
+        return await this.sendDiapasonForServer(diapasonForMoonraker)
     }
+
+    
 
     async sendDiapasonForServer(diapasonForMoonraker: PrintingDiapasonForMoonraker) {
         const diapasonStr = JSON.stringify(diapasonForMoonraker, null, 2)

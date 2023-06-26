@@ -1,5 +1,5 @@
 import { MutationTree } from "vuex";
-import { LightFilesState, FileData } from "./types";
+import { LightFilesState, FileData, LastPrintingFile } from "./types";
 
 export const mutations: MutationTree<LightFilesState> = {
     setLayersByMoonrakerPath(state, payload) {
@@ -18,6 +18,10 @@ export const mutations: MutationTree<LightFilesState> = {
 
     setSelectedFile(state, payload: FileData) {
         state.selectedFile = payload
+    },
+
+    setLastPrintingFile(state, payload: LastPrintingFile) {
+        state.lastPrintingFile = payload;
     }
 
 }

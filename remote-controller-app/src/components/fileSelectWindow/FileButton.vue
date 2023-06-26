@@ -38,13 +38,6 @@ export default class FileButton extends Vue {
         this.fileData.isSelected = true;
     }
 
-    openChosenFile() {  // TODO убрать
-        this.$store.commit('ourExtension/layoutsData/newFileBrowseWindow/deactivateFiles');
-        this.$store.commit('ourExtension/layoutsData/newFileBrowseWindow/setSelectedFile', this.fileData);
-        this.$store.commit('ourExtension/layoutsData/filePreviewWindow/setFileData', this.fileData);
-        this.$store.dispatch('ourExtension/windowFlags/openFilePreviewWindow');
-    }
-
     touchStartHandler() {
         this.$store.commit('ourExtension/layoutsData/newFileBrowseWindow/deactivateFiles');
         this.fileData.isSelected = true;

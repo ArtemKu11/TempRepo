@@ -3,7 +3,7 @@
         <router-view></router-view>
         <DefaultAlert v-if="alertFlag" />
         <InfoAlert v-if="infoAlertFlag" />
-        <!-- <FatalErrorAlert v-if="fatalErrorFlag" /> -->
+        <FatalErrorAlert v-if="fatalErrorFlag" />
     </div>
 </template>
 
@@ -270,7 +270,7 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
                     type: 'ok'
                 }
                 this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
-                this.openExisitingPrintingWindow()
+                this.initExisitingPrintingWindow()
             }
         }, 1000)
 
@@ -341,7 +341,7 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
         }
 
         if (this.printerPrinting || this.printerPaused) {
-            this.openExisitingPrintingWindow()
+            this.initExisitingPrintingWindow()
             return
         } else {
             this.$store.dispatch('ourExtension/windowFlags/openMainWindow');
