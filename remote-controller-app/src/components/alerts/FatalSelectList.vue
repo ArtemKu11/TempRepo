@@ -1,0 +1,296 @@
+<template>
+    <div ref="mainContainer" class="material-select-container">
+        <div class="material-select-content-container">
+            <div class="material-select-header">
+                <button @click="homeButtonClick" class="home-button"><img
+                        src="@/layouts/profiles_layout/img/button_star.svg"></button>
+                <button class="points-button"><img src="@/layouts/profiles_layout/img/points_icon.png"></button>
+            </div>
+            <div class="material-select-center">
+                <ItemButton @selectItem="selectItem" @activateItem="activateItem" @deactivateItems="deactivateItems" v-for="(item, index) of listItems" :key="index"
+                    :listInstance="item" />
+            </div>
+            <div class="file-select-footer"></div>
+        </div>
+    </div>
+</template>
+
+
+<script lang="ts">
+import { ListInstance } from '@/store/ourExtension/layoutsData/selectListWindow/types';
+import { Vue, Component, Prop } from 'vue-property-decorator';
+import ItemButton from './ItemButton.vue';
+
+@Component({
+    components: {
+        ItemButton
+    },
+})
+export default class FatalSelectList extends Vue {
+
+    @Prop()
+    items!: string[]
+    listItems: ListInstance[] = []
+
+    mounted() {
+        const container = this.$refs.mainContainer as HTMLElement;
+        if (container) {
+            container.style.zIndex = '10'
+        }
+
+        for (const item of this.items) {
+            this.listItems.push({
+                isActive: false,
+                name: item
+            })
+        }
+    }
+
+    deactivateItems() {
+        for (const item of this.listItems) {
+            item.isActive = false
+        }
+    }
+
+    activateItem(itemProp: string) {
+        for (const item of this.listItems) {
+            if (itemProp === item.name.toLowerCase()) {
+                item.isActive = true
+            }
+        }
+    }
+
+    homeButtonClick() {
+        this.$emit('close')
+    }
+
+    selectItem(itemName: string) {
+        this.$emit('selectItem', itemName)
+    }
+}
+</script>
+
+<style lang="scss">
+@use "sass:math";
+@import "@/style/baseLayout/css/base_layout.scss";
+
+
+button {
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
+@mixin doubleAnglePolygon($width, $height, $angle) {
+    $tangens: math.abs(math.tan($angle));
+    $visota: $height * $tangens;
+    width: $width;
+    height: $height;
+    clip-path: polygon(0% 0%, $width - $visota 0%, 100% 50%, $width - $visota 100%, 0% 100%, $visota 50%);
+}
+
+@mixin singleAnglePolygon($width, $height, $angle) {
+    $tangens: math.abs(math.tan($angle));
+    $visota: $height * $tangens;
+    width: $width;
+    height: $height;
+    clip-path: polygon(0% 0%, $width - $visota 0%, 100% 50%, $width - $visota 100%, 0% 100%);
+}
+
+.material-select-container {
+    min-height: 660px;
+    position: absolute;
+    z-index: 3;
+    height: 100%;
+    width: 100%;
+    display: grid;
+    // grid-template-columns: $sidebarWidth auto;
+    grid-template-rows: 1fr;
+    backdrop-filter: blur(5px);
+    background: rgba(21, 21, 21, 0.9);
+    // display: none;
+
+    .material-select-content-container {
+        min-height: 660px;
+        height: 100%;
+        display: grid;
+        grid-template-rows: $headerHeight 50px auto 80px;
+        overflow-y: auto;
+        grid-column: 2/3;
+        padding: 0px 40px;
+
+        .material-select-header {
+            display: flex;
+            align-items: center;
+            height: $headerHeight;
+
+            button {
+
+                cursor: pointer;
+                background: transparent;
+                border: none;
+
+            }
+
+            .home-button {
+                @include singleAnglePolygon(84px, 45px, 165deg);
+                background-image: url('@/layouts/profiles_layout/img/star_button.svg');
+                background-position: center;
+                background-repeat: no-repeat;
+
+                img {
+                    padding-right: 12px
+                }
+            }
+
+            .points-button {
+                @include doubleAnglePolygon(89px, 45px, 165deg);
+                background-image: url('@/layouts/profiles_layout/img/points_button.svg');
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+        }
+
+        .material-select-center {
+            // min-width: 1140px - $sidebarWidth;
+            grid-row: 3;
+            width: 100%;
+            height: 100%;
+            justify-self: center;
+            padding-right: 100px;
+            overflow-y: scroll;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            &::-webkit-scrollbar {
+                width: 49px;
+            }
+
+
+            &::-webkit-scrollbar-thumb {
+                width: 49px;
+                height: 90px;
+                background: linear-gradient(326.69deg, #656565 18.34%, #C1C1C1 101.19%);
+                border-radius: 63px;
+            }
+
+
+            &::-webkit-scrollbar-track {
+                border-left: 21px solid transparent;
+                border-right: 21px solid transparent;
+                background-clip: padding-box;
+                background-image: linear-gradient(rgba(20, 20, 20, 1), rgba(53, 53, 53, 1), rgba(0, 0, 0, 1));
+            }
+
+            hr {
+                width: 90%;
+                height: 1px;
+                background: none;
+                border-top: 1px solid;
+                border-color: rgba(0, 224, 255, 0.63);
+            }
+
+            .button-wrapper {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .material-select-button {
+                background: none;
+                border: none;
+                display: grid;
+                grid-template-columns: auto 180px;
+                width: 100%;
+                padding-right: 5%;
+                margin-top: 10px;
+                cursor: pointer;
+                -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+                -webkit-tap-highlight-color: transparent;
+
+
+
+                .material-info {
+                    height: 90px;
+                    width: 100%;
+                    display: grid;
+                    grid-template-columns: 50px auto;
+                    column-gap: 30px;
+                    align-items: center;
+                    user-select: none;
+
+                    .material-icon {
+                        width: 61px;
+                        height: 31px;
+                        font-weight: 700;
+                        font-size: 14px;
+                        // border: 3px solid #6B6B6B;
+                        border: 3px solid white;
+                        border-radius: 6px;
+                        color: white;
+                        // color: #6B6B6B;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+
+                    span {
+                        grid-column: 2;
+                        font-weight: 700;
+                        font-size: 35px;
+                        color: white;
+                        // color: #6B6B6B;
+                        
+                    }
+                }
+
+                button {
+                    background: none;
+                    border: none;
+                    width: 179px;
+                    height: 73px;
+                    align-self: center;
+                    justify-self: center;
+                    font-size: 25px;
+                    font-weight: 700;
+                    color: rgba(217, 217, 217, 1);
+                    filter: drop-shadow(6px 6px 10px #000000) drop-shadow(-6px -6px 10px rgba(0, 148, 255, 0.37));
+                    border: 3px solid rgb(201, 196, 196);
+                    border-radius: 12px;
+                    cursor: pointer;
+                    user-select: none;
+                    display: none;
+
+                }
+
+                &.active {
+
+                    .material-info {
+                        .material-icon {
+                            border: 3px solid white;
+                            color: white;
+                        }
+
+                        span {
+                            color: white;
+                        }
+                    }
+
+                    button {
+                        display: block;
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+
+</style>
