@@ -96,22 +96,7 @@
 
         <div class="control-buttons">
 
-            <div v-if="isPrinting" class="big-round-button-wrapper">
-                <button class="big-round-button">
-                    <span class="percent">{{ printProgress }}%</span>
-                    <svg>
-                        <defs>
-                            <linearGradient id="grad1">
-                                <stop offset="0%" stop-color="rgba(0, 178, 202, 1)" />
-                                <stop offset="100%" stop-color="rgba(4, 112, 200, 1)" stop-opacity="1" />
-                            </linearGradient>
-                        </defs>
-                        <circle ref="circleBar" transform="rotate(-90 176 176)" stroke-dasharray="423.9 518.1" cx="176"
-                            cy="176" r="150" stroke="url(#grad1)" stroke-width="7px" fill="transparent">
-                        </circle>
-                    </svg>
-                </button>
-            </div>
+            <CircleBar v-if="isPrinting" />
 
             <button v-if="!isPrinting" :class="{ 'active': buttonsState.firstButton }"
                 @touchstart="touchStartHandler($event, 'firstButton')" @touchend="touchEndHandler('firstButton')"
@@ -179,9 +164,7 @@
 
             <div class="progress-bar-wrapper">
                 <img src="@/style/printWindow/img/progress_bar.svg" alt="">
-                <div class="progress-wrapper">
-                    <div ref="progressBar" class="progress"></div>
-                </div>
+                <ProgressBar />
             </div>
         </div>
 
@@ -203,10 +186,12 @@ import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
 import { InfoAlertType, AlertType } from '@/store/ourExtension/layoutsData/alerts/types';
 import { PrintingDiapasonForMoonraker, ProfilesMetadata } from '@/store/ourExtension/profiles/types';
 import { Component, Mixins, Vue } from 'vue-property-decorator';
+import ProgressBar from './ProgressBar.vue';
+import CircleBar from './CircleBar.vue';
 
 @Component({
     components: {
-
+        ProgressBar, CircleBar
     },
 })
 export default class PrintWindow extends Mixins(WindowsMixin, StateMixin) {
@@ -240,7 +225,7 @@ export default class PrintWindow extends Mixins(WindowsMixin, StateMixin) {
     }
 
     setProgressBarPercent(percent: number, progressBar: HTMLElement) {
-        progressBar.style.width = `${percent}%;`
+        progressBar.style.width = `${percent}%`
     }
 
     setPercent(percent: number, circleBar: SVGElement) {

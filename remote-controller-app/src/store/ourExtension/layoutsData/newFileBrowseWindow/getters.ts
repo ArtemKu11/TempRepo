@@ -7,7 +7,7 @@ export const getters: GetterTree<NewFileBrowseWindowState, RootState> = {
         return state.currentPath
     },
 
-    getFileList(state) {
+    getFileList: (state) => () => {
         return state.fileList;
     },
 

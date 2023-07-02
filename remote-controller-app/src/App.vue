@@ -112,7 +112,7 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
     printerPrintingWather() {
         if (this.printerPrinting) {
             setTimeout(() => {
-                if (this.printerPrinting || this.printerPaused && this.$route.path !== "/print") {
+                if ((this.printerPrinting || this.printerPaused) && this.$route.path !== '/print') {
                     this.initExisitingPrintingWindow()
                     this.$router.push('/print')
                 }
@@ -128,6 +128,7 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
                 filesMap.gcodes.forEach((value) => {
                     this.parseGcodes(value)
                 })
+                this.$store.dispatch('ourExtension/layoutsData/newFileBrowseWindow/setCurrentPath', 'gcodes')
             }
         }
     }

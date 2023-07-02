@@ -18,8 +18,8 @@
                 <hr>
             </button>
             <div class="files-list">
-                <FileButton v-for="(fileData, index) in fileList" :key="-index - 1" :fileData="fileData" />
                 <FolderButton v-for="(directoryData, index) in directoryList" :key="index" :directoryData="directoryData" />
+                <FileButton v-for="(fileData, index) in fileList" :key="-index - 1" :fileData="fileData" />
             </div>
         </div>
 
@@ -108,11 +108,11 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
     }
 
     get absolutelyEmpty(): boolean {
-        return !this.isDirectorySelected && Boolean(this.fileList) && Boolean(this.directoryList)
+        return !this.isDirectorySelected && !Boolean(this.fileList) && !Boolean(this.directoryList)
     }
 
     get fileList(): Array<FileData> {
-        return this.$store.getters['ourExtension/layoutsData/newFileBrowseWindow/getFileList']
+        return this.$store.getters['ourExtension/layoutsData/newFileBrowseWindow/getFileList']()
     }
 
     get directoryList(): Array<FileData> {
