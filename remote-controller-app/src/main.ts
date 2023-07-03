@@ -11,6 +11,8 @@ import { SocketPlugin } from './plugins/socketClient'
 import store from './store'
 import { InitConfig } from './store/config/types'
 import router from './router'
+import { GpioSocket } from '@/gpio/gpioSocket'
+
 
 Vue.config.productionTip = false
 
@@ -33,6 +35,7 @@ appInit()
         // if (config.apiConfig.socketUrl && config.apiConnected && config.apiAuthenticated) {
         //     Vue.$socket.connect(config.apiConfig.socketUrl)
         // }
+        createGpioSocket()
         Vue.$socket.connect(config.apiConfig.socketUrl)
 
 
@@ -47,4 +50,8 @@ appInit()
     })
 
 
-
+function createGpioSocket() {
+    console.log('Попытка создать сокет')
+    const gpioSocket = new GpioSocket(store)
+    gpioSocket.connect()
+}

@@ -185,16 +185,17 @@ import { FileData } from '@/store/ourExtension/files/types';
 import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
 import { InfoAlertType, AlertType } from '@/store/ourExtension/layoutsData/alerts/types';
 import { PrintingDiapasonForMoonraker, ProfilesMetadata } from '@/store/ourExtension/profiles/types';
-import { Component, Mixins, Vue } from 'vue-property-decorator';
+import { Component, Mixins, Vue, Watch } from 'vue-property-decorator';
 import ProgressBar from './ProgressBar.vue';
 import CircleBar from './CircleBar.vue';
+import GpioMixin from '@/mixins/gpio';
 
 @Component({
     components: {
         ProgressBar, CircleBar
     },
 })
-export default class PrintWindow extends Mixins(WindowsMixin, StateMixin) {
+export default class PrintWindow extends Mixins(WindowsMixin, StateMixin, GpioMixin) {
     warningFlag = false
     noGasFlag = false
     processingSetter: string = ''
@@ -210,6 +211,10 @@ export default class PrintWindow extends Mixins(WindowsMixin, StateMixin) {
 
     mounted() {
         setTimeout(() => { this.setPrintProgress() }, 100)
+    }
+
+    beforeDestroy() {
+        this.setAllButtonsPressed(false)
     }
 
     setPrintProgress() {
@@ -237,6 +242,7 @@ export default class PrintWindow extends Mixins(WindowsMixin, StateMixin) {
 
     touchStartHandler(e: TouchEvent, button: string) {
         if (button in this.buttonsState) {
+            this.setAllButtonsPressed(false)
             const state = this.buttonsState as any
             state[button] = true
             if (e.cancelable) {
@@ -561,6 +567,113 @@ export default class PrintWindow extends Mixins(WindowsMixin, StateMixin) {
             type: 'red'
         }
         Alerts.showInfoAlert(alert)
+    }
+
+    /// GPIO SUPPORT:
+
+    gpioButtonDownEventHandler(button: string) {
+        if (button in this.buttonsState) {
+            const state = this.buttonsState as any
+            state[button] = true
+        }
+    }
+
+    gpioButtonUpEventHandler(button: string, needToResolveClick = true) {
+        if (button in this.buttonsState) {
+            const state = this.buttonsState as any
+            state[button] = false
+            if (needToResolveClick) {
+                this.resolveButtonClick(button)
+            }
+        }
+    }
+
+    @Watch('isFirstButtonPressed')
+    firstButtonWather(newValue: boolean, oldValue: boolean) {
+        const isPressed = this.isFirstButtonPressed
+        if (isPressed) {
+            this.gpioButtonDownEventHandler('firstButton')
+        } else {
+            if (!this.buttonsInterrups.firstButton) {
+                this.gpioButtonUpEventHandler('firstButton')
+            } else {
+                this.gpioButtonUpEventHandler('firstButton', false)
+            }
+        }
+    }
+
+    @Watch('isSecondButtonPressed')
+    secondButtonWather(newValue: boolean, oldValue: boolean) {
+        const isPressed = this.isSecondButtonPressed
+        if (isPressed) {
+            this.gpioButtonDownEventHandler('secondButton')
+        } else {
+            if (isPressed) {
+                this.gpioButtonUpEventHandler('secondButton')
+            } else {
+                if (!this.buttonsInterrups.secondButton) {
+                    this.gpioButtonUpEventHandler('secondButton')
+                } else {
+                    this.gpioButtonUpEventHandler('secondButton', false)
+                }
+            }
+        }
+    }
+
+    @Watch('isThirdButtonPressed')
+    thirdButtonWather(newValue: boolean, oldValue: boolean) {
+        const isPressed = this.isThirdButtonPressed
+        if (isPressed) {
+            this.gpioButtonDownEventHandler('thirdButton')
+        } else {
+            if (!this.buttonsInterrups.thirdButton) {
+                this.gpioButtonUpEventHandler('thirdButton')
+            } else {
+                this.gpioButtonUpEventHandler('thirdButton', false)
+            }
+        }
+    }
+
+    @Watch('isFourthButtonPressed')
+    fourthButtonWather(newValue: boolean, oldValue: boolean) {
+        const isPressed = this.isFourthButtonPressed
+        if (isPressed) {
+            this.gpioButtonDownEventHandler('fourthButton')
+        } else {
+            if (!this.buttonsInterrups.fourthButton) {
+                this.gpioButtonUpEventHandler('fourthButton')
+            } else {
+                this.gpioButtonUpEventHandler('fourthButton', false)
+            }
+        }
+    }
+
+    @Watch('isFifthButtonPressed')
+    fifthButtonWather(newValue: boolean, oldValue: boolean) {
+        const isPressed = this.isFifthButtonPressed
+        if (isPressed) {
+            this.gpioButtonDownEventHandler('fifthButton')
+        } else {
+            if (!this.buttonsInterrups.fifthButton) {
+                this.gpioButtonUpEventHandler('fifthButton')
+            } else {
+                this.gpioButtonUpEventHandler('fifthButton', false)
+            }
+        }
+    }
+
+    @Watch('isSixthButtonPressed')
+    sixthButtonWather(newValue: boolean, oldValue: boolean) {
+        const isPressed = this.isSixthButtonPressed
+        if (isPressed) {
+            this.gpioButtonDownEventHandler('sixthButton')
+        } else {
+            if (!this.buttonsInterrups.sixthButton) {
+                this.gpioButtonUpEventHandler('sixthButton')
+            } else {
+                this.gpioButtonUpEventHandler('sixthButton', false)
+            }
+        }
     }
 
 }

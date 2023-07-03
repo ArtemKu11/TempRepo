@@ -3,7 +3,7 @@
         <router-view></router-view>
         <DefaultAlert v-if="alertFlag" />
         <InfoAlert v-if="infoAlertFlag" />
-        <FatalErrorAlert v-if="fatalErrorFlag" />
+        <!-- <FatalErrorAlert v-if="fatalErrorFlag" /> -->
     </div>
 </template>
 
@@ -41,13 +41,15 @@ import { AxiosResponse } from 'axios';
 import StateMixin from './mixins/state';
 import { AlertType } from './store/ourExtension/layoutsData/alerts/types';
 import WindowsMixin from './mixins/windows';
+import GpioMixin from './mixins/gpio';
+import { Alerts } from './store/ourExtension/layoutsData/alerts/helpers';
 
 @Component({
     components: {
         DefaultAlert, InfoAlert, FatalErrorAlert
     },
 })
-export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
+export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin, GpioMixin) {
 
     buttonFlags = {
         mainButton: false,
@@ -91,6 +93,23 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
 
     get fatalErrorFlag(): Boolean {
         return !this.klippyReady || !this.klippyConnected
+    }
+
+    @Watch('gpioSocketConnected')
+    gpioSocketConnectedWather() {
+        if (this.gpioSocketConnected) {
+            const alert: AlertType = {
+                message: "GPIO сокет подключен!",
+                type: 'green'
+            }
+            Alerts.showInfoAlert(alert)
+        } else {
+            const alert: AlertType = {
+                message: "GPIO сокет умер!",
+                type: 'red'
+            }
+            Alerts.showInfoAlert(alert)
+        }
     }
 
     mounted() {

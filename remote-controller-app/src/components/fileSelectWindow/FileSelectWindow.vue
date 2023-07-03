@@ -78,7 +78,7 @@
 
 <script lang="ts">
 import { DirectoryData, FileData, LastPrintingFile } from '@/store/ourExtension/files/types';
-import { Component, Mixins, Vue } from 'vue-property-decorator';
+import { Component, Mixins, Vue, Watch } from 'vue-property-decorator';
 import FileButton from './FileButton.vue';
 import FolderButton from './FolderButton.vue';
 import { AlertType, InfoAlertType } from '@/store/ourExtension/layoutsData/alerts/types';
@@ -86,6 +86,8 @@ import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
 import { mockHelper } from '@/helpers/mockHelper';
 import StateMixin from '@/mixins/state';
 import WindowsMixin from '@/mixins/windows';
+import GpioMixin from '@/mixins/gpio';
+
 import { PrintingDiapasonForMoonraker } from '@/store/ourExtension/profiles/types';
 import FilesMixin from '@/mixins/files';
 
@@ -96,7 +98,7 @@ import FilesMixin from '@/mixins/files';
         FileButton, FolderButton
     },
 })
-export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, FilesMixin) {
+export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, FilesMixin, GpioMixin) {
 
     buttonsState = {  // флаги для бинда .active класса для мнгновенной подмены картинок по touchstart
         firstButton: false,  // Информация о файле
@@ -141,6 +143,7 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
 
     beforeDestroy() {
         this.deactivateFiles()
+        this.setAllButtonsPressed(false)
     }
 
     deactivateFiles() {
@@ -149,6 +152,7 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
 
     touchStartHandler(e: TouchEvent, button: string) {
         if (button in this.buttonsState) {
+            this.setAllButtonsPressed(false)
             const state = this.buttonsState as any
             state[button] = true
             if (e.cancelable) {
@@ -164,6 +168,8 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
             case "fourthButton":  // Выбор
                 this.selectButtonClick()
                 return;
+            case "fifthButton":  // Выбор
+                return;
             default:
                 return;
         }
@@ -176,24 +182,27 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
         }
     }
 
+    
+
     selectButtonClick() {
-        const selectedFile = this.selectedFile
-        const selectedDirectory = this.selectedDirectory
-        if (selectedFile) {
-            this.tryToStartPrint()
-            return
-        }
-        if (selectedDirectory) {
-            this.$store.commit('ourExtension/layoutsData/newFileBrowseWindow/deactivateFiles');
-            const newPath = this.currentPath + "/" + selectedDirectory.name
-            this.$store.dispatch('ourExtension/layoutsData/newFileBrowseWindow/setCurrentPath', newPath);
-            return
-        }
-        const alert: InfoAlertType = {
-            message: "Ничего не выбрано",
-            type: 'red'
-        }
-        Alerts.showInfoAlert(alert)
+        this.tryToStartPrint();  // TODO раскоммениторовать и убрать
+        // const selectedFile = this.selectedFile
+        // const selectedDirectory = this.selectedDirectory
+        // if (selectedFile) {
+        //     this.tryToStartPrint()
+        //     return
+        // }
+        // if (selectedDirectory) {
+        //     this.$store.commit('ourExtension/layoutsData/newFileBrowseWindow/deactivateFiles');
+        //     const newPath = this.currentPath + "/" + selectedDirectory.name
+        //     this.$store.dispatch('ourExtension/layoutsData/newFileBrowseWindow/setCurrentPath', newPath);
+        //     return
+        // }
+        // const alert: InfoAlertType = {
+        //     message: "Ничего не выбрано",
+        //     type: 'red'
+        // }
+        // Alerts.showInfoAlert(alert)
     }
 
     tryToStartPrint() {
@@ -220,8 +229,8 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
     }
 
     startNewPrint() {
-        // const selectedFile = mockHelper.getFileDataMock()
-        const selectedFile = this.selectedFile
+        const selectedFile = mockHelper.getFileDataMock()
+        // const selectedFile = this.selectedFile  // Поменять местами
         if (selectedFile) {
 
             this.$store.commit('ourExtension/files/setSelectedFile', selectedFile)
@@ -247,22 +256,24 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
     }
 
     async printFile(diapasonForMoonraker: PrintingDiapasonForMoonraker, file: FileData) {
-        const response = await this.sendProfile(diapasonForMoonraker)
-        if (response.status && response.status === 201) {
-            const lastPrintingFile: LastPrintingFile = {
-                diapason: diapasonForMoonraker,
-                file: file
-            }
-            this.$store.commit('ourExtension/files/setLastPrintingFile', lastPrintingFile)
-            this.initNewPrintingWindow(diapasonForMoonraker, file)
-            this.$router.push('/print')
-        } else {
-            const alert: InfoAlertType = {
-                message: "Не удалось отправить профиль печати",
-                type: 'red'
-            }
-            Alerts.showInfoAlert(alert)
-        }
+        this.initNewPrintingWindow(diapasonForMoonraker, file)
+        this.$router.push('/print')
+        // const response = await this.sendProfile(diapasonForMoonraker)  // TODO убрать первые 2 строки и раскомментировать
+        // if (response.status && response.status === 201) {
+        //     const lastPrintingFile: LastPrintingFile = {
+        //         diapason: diapasonForMoonraker,
+        //         file: file
+        //     }
+        //     this.$store.commit('ourExtension/files/setLastPrintingFile', lastPrintingFile)
+        //     this.initNewPrintingWindow(diapasonForMoonraker, file)
+        //     this.$router.push('/print')
+        // } else {
+        //     const alert: InfoAlertType = {
+        //         message: "Не удалось отправить профиль печати",
+        //         type: 'red'
+        //     }
+        //     Alerts.showInfoAlert(alert)
+        // }
     }
 
     openPreviousDirectory() {
@@ -275,6 +286,179 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
     }
 
 
+    /// GPIO SUPPORT:
+
+    // 1. Унаследоваться от GpioMixin
+    // 2. beforeDestroy: this.setAllButtonsPressed(false)
+    // 3. touchStartHandler: this.setAllButtonsPressed(false)
+    // 4. Скопировать все нижележащее 
+
+    gpioButtonDownEventHandler(button: string) {
+        if (button in this.buttonsState) {
+            const state = this.buttonsState as any
+            state[button] = true
+        }
+    }
+
+    gpioButtonUpEventHandler(button: string, needToResolveClick = true) {
+        if (button in this.buttonsState) {
+            const state = this.buttonsState as any
+            state[button] = false
+            if (needToResolveClick) {
+                this.resolveButtonClick(button)
+            }
+        }
+    }
+
+    @Watch('isFirstButtonPressed')
+    firstButtonWather(newValue: boolean, oldValue: boolean) {
+        const isPressed = this.isFirstButtonPressed
+        if (isPressed) {
+            this.gpioButtonDownEventHandler('firstButton')
+        } else {
+            if (!this.buttonsInterrups.firstButton) {
+                this.gpioButtonUpEventHandler('firstButton')
+            } else {
+                this.gpioButtonUpEventHandler('firstButton', false)
+            }
+        }
+    }
+
+    @Watch('isSecondButtonPressed')
+    secondButtonWather(newValue: boolean, oldValue: boolean) {
+        const isPressed = this.isSecondButtonPressed
+        if (isPressed) {
+            this.gpioButtonDownEventHandler('secondButton')
+        } else {
+            if (isPressed) {
+                this.gpioButtonUpEventHandler('secondButton')
+            } else {
+                if (!this.buttonsInterrups.secondButton) {
+                    this.gpioButtonUpEventHandler('secondButton')
+                } else {
+                    this.gpioButtonUpEventHandler('secondButton', false)
+                }
+            }
+        }
+    }
+
+    @Watch('isThirdButtonPressed')
+    thirdButtonWather(newValue: boolean, oldValue: boolean) {
+        const isPressed = this.isThirdButtonPressed
+        if (isPressed) {
+            this.gpioButtonDownEventHandler('thirdButton')
+        } else {
+            if (!this.buttonsInterrups.thirdButton) {
+                this.gpioButtonUpEventHandler('thirdButton')
+            } else {
+                this.gpioButtonUpEventHandler('thirdButton', false)
+            }
+        }
+    }
+
+    @Watch('isFourthButtonPressed')
+    fourthButtonWather(newValue: boolean, oldValue: boolean) {
+        const isPressed = this.isFourthButtonPressed
+        if (isPressed) {
+            this.gpioButtonDownEventHandler('fourthButton')
+        } else {
+            if (!this.buttonsInterrups.fourthButton) {
+                this.gpioButtonUpEventHandler('fourthButton')
+            } else {
+                this.gpioButtonUpEventHandler('fourthButton', false)
+            }
+        }
+    }
+
+    @Watch('isFifthButtonPressed')
+    fifthButtonWather(newValue: boolean, oldValue: boolean) {
+        const isPressed = this.isFifthButtonPressed
+        if (isPressed) {
+            this.gpioButtonDownEventHandler('fifthButton')
+        } else {
+            if (!this.buttonsInterrups.fifthButton) {
+                this.gpioButtonUpEventHandler('fifthButton')
+            } else {
+                this.gpioButtonUpEventHandler('fifthButton', false)
+            }
+        }
+    }
+
+    @Watch('isSixthButtonPressed')
+    sixthButtonWather(newValue: boolean, oldValue: boolean) {
+        const isPressed = this.isSixthButtonPressed
+        if (isPressed) {
+            this.gpioButtonDownEventHandler('sixthButton')
+        } else {
+            if (!this.buttonsInterrups.sixthButton) {
+                this.gpioButtonUpEventHandler('sixthButton')
+            } else {
+                this.gpioButtonUpEventHandler('sixthButton', false)
+            }
+        }
+    }
+
+    /// TEMPLATE:
+
+    // @Watch('isFirstButtonPressed')
+    // firstButtonWather() {
+    //     const isPressed = this.isFirstButtonPressed
+    //     if (isPressed) {
+    //         console.log('Нажата первая кнопка')
+    //     } else {
+    //         console.log('Отпущена первая кнопка')
+    //     }
+    // }
+
+    // @Watch('isSecondButtonPressed')
+    // secondButtonWather() {
+    //     const isPressed = this.isSecondButtonPressed
+    //     if (isPressed) {
+    //         console.log('Нажата вторая кнопка')
+    //     } else {
+    //         console.log('Отпущена вторая кнопка')
+    //     }
+    // }
+
+    // @Watch('isThirdButtonPressed')
+    // thirdButtonWather() {
+    //     const isPressed = this.isThirdButtonPressed
+    //     if (isPressed) {
+    //         console.log('Нажата третья кнопка')
+    //     } else {
+    //         console.log('Отпущена третья кнопка')
+    //     }
+    // }
+
+    // @Watch('isFourthButtonPressed')
+    // fourthButtonWather() {
+    //     const isPressed = this.isFourthButtonPressed
+    //     if (isPressed) {
+    //         console.log('Нажата четвертая кнопка')
+    //     } else {
+    //         console.log('Отпущена четвертая кнопка')
+    //     }
+    // }
+
+    // @Watch('isFifthButtonPressed')
+    // fifthButtonWather() {
+    //     const isPressed = this.isFifthButtonPressed
+    //     if (isPressed) {
+    //         console.log('Нажата пятая кнопка')
+    //     } else {
+    //         console.log('Отпущена пятая кнопка')
+    //     }
+    // }
+
+    // @Watch('isSixthButtonPressed')
+    // sixthButtonWather() {
+    //     const isPressed = this.isSixthButtonPressed
+    //     if (isPressed) {
+    //         console.log('Нажата шестая кнопка')
+    //     } else {
+    //         console.log('Отпущена шестая кнопка')
+    //     }
+    // }
 }
 </script>
 

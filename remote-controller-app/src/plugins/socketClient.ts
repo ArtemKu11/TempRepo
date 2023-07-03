@@ -306,7 +306,7 @@ interface Request {
     wait?: string;
 }
 
-interface SocketRequest {
+export interface SocketRequest {
     jsonrpc: string;
     id: number;
     method: string;

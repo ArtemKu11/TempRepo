@@ -6,7 +6,7 @@ import layoutsData from "./layoutsData";
 import { profiles } from "./profiles";
 import { OurExtensionState } from "./types";
 import windowFlags from "./windowFlags";
-import { temp } from "./temp";
+import { gpio } from "./gpio";
 
 const namespaced = true;
 
@@ -17,7 +17,7 @@ export const ourExtension: Module<OurExtensionState, RootState> = {
         windowFlags,
         files,
         profiles,
-        temp
+        gpio
     },
     actions: {
         reset() {
