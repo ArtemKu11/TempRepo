@@ -1,5 +1,5 @@
 import { MutationTree } from "vuex";
-import { GpioState } from "./types";
+import { EncoderState, GpioState } from "./types";
 
 export const mutations: MutationTree<GpioState> = {
     setSocketConnected(state, payload: boolean) {
@@ -29,4 +29,8 @@ export const mutations: MutationTree<GpioState> = {
     setSixthButton(state, payload: boolean) {
         state.buttonsState.sixthButton = payload
     },
+
+    setEncoder1(state, payload: EncoderState) {
+        state.encoderState.encoder1 = payload
+    }
 }

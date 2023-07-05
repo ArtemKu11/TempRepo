@@ -1,6 +1,7 @@
 export interface GpioState {
     isSocketConnected: boolean
     buttonsState: ButtonsState
+    encoderState: EncodersState
 }
 
 export interface ButtonsState {
@@ -10,4 +11,13 @@ export interface ButtonsState {
     fourthButton: boolean
     fifthButton: boolean
     sixthButton: boolean
+}
+
+export interface EncodersState {
+    encoder1: EncoderState
+}
+
+export interface EncoderState {
+    emited: boolean
+    isClockwise: boolean
 }

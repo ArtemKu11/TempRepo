@@ -30,4 +30,8 @@ export const getters: GetterTree<GpioState, RootState> = {
     getSixthButton(state) {
         return state.buttonsState.sixthButton
     },
+
+    getEncoder1(state) {
+        return state.encoderState.encoder1
+    }
 }

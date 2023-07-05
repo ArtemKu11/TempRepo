@@ -3,3 +3,7 @@ tests
 .vscode
 AppCopy.vue
 x-weld-app
+gpio_socket/.idea/
+gpio_socket/__pycache__
+
+gpio_socket/callback_test.py

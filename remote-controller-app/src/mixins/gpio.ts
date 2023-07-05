@@ -1,3 +1,4 @@
+import { EncoderState } from '@/store/ourExtension/gpio/types'
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
 
@@ -80,5 +81,9 @@ export default class GpioMixin extends Vue {
         for (const button in interrups) {
             interrups[button] = newValue
         }
+    }
+
+    get encoder1State(): EncoderState {
+        return this.$store.getters['ourExtension/gpio/getEncoder1']
     }
 }

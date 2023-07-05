@@ -10,6 +10,12 @@ export const defaultState = (): GpioState => {
             fourthButton: false,
             fifthButton: false,
             sixthButton: false
+        },
+        encoderState: {
+            encoder1: {
+                emited: false,
+                isClockwise: false
+            }
         }
     }
 }

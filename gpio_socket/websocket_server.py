@@ -1,8 +1,10 @@
 import asyncio
 import json
+import wiringpi
 
 from server_response import ServerResponse
-from button_event import ButtonEvent
+# from test_processor import TestProcessor
+from gpio_processor import OPGpioProcessor
 
 import websockets
 from websockets.exceptions import ConnectionClosedOK
@@ -17,26 +19,14 @@ class WebSocketServer:
 
     async def start_server(self):
         serve_func = websockets.serve(self.new_client_connected, "localhost", 8125)
-        input = self.input_func()
-        await asyncio.gather(serve_func, input)
+        # gpio_processor = TestProcessor(self.send_to_clients, self.clients_list)
+        gpio_processor = OPGpioProcessor(self.send_to_clients, self.clients_list)
+        await asyncio.gather(serve_func, gpio_processor.start_processing())
 
-    async def input_func(self):
-        while True:
-            if len(self.clients_list):
-                command = await asyncio.to_thread(input, 'Введите номер кнопки: ')
-                if command.isdigit():
-                    key_down_event = ButtonEvent(button_number=int(command), event_type='key_down')
-                    await self.send_to_clients(key_down_event.__dict__)
-                    await asyncio.sleep(0.5)
-                    key_up_event = ButtonEvent(button_number=int(command), event_type='key_up')
-                    await self.send_to_clients(key_up_event.__dict__)
-            else:
-                await asyncio.sleep(1)
-
-    async def send_to_clients(self, button):
+    async def send_to_clients(self, result):
         if len(self.clients_list):
             for i in range(0, len(self.clients_list)):
-                response = json.dumps(ServerResponse(button).__dict__)
+                response = json.dumps(ServerResponse(result).__dict__)
                 await self.clients_list[i].send(response)
 
     async def new_client_connected(self, client_socket, path):
@@ -58,6 +48,7 @@ class WebSocketServer:
 
 
 if __name__ == '__main__':
+    wiringpi.wiringPiSetup()
     event_loop = asyncio.new_event_loop()
     server = WebSocketServer(event_loop)
     asyncio.set_event_loop(event_loop)

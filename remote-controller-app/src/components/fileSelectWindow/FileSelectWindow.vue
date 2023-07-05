@@ -398,6 +398,10 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
         }
     }
 
+    @Watch('encoder1State')
+    encoder1Watcher() {
+        console.log(this.encoder1State.emited)
+    }
     /// TEMPLATE:
 
     // @Watch('isFirstButtonPressed')

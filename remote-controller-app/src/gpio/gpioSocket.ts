@@ -1,4 +1,5 @@
 import { SocketRequest } from "@/plugins/socketClient"
+import { EncoderState } from "@/store/ourExtension/gpio/types"
 import { Alerts } from "@/store/ourExtension/layoutsData/alerts/helpers"
 import { AlertType } from "@/store/ourExtension/layoutsData/alerts/types"
 import { Store } from "vuex"
@@ -17,6 +18,9 @@ export class GpioSocket {
         [4, 'ourExtension/gpio/setFourthButton'],
         [5, 'ourExtension/gpio/setFifthButton'],
         [6, 'ourExtension/gpio/setSixthButton'],])
+    encodersCommits = new Map([
+        [1, 'ourExtension/gpio/setEncoder1']
+    ])
 
     constructor(store: Store<any>) {
         this.store = store
@@ -49,6 +53,9 @@ export class GpioSocket {
                         if (data.result.event_type === "button_event") {  // TODO, энкодер
                             const buttonEvent = data.result as ButtonEvent
                             this.handleButtonEvent(buttonEvent)
+                        } else if (data.result.event_type === "encoder_event") {
+                            const encoderEvent = data.result as EncoderEvent
+                            this.handleEncoderEvent(encoderEvent)
                         }
                     }
                 }
@@ -91,10 +98,46 @@ export class GpioSocket {
             Alerts.showInfoAlert(alert)
         }
     }
+
+    handleEncoderEvent(encoderEvent: EncoderEvent) {
+        const encoderNumber = encoderEvent.encoder_number
+        const commit = this.encodersCommits.get(encoderNumber)
+        let isClockwise = true
+        if (encoderEvent.type === 'counter_clockwise') {
+            isClockwise = false
+        }
+        if (commit) {
+            const emitedEncoderState: EncoderState = {
+                emited: true,
+                isClockwise: isClockwise
+            }
+            this.store.commit(commit, emitedEncoderState)
+            setTimeout(() => {
+                const encoderState: EncoderState = {
+                    emited: false,
+                    isClockwise: isClockwise
+                }
+                this.store.commit(commit, encoderState)
+            }, 1)
+            
+        } else {
+            const alert: AlertType = {
+                message: "Неизвестный запрос с сервера на энкодер: " + encoderNumber,
+                type: 'red'
+            }
+            Alerts.showInfoAlert(alert)
+        }
+    }
 }
 
 interface ButtonEvent {
-    event_type: string
-    type: string
+    event_type: string  // button_event
+    type: string  // key_up, key_down
     button_number: number
+}
+
+interface EncoderEvent {
+    event_type: string  // encoder_event
+    type: string  // clockwise, counter_clockwise
+    encoder_number: number
 }
