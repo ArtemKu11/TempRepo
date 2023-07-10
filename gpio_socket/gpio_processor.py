@@ -1,8 +1,7 @@
 import asyncio
 
 import wiringpi
-from button_event import ButtonEvent
-from encoder_event import EncoderEvent
+from dto import ButtonEvent, EncoderEvent
 
 
 class Button:

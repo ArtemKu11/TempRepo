@@ -1,7 +1,10 @@
 button1:
-  number: 1
-  pin: 3
+  number: 4
+  pin: 8
+button2:
+  number: 5
+  pin: 10
 encoder1:
   number: 1
-  first_pin: 4
+  first_pin: 3
   second_pin: 5

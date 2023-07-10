@@ -7,3 +7,7 @@ gpio_socket/.idea/
 gpio_socket/__pycache__
 
 gpio_socket/callback_test.py
+gpio_socket/asyncio_timer.py
+__pycache__
+gpio_socket/encoder.py
+gpio_socket/rpi_interrupt.py

@@ -1,6 +1,7 @@
 import asyncio
-from button_event import ButtonEvent
-
+from dto import ButtonEvent
+import datetime, time
+from time import sleep
 
 class TestProcessor:
     def __init__(self, send_to_clients_callback, clients_list):
@@ -35,3 +36,10 @@ class TestProcessor:
                         key_up_event = ButtonEvent(button_number=4, event_type='key_up')
                         await self.send_to_clients_callback(key_up_event.__dict__)
                         print('key_up')
+
+
+if __name__ == '__main__':
+    date = time.time()
+    print(date)
+    sleep(1)
+    print((time.time() - date) * 1000)
