@@ -297,8 +297,10 @@ export class UltraFinalOnlineValcoderProcessor {  // Использовать и
     private readonly TIME_SHIFT_IN_PERCENT = 1
     private readonly TOUCH_TIMEOUT = 500
     private readonly SEND_PIXELS_BORDER = 50
+    private readonly SPEED_CHANGE_BORDER = 0.2
+    private readonly SEND_TIMEOUT_SHIFT = 0.9
     private $store: Store<RootState>
-    private lastSendedValue: number
+    private lastSentValue: number
     private lastStartTouchTime = 0
     private lastUsualTouchTime = 0
     private isItFirstTick = true
@@ -309,11 +311,13 @@ export class UltraFinalOnlineValcoderProcessor {  // Использовать и
     }
     private valcoderData!: ReturnedValcoderData
     private clockwiseDirection = true
+    private lastSentSpeed = 0
+    private sendTimeout: null | number = null
 
 
     constructor(store: Store<RootState>) {
         this.$store = store
-        this.lastSendedValue = +this.processingValue
+        this.lastSentValue = +this.processingValue
     }
 
     get processingValue(): string {
@@ -351,7 +355,9 @@ export class UltraFinalOnlineValcoderProcessor {  // Использовать и
         const distance = this.getTouchDistance()
         this.resetTouchIfItNeeded()
         this.touchPixels += distance
-        this.tryToSendByPixels()
+        if (this.sendTimeout === null) {
+            this.tryToSendByPixels()
+        }
         this.lastTouchCoords.x = valcoderData.touchX
         this.lastTouchCoords.y = valcoderData.touchY
     }
@@ -379,16 +385,46 @@ export class UltraFinalOnlineValcoderProcessor {  // Использовать и
             const distance = newValue - +this.processingValue
             const [speed, time] = this.resolveSpeedAndTime(new Date().getTime() - this.lastStartTouchTime, distance)
             this.sendConfigureableMoveGCode(distance + "", speed + "")
-            this.lastSendedValue = newValue
+            this.lastSentValue = newValue
 
             this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue + '')
             this.touchPixels -= steps * this.SEND_PIXELS_BORDER
             this.lastStartTouchTime = new Date().getTime()
+            this.sendTimeout = setTimeout(() => {
+                this.tryToSendByTimeout()
+            }, time * this.SEND_TIMEOUT_SHIFT)
         }
     }
 
-    private resolveNewValue(): number[] {
-        const steps = Math.trunc(this.touchPixels / this.SEND_PIXELS_BORDER)
+    private tryToSendByTimeout() {
+        if (this.touchPixels > this.SEND_PIXELS_BORDER * 0.2) {
+            let [newValue, steps] = this.resolveNewValue(false)
+            newValue = +newValue.toFixed(1)
+
+            const distance = +(newValue - +this.processingValue).toFixed(1)
+            const [speed, time] = this.resolveSpeedAndTime(new Date().getTime() - this.lastStartTouchTime, distance)
+            this.sendConfigureableMoveGCode(distance + "", speed + "")
+            this.lastSentValue = newValue
+
+            this.$store.commit('ourExtension/layoutsData/inputWindow/setProcessingValue', newValue + '')
+            this.touchPixels -= steps * this.SEND_PIXELS_BORDER
+            this.lastStartTouchTime = new Date().getTime()
+            this.sendTimeout = setTimeout(() => {
+                this.tryToSendByTimeout()
+            }, time * this.SEND_TIMEOUT_SHIFT)
+        } else {
+            this.sendTimeout = null
+        }
+    }
+
+    private resolveNewValue(needToTrunc = true): number[] {
+        let steps = this.touchPixels / this.SEND_PIXELS_BORDER
+        if (needToTrunc) {
+            steps = Math.trunc(steps)
+        } else {
+            steps = +steps.toFixed(1)
+        }
+        // const steps = Math.trunc(this.touchPixels / this.SEND_PIXELS_BORDER)
         let newValue = steps * this.valcoderStep + Math.abs(+this.processingValue)
         if (this.isItClockwiseDirection()) {
             newValue = steps * this.valcoderStep + +this.processingValue
@@ -526,6 +562,7 @@ export class UltraFinalOnlineValcoderProcessor {  // Использовать и
             this.isItFirstTick = false
         }
         let speed = +((distance / requiredTime) * 60 * 1000).toFixed(0);
+
         if (speed > this.MAX_SPEED) {
             speed = this.MAX_SPEED
             requiredTime = +((distance / this.MAX_SPEED) * 60 * 1000).toFixed(0)
@@ -533,14 +570,21 @@ export class UltraFinalOnlineValcoderProcessor {  // Использовать и
             speed = this.MIN_SPEED
             requiredTime = +((distance / this.MAX_SPEED) * 60 * 1000).toFixed(0)
         }
-        return [speed, requiredTime]
+
+        if (Math.abs(speed - this.lastSentSpeed) / this.lastSentSpeed < this.SPEED_CHANGE_BORDER) {
+            speed = this.lastSentSpeed
+            requiredTime = +((distance / speed) * 60 * 1000).toFixed(0)
+        }
+        this.lastSentSpeed = speed
+
+        return [speed, requiredTime]  // time в мс
     }
 
     private tryToSendValue() {
         const currentValue = +this.processingValue
-        const distance = currentValue - this.lastSendedValue
+        const distance = currentValue - this.lastSentValue
         if (distance) {
-            this.lastSendedValue = currentValue
+            this.lastSentValue = currentValue
             this.sendMoveGcode(distance + "")
         }
     }
@@ -557,6 +601,7 @@ export class UltraFinalOnlineValcoderProcessor {  // Использовать и
     }
 
     private sendConfigureableMoveGCode(distance: string, speed: string) {
+        console.log(distance, speed)
         const axis = this.inputWindowData.coordName.toLowerCase()
         this.sendGcode(`G91
             G1 ${axis}${distance} F${speed}

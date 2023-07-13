@@ -49,16 +49,17 @@
 
 <script lang="ts">
 import StateMixin from '@/mixins/state';
+import WindowsMixin from '@/mixins/windows';
 import { Component, Mixins, Vue } from 'vue-property-decorator';
 
 @Component({})
-export default class MainSettingsWindow extends Mixins(StateMixin) {
+export default class MainSettingsWindow extends Mixins(StateMixin, WindowsMixin) {
     openConsoleWindow() {
         this.$store.dispatch('ourExtension/windowFlags/openConsoleWindow')
     }
 
-    openGorelkaMaintenanceWindow() {
-        this.$store.dispatch('ourExtension/windowFlags/openGorelkaMaintenanceWindow')
+    openGorelkaMaintenance() {
+        this.openGorelkaMaintenanceWindow()
     }
 
     openSystemInfoWindow() {

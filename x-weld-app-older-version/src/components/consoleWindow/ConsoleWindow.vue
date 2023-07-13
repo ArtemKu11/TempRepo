@@ -180,9 +180,10 @@ export default class ConsoleWindow extends Mixins(StateMixin) {
             const startPos = input.selectionStart;
             const endPos = input.selectionEnd;
             this.inputValue = this.inputValue.substring(0, startPos) + symbol + this.inputValue.substring(endPos, this.inputValue.length);
+            input.focus()
             setTimeout(() => {
                 input.setSelectionRange(startPos + 1, startPos + 1)
-            }, 10)
+            }, 1)
         } else {
             this.inputValue += symbol
         }

@@ -9,7 +9,7 @@
                 <span v-if="noGasFlag">NO GAS</span>
             </div>
             <div class="coordinates-container">
-                <img src="@/layouts/new_print_layout/img/gorelka_logo.svg" />
+                <img @touchstart="openGorelkaMaintenanceWindow" src="@/layouts/new_print_layout/img/gorelka_logo.svg" />
                 <span id="x-coords">{{ fixedCoordinatesHolder[0] }}</span>
                 <span id="y-coords">{{ fixedCoordinatesHolder[1] }}</span>
                 <span id="z-coords">{{ fixedCoordinatesHolder[2] }}</span>
@@ -272,8 +272,6 @@ export default class NewPrintingWindow extends Mixins(WindowsMixin, StateMixin) 
     get profilesMetadata(): ProfilesMetadata {
         return this.$store.getters['ourExtension/profiles/getProfilesMetadata']
     }
-
-
 
     round(value: number) {
         return Math.round(+value * 10) / 10;

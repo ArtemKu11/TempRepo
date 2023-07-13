@@ -169,4 +169,8 @@ export default class WindowsMixin extends Vue {
         }
         Alerts.showInfoAlert(alert)
     }
+
+    openGorelkaMaintenanceWindow() {
+        this.$store.dispatch('ourExtension/windowFlags/openGorelkaMaintenanceWindow')
+    }
 }

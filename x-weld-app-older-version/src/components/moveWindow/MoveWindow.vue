@@ -3,7 +3,7 @@
         <div id="content-header">
             <div id="name-container">Перемещение горелки</div>
             <div id="coordinates-container">
-                <img src="@/layouts/move_layout/img/gorelka_logo.svg" />
+                <img @touchstart="openGorelkaMaintenanceWindow" src="@/layouts/move_layout/img/gorelka_logo.svg" />
                 <span id="x-coords">{{ fixedCoordinatesHolder[0] }}</span>
                 <span id="y-coords">{{ fixedCoordinatesHolder[1] }}</span>
                 <span id="z-coords">{{ fixedCoordinatesHolder[2] }}</span>
@@ -25,13 +25,13 @@
             </div>
             <div id="lables-container">
                 <div class="coord-label-div x">
-                    <button @touchstart="openInputWindow('X')"><img
+                    <button @touchstart="openInput('X')"><img
                             src="@/layouts/move_layout/img/keyboard_button.svg" /></button>
                     <span>{{ fixedCoordinatesHolder[0] }}</span>
                     <span>мм</span>
                 </div>
                 <div class="coord-label-div y">
-                    <button @touchstart="openInputWindow('Y')"><img
+                    <button @touchstart="openInput('Y')"><img
                             src="@/layouts/move_layout/img/keyboard_button.svg" /></button>
                     <span>{{ fixedCoordinatesHolder[1] }}</span>
                     <span>мм</span>
@@ -51,6 +51,7 @@
 
 <script lang="ts">
 import StateMixin from '@/mixins/state';
+import WindowsMixin from '@/mixins/windows';
 import { InitInputWindowData, InputWindowData } from '@/store/ourExtension/layoutsData/inputWindow/types';
 import { Mixins, Component, Vue, Watch } from 'vue-property-decorator';
 import StepSelector from './StepSelector.vue';
@@ -65,7 +66,7 @@ import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
         StepSelector, XBigButton, YBigButton, ZBigButton
     },
 })
-export default class MoveWindow extends Mixins(StateMixin) {
+export default class MoveWindow extends Mixins(StateMixin, WindowsMixin) {
     unlockTimeout: number | null = null
 
     get maxCoordinates(): number[] {
@@ -106,7 +107,7 @@ export default class MoveWindow extends Mixins(StateMixin) {
         }, 1000)
         setTimeout(() => {
             if (!this.unlockTimeout) {
-                this.openInputWindow('Z')
+                this.openInput('Z')
             }
         }, 100)
     }
@@ -167,7 +168,7 @@ export default class MoveWindow extends Mixins(StateMixin) {
     //     }
     // }
 
-    openInputWindow(coordName: string) {
+    openInput(coordName: string) {
 
         const confirmCallback = this.newValueReceiver.bind(this)
 

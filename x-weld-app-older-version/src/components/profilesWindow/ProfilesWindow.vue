@@ -7,7 +7,7 @@
         <div id="content-header">
             <div id="name-container">{{ headerText }} {{ layersText }}</div>
             <div id="coordinates-container">
-                <img src="@/layouts/profiles_layout/img/gorelka_logo.svg" />
+                <img @touchstart="openGorelkaMaintenanceWindow" src="@/layouts/profiles_layout/img/gorelka_logo.svg" />
                 <span id="x-coords">X {{ fixedCoordinatesHolder[0] }}</span>
                 <span id="y-coords">Y {{ fixedCoordinatesHolder[1] }}</span>
                 <span id="z-coords">Z {{ fixedCoordinatesHolder[2] }}</span>
@@ -146,13 +146,14 @@ import { SelectListInitData } from '@/store/ourExtension/layoutsData/selectListW
 import LayersBar from './LayersBar.vue'
 import LayersSetup from './LayersSetup.vue'
 import StateMixin from '@/mixins/state';
+import WindowsMixin from '@/mixins/windows';
 
 @Component({
     components: {
         LayersBar, LayersSetup
     },
 })
-export default class ProfilesWindow extends Mixins(StateMixin) {
+export default class ProfilesWindow extends Mixins(StateMixin, WindowsMixin) {
     modelLayers = {
         cachedFirstLayer: 0,
         cachedLastLayer: 0
@@ -305,7 +306,7 @@ export default class ProfilesWindow extends Mixins(StateMixin) {
             }
             const callback = this.digitParameterNewValueReceiver.bind(this);
             this.processingParameterPath = parameterPath;
-            this.openInputWindow(+requiredParameter, callback, paramName, 1000, -1000, valcoderStep, rejectPoint)
+            this.openInput(+requiredParameter, callback, paramName, 1000, -1000, valcoderStep, rejectPoint)
         }
     }
 
@@ -340,7 +341,7 @@ export default class ProfilesWindow extends Mixins(StateMixin) {
         }
     }
 
-    openInputWindow(initValue: number, confirmCallback: Function, coordName: string, maxValue: number, minValue: number, valcoderStep: number, rejectPointClick: boolean) {
+    openInput(initValue: number, confirmCallback: Function, coordName: string, maxValue: number, minValue: number, valcoderStep: number, rejectPointClick: boolean) {
         const inputWindowData: InputWindowData = {
             coordName: coordName,
             initValue: initValue,
