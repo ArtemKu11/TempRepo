@@ -32,5 +32,9 @@ export const mutations: MutationTree<GpioState> = {
 
     setEncoder1(state, payload: EncoderState) {
         state.encoderState.encoder1 = payload
+    },
+
+    setEncoder2(state, payload: EncoderState) {
+        state.encoderState.encoder2 = payload
     }
 }

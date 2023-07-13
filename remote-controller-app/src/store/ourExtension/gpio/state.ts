@@ -15,6 +15,10 @@ export const defaultState = (): GpioState => {
             encoder1: {
                 emited: false,
                 isClockwise: false
+            },
+            encoder2: {
+                emited: false,
+                isClockwise: false
             }
         }
     }

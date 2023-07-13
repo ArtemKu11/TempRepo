@@ -15,6 +15,7 @@ export interface ButtonsState {
 
 export interface EncodersState {
     encoder1: EncoderState
+    encoder2: EncoderState
 }
 
 export interface EncoderState {

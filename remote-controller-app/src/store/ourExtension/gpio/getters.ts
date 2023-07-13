@@ -33,5 +33,9 @@ export const getters: GetterTree<GpioState, RootState> = {
 
     getEncoder1(state) {
         return state.encoderState.encoder1
+    },
+
+    getEncoder2(state) {
+        return state.encoderState.encoder2
     }
 }

@@ -19,7 +19,8 @@ export class GpioSocket {
         [5, 'ourExtension/gpio/setFifthButton'],
         [6, 'ourExtension/gpio/setSixthButton'],])
     encodersCommits = new Map([
-        [1, 'ourExtension/gpio/setEncoder1']
+        [1, 'ourExtension/gpio/setEncoder1'],
+        [2, 'ourExtension/gpio/setEncoder2']
     ])
 
     constructor(store: Store<any>) {

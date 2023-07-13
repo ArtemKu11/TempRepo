@@ -289,6 +289,14 @@ export default class PrintWindow extends Mixins(WindowsMixin, StateMixin, GpioMi
         this.current = +(this.current - 1).toFixed(1)
     }
 
+    voltagePlus() {
+        this.voltage = +(this.voltage + 1).toFixed(1)
+    }
+
+    voltageMinus() {
+        this.voltage = +(this.voltage - 1).toFixed(1)
+    }
+
     get actualTime(): string {
         return this.$store.getters['ourExtension/layoutsData/baseLayout/getActualTime']();
     }
@@ -691,6 +699,17 @@ export default class PrintWindow extends Mixins(WindowsMixin, StateMixin, GpioMi
                 this.currentPlus()
             } else {
                 this.currentMinus()
+            }
+        }
+    }
+
+    @Watch('encoder2State')
+    encoder2Watcher() {
+        if (this.encoder2State.emited) {
+            if (this.encoder2State.isClockwise) {
+                this.voltagePlus()
+            } else {
+                this.voltageMinus()
             }
         }
     }

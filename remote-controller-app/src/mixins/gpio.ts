@@ -86,4 +86,8 @@ export default class GpioMixin extends Vue {
     get encoder1State(): EncoderState {
         return this.$store.getters['ourExtension/gpio/getEncoder1']
     }
+
+    get encoder2State(): EncoderState {
+        return this.$store.getters['ourExtension/gpio/getEncoder2']
+    }
 }

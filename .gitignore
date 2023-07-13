@@ -11,3 +11,4 @@ gpio_socket/asyncio_timer.py
 __pycache__
 gpio_socket/encoder.py
 gpio_socket/rpi_interrupt.py
+gpio_socket/interrupt_detector.py

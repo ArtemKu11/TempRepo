@@ -41,12 +41,51 @@ class RPiGpioProcessor:
             list_of_coros.append(self.__listen_button(button))
         for encoder in self.encoders:
             list_of_coros.append(self.__listen_encoder(encoder))
+            # list_of_coros.append(self.__listen_encoder_on_falling(encoder))
         await asyncio.gather(*list_of_coros)
         print(f'[ INFO ] СЛУШАЕТСЯ: {len(self.buttons)} КНОПОК, {len(self.encoders)} ЭНКОДЕРОВ')
         while True:
             await asyncio.sleep(1)
 
+    # ПО ЧАСОВОЙ:
+    # 1 1
+    # 1 0
+    # 0 0
+    # 0 1
+    # 1 1
+
+    # ПРОТИВ ЧАСОВОЙ:
+    # 1 1
+    # 0 1
+    # 0 0
+    # 1 0
+    # 1 1
+
+    async def __listen_encoder_on_falling(self, encoder: Encoder):
+        GPIO.setup(encoder.first_pin, GPIO.IN)
+        GPIO.setup(encoder.second_pin, GPIO.IN)
+        GPIO.add_event_detect(encoder.first_pin, GPIO.RISING,
+                              callback=lambda x: self.__encoder_first_pin_falling(encoder))
+        GPIO.add_event_detect(encoder.second_pin, GPIO.RISING,
+                              callback=lambda x: self.__encoder_second_pin_falling(encoder))
+
+    def __encoder_first_pin_falling(self, encoder):
+        print(encoder.encoder_number, 'FIRST_PIN')
+        second_pin_value = GPIO.input(encoder.second_pin)
+        if second_pin_value:
+            encoder_event = EncoderEvent(encoder_number=encoder.encoder_number, rotation='counter_clockwise').__dict__
+            self.events_queue.put(encoder_event)
+
+    def __encoder_second_pin_falling(self, encoder):
+        print(encoder.encoder_number, 'SECOND_PIN')
+        first_pin_value = GPIO.input(encoder.first_pin)
+        if first_pin_value:
+            encoder_event = EncoderEvent(encoder_number=encoder.encoder_number, rotation='clockwise').__dict__
+            self.events_queue.put(encoder_event)
+
     async def __listen_encoder(self, encoder: Encoder):
+        # GPIO.setup(encoder.first_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        # GPIO.setup(encoder.second_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.setup(encoder.first_pin, GPIO.IN)
         GPIO.setup(encoder.second_pin, GPIO.IN)
         GPIO.add_event_detect(encoder.first_pin, GPIO.RISING,
@@ -55,12 +94,14 @@ class RPiGpioProcessor:
                               callback=lambda x: self.__encoder_second_pin_rising(encoder))
 
     def __encoder_first_pin_rising(self, encoder):
+        print(encoder.encoder_number, 'FIRST_PIN')
         second_pin_value = GPIO.input(encoder.second_pin)
         if second_pin_value:
             encoder_event = EncoderEvent(encoder_number=encoder.encoder_number, rotation='clockwise').__dict__
             self.events_queue.put(encoder_event)
 
     def __encoder_second_pin_rising(self, encoder):
+        print(encoder.encoder_number, 'SECOND_PIN')
         first_pin_value = GPIO.input(encoder.first_pin)
         if first_pin_value:
             encoder_event = EncoderEvent(encoder_number=encoder.encoder_number, rotation='counter_clockwise').__dict__
@@ -84,13 +125,17 @@ class RPiGpioProcessor:
 
     def interrupt_event(self, button: Button):
         pin_value = GPIO.input(button.pin)
-        current_time = time.time()
-        if button.last_event_time is None or ((current_time - button.last_event_time) * 1000 > 50):
-            if pin_value:
-                self.key_down_event(button)
-            else:
-                self.key_up_event(button)
-            button.last_event_time = current_time
+        if pin_value:
+            self.key_down_event(button)
+        else:
+            self.key_up_event(button)
+        # current_time = time.time()
+        # if button.last_event_time is None or ((current_time - button.last_event_time) * 1000 > 50):
+        #     if pin_value:
+        #         self.key_down_event(button)
+        #     else:
+        #         self.key_up_event(button)
+        #     button.last_event_time = current_time
 
 
     def key_down_event(self, button: Button):

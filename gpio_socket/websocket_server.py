@@ -36,6 +36,7 @@ class WebSocketServer:
             await asyncio.sleep(0.01)
 
     async def send_to_clients(self, result):
+        # print(result)
         if len(self.clients_list):
             for i in range(0, len(self.clients_list)):
                 response = json.dumps(ServerResponse(result).__dict__)
