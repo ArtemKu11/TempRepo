@@ -94,18 +94,16 @@ class RPiGpioProcessor:
                               callback=lambda x: self.__encoder_second_pin_rising(encoder))
 
     def __encoder_first_pin_rising(self, encoder):
-        print(encoder.encoder_number, 'FIRST_PIN')
         second_pin_value = GPIO.input(encoder.second_pin)
         if second_pin_value:
             encoder_event = EncoderEvent(encoder_number=encoder.encoder_number, rotation='clockwise').__dict__
-            self.events_queue.put(encoder_event)
+            self.events_queue.put(encoder_event, block=True)
 
     def __encoder_second_pin_rising(self, encoder):
-        print(encoder.encoder_number, 'SECOND_PIN')
         first_pin_value = GPIO.input(encoder.first_pin)
         if first_pin_value:
             encoder_event = EncoderEvent(encoder_number=encoder.encoder_number, rotation='counter_clockwise').__dict__
-            self.events_queue.put(encoder_event)
+            self.events_queue.put(encoder_event, block=True)
 
     async def __listen_button(self, button: Button):
         GPIO.setup(button.pin, GPIO.IN)
@@ -141,7 +139,7 @@ class RPiGpioProcessor:
     def key_down_event(self, button: Button):
         if not button.is_key_down:
             key_down_event = ButtonEvent(button_number=button.button_number, event_type='key_down').__dict__
-            self.events_queue.put(key_down_event)
+            self.events_queue.put(key_down_event, block=True)
             # self.event_loop.create_task(self.send_to_clients_callback(key_down_event))
 
             # asyncio.ensure_future(self.send_to_clients_callback(key_down_event), loop=self.event_loop)
@@ -155,7 +153,7 @@ class RPiGpioProcessor:
     def key_up_event(self, button: Button):
         if button.is_key_down:
             key_up_event = ButtonEvent(button_number=button.button_number, event_type='key_up').__dict__
-            self.events_queue.put(key_up_event)
+            self.events_queue.put(key_up_event, block=True)
             # self.events_list.append(key_up_event)
 
             # asyncio.ensure_future(self.send_to_clients_callback(key_up_event), loop=self.event_loop)

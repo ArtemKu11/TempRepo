@@ -12,3 +12,4 @@ __pycache__
 gpio_socket/encoder.py
 gpio_socket/rpi_interrupt.py
 gpio_socket/interrupt_detector.py
+gpio_socket/encoder_polling.py

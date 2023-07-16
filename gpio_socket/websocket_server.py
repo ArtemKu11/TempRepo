@@ -31,7 +31,7 @@ class WebSocketServer:
     async def __listen_events(self):
         while True:
             while not self.events_queue.empty():
-                event = self.events_queue.get()
+                event = self.events_queue.get(block=True)
                 await self.send_to_clients(event)
             await asyncio.sleep(0.01)
 
@@ -54,6 +54,7 @@ class WebSocketServer:
             except ConnectionClosedOK:
                 if self.clients_list.count(client_socket):
                     self.clients_list.remove(client_socket)
+                    print('[ INFO ] КЛИЕНТ ОТКЛЮЧЕН')
                 break
 
     def stop_everything(self):
