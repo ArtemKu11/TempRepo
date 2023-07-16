@@ -297,7 +297,7 @@ export class UltraFinalOnlineValcoderProcessor {  // Использовать и
     private readonly TIME_SHIFT_IN_PERCENT = 1
     private readonly TOUCH_TIMEOUT = 500
     private readonly SEND_PIXELS_BORDER = 50
-    private readonly SPEED_CHANGE_BORDER = 0.2
+    private readonly SPEED_CHANGE_BORDER = 0.1
     private readonly SEND_TIMEOUT_SHIFT = 0.9
     private $store: Store<RootState>
     private lastSentValue: number
@@ -380,9 +380,11 @@ export class UltraFinalOnlineValcoderProcessor {  // Использовать и
 
     private tryToSendByPixels() {
         if (this.touchPixels > this.SEND_PIXELS_BORDER) {
-            const [newValue, steps] = this.resolveNewValue()
+            let [newValue, steps] = this.resolveNewValue()
+            newValue = +newValue.toFixed(1)
 
-            const distance = newValue - +this.processingValue
+            const distance = +(newValue - +this.processingValue).toFixed(1)
+
             const [speed, time] = this.resolveSpeedAndTime(new Date().getTime() - this.lastStartTouchTime, distance)
             this.sendConfigureableMoveGCode(distance + "", speed + "")
             this.lastSentValue = newValue

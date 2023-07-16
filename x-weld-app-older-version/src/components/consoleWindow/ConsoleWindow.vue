@@ -5,11 +5,12 @@
                 :consoleEntry="entry" />
         </div>
         <div class="input-wrapper">
-            <input @click="clickOnInput" ref="input" @keypress="submitHandler" v-model="inputValue" type="text"
-                placeholder="Введите команду">
+            <input @click="clickOnInput" ref="input" @keypress="submitHandler" @input="onInputChange" :value="inputValue"
+                type="text" placeholder="Введите команду">
         </div>
         <div v-if="keyboardFlag" class="keyboard-wrapper">
-            <SimpleKeyboard @onChange="" @onKeyPress="virtualKeyboardClick" :theme="'hg-theme-default myTheme1'" />
+            <SimpleKeyboard @onChange="onChange" @onKeyPress="onKeyPress"
+                :input="inputValue" :theme="'hg-theme-default myTheme1'" />
         </div>
         <!-- <div class="keyboard"></div> -->
     </div>
@@ -38,10 +39,16 @@ export default class ConsoleWindow extends Mixins(StateMixin) {
     inputValue = ''
     logs: Array<string> = []
     keyboardFlag = false;
+    keyboardClickTimeout: null | number = null
+    maxConsoleEntriesCount = 20
 
     get consoleEntries(): Array<ConsoleEntry> {
         setTimeout(() => this.scrollToLatest(), 200)
-        return this.$store.getters['console/getConsoleEntries']
+        let entries = this.$store.getters['console/getConsoleEntries'] as Array<ConsoleEntry>
+        if (entries.length > 20) {
+            entries = entries.slice(-this.maxConsoleEntriesCount)
+        }
+        return entries
     }
 
     @Watch('modelValue', { deep: true })
@@ -59,6 +66,23 @@ export default class ConsoleWindow extends Mixins(StateMixin) {
 
     mounted() {
         this.scrollToLatest();
+    }
+
+    onChange(input: string) {
+        this.inputValue = input;
+    }
+
+    onKeyPress(button: string) {
+        if (button === '{enter}') {
+            this.submit()
+        }
+    }
+
+    onInputChange(input: Event) {
+        const target = input.target as HTMLInputElement
+        if (target) {
+            this.inputValue = target.value
+        }
     }
 
     scrollToLatest() {
@@ -107,85 +131,12 @@ export default class ConsoleWindow extends Mixins(StateMixin) {
                 this.scrollToLatest()
             }
         }, 200)
-        // if (!this.keyboardFlag) {
-        //     this.keyboardFlag = !this.keyboardFlag
-        // setTimeout(() => {
-        //     if (this.keyboardFlag) {
-        //         this.scrollToLatest()
-        //     }
-        // }, 200)
-        // }
     }
 
-    virtualKeyboardClick(key: string) {
-        switch (key) {
-            case '{bksp}':
-                this.deleteSymbol()
-                break;
-            case '{space}':
-                this.spaceClick()
-                break;
-            case '{enter}':
-                this.submit()
-                break;
-            default:
-                this.symbolClick(key)
-                break;
-        }
+    focusOnInput() {
         const input = this.$refs.input as HTMLElement
         if (input) {
-            setTimeout(() => { input.focus() }, 100)
-        }
-    }
-
-    deleteSymbol() {
-        if (this.inputValue) {
-            const input = this.$refs.input as HTMLInputElement
-            if (input && input.selectionStart !== null && input.selectionEnd !== null) {
-                const startPos = input.selectionStart;
-                const endPos = input.selectionEnd;
-                if (!endPos) {
-                    return
-                }
-                if (startPos === endPos) {
-                    this.inputValue = this.inputValue.slice(0, startPos - 1) + this.inputValue.slice(endPos, this.inputValue.length)
-                    setTimeout(() => {
-                        input.setSelectionRange(startPos - 1, startPos - 1)
-                    }, 10)
-                } else {
-                    this.inputValue = this.inputValue.slice(0, startPos) + this.inputValue.slice(endPos, this.inputValue.length)
-                    setTimeout(() => {
-                        input.setSelectionRange(startPos, startPos)
-                    }, 10)
-                }
-            } else {
-                this.inputValue = this.inputValue.slice(0, -1)
-            }
-        }
-    }
-
-    spaceClick() {
-        this.addSymbol(' ')
-    }
-
-    symbolClick(symbol: string) {
-        if (!symbol.startsWith('{')) {
-            this.addSymbol(symbol)
-        }
-    }
-
-    addSymbol(symbol: string) {
-        const input = this.$refs.input as HTMLInputElement
-        if (input && input.selectionStart !== null && input.selectionEnd !== null) {
-            const startPos = input.selectionStart;
-            const endPos = input.selectionEnd;
-            this.inputValue = this.inputValue.substring(0, startPos) + symbol + this.inputValue.substring(endPos, this.inputValue.length);
             input.focus()
-            setTimeout(() => {
-                input.setSelectionRange(startPos + 1, startPos + 1)
-            }, 1)
-        } else {
-            this.inputValue += symbol
         }
     }
 }
