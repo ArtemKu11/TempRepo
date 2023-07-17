@@ -25,7 +25,7 @@
         <MoveWindow v-if="moveWindowFlag" />
         <InputWindow v-if="inputWindowFlag" />
         <MainSettingsWindow v-if="mainSettingsWindowFlag" />
-        <ConsoleWindow v-model="backClickForConsole" v-if="consoleWindowFlag" />
+        <ConsoleWindow v-if="consoleWindowFlag" />
         <ProfilesWindow v-if="profilesWindowFlag" />
         <SelectListWindow v-if="selectListWindowFlag" />
         <PreprintingWindow v-if="preprintingWindowFlag" />
@@ -35,7 +35,7 @@
         <DefaultAlert v-if="alertFlag" />
         <InfoAlert v-if="infoAlertFlag" />
         <BlockingWindow v-if="isBlocking" />
-        <FatalErrorAlert v-if="fatalErrorFlag" />
+        <!-- <FatalErrorAlert v-if="fatalErrorFlag" /> -->
 
     </div>
 </template>
@@ -53,7 +53,6 @@ import ConsoleWindow from './components/consoleWindow/ConsoleWindow.vue';
 import ProfilesWindow from './components/profilesWindow/ProfilesWindow.vue';
 import SelectListWindow from './components/selectListWindow/SelectListWindow.vue';
 import PreprintingWindow from './components/preprintingWindow/PreprintingWindow.vue';
-// import PrintingWindow from './components/printingWindow/PrintingWindow.vue';
 import PrintingWindow from './components/printingWindow/NewPrintingWindow.vue';
 
 import GorelkaMaintenanceWindow from './components/gorelkaMaintenanceWindow/GorelkaMaintenanceWindow.vue';
@@ -85,7 +84,7 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
     isBlocking = false
     blockingTime = 0
     blockingTimeout: null | number = null
-    backClickForConsole = false
+    // backClickForConsole = false
 
     buttonFlags = {
         mainButton: false,
@@ -334,7 +333,8 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin) {
         }
 
         if (this.consoleWindowFlag) {
-            this.backClickForConsole = true
+            this.$store.dispatch('ourExtension/layoutsData/settingsWindow/setBackClickFlagForConsole', true)
+            // this.backClickForConsole = true
             return
         }
 

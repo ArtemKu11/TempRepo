@@ -9,5 +9,9 @@ export const getters: GetterTree<SettingsWindowState, RootState> = {
 
     getMaintenanceFlag(state) {
         return state.maintenanceFlag
+    },
+
+    getBackClickFlagForConsole(state) {
+        return state.backClickFlagForConsole
     }
 }

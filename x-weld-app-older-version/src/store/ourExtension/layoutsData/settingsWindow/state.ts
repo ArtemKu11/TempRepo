@@ -3,7 +3,8 @@ import { SettingsWindowState } from "./types";
 export const defaultState = (): SettingsWindowState => {
     return {
         maintenanceFlag: false,
-        lastCoords: []
+        lastCoords: [],
+        backClickFlagForConsole: false
     }
 }
 

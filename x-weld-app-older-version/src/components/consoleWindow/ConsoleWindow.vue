@@ -9,8 +9,8 @@
                 type="text" placeholder="Введите команду">
         </div>
         <div v-if="keyboardFlag" class="keyboard-wrapper">
-            <SimpleKeyboard @onChange="onChange" @onKeyPress="onKeyPress"
-                :input="inputValue" :theme="'hg-theme-default myTheme1'" />
+            <SimpleKeyboard @onChange="onChange" @onKeyPress="onKeyPress" :input="inputValue"
+                :theme="'hg-theme-default myTheme1'" />
         </div>
         <!-- <div class="keyboard"></div> -->
     </div>
@@ -33,8 +33,8 @@ import SimpleKeyboard from "./SimpleKeyboard.vue";
     },
 })
 export default class ConsoleWindow extends Mixins(StateMixin) {
-    @Model('update:modelValue', { type: Boolean })
-    modelValue!: boolean
+    // @Model('update:modelValue', { type: Boolean })
+    // modelValue!: boolean
 
     inputValue = ''
     logs: Array<string> = []
@@ -51,14 +51,31 @@ export default class ConsoleWindow extends Mixins(StateMixin) {
         return entries
     }
 
-    @Watch('modelValue', { deep: true })
+    // @Watch('modelValue', { deep: true })
+    // backClickWatcher() {
+    //     if (this.modelValue) {
+    //         if (this.keyboardFlag) {
+    //             this.keyboardFlag = false
+    //             this.$emit('update:modelValue', false)
+    //         } else {
+    //             this.$emit('update:modelValue', false)
+    //             this.$store.dispatch('ourExtension/windowFlags/openPreviousWindow');
+    //         }
+    //     }
+    // }
+
+    get backClickFlag(): boolean {
+        return this.$store.getters['ourExtension/layoutsData/settingsWindow/getBackClickFlagForConsole']
+    }
+
+    @Watch('backClickFlag', { deep: true })
     backClickWatcher() {
-        if (this.modelValue) {
+        if (this.backClickFlag) {
             if (this.keyboardFlag) {
                 this.keyboardFlag = false
-                this.$emit('update:modelValue', false)
+                this.$store.dispatch('ourExtension/layoutsData/settingsWindow/setBackClickFlagForConsole', false)
             } else {
-                this.$emit('update:modelValue', false)
+                this.$store.dispatch('ourExtension/layoutsData/settingsWindow/setBackClickFlagForConsole', false)
                 this.$store.dispatch('ourExtension/windowFlags/openPreviousWindow');
             }
         }
