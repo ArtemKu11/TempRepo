@@ -51,7 +51,7 @@ export default class MainWindowButton extends Mixins(StateMixin, FilesMixin, Ser
         } else if (this.buttonData.buttonName === 'Конфигурация') {
             this.$store.dispatch('ourExtension/layoutsData/profilesWindow/reset')
             this.$store.dispatch('ourExtension/layoutsData/profilesWindow/initWithGlobalProfiles')
-            this.$store.dispatch('ourExtension/windowFlags/openProfilesWindow')
+            this.$store.dispatch('ourExtension/windowFlags/openProfilesWindowWithStackSave')
         } else if (this.buttonData.buttonName === 'Допечатная подготовка') {
             if (!this.isFileSelected) {
                 return;

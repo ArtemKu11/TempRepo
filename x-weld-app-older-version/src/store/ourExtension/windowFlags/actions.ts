@@ -39,8 +39,12 @@ export const actions: ActionTree<WindowFlagsState, RootState> = {
         // const currentFlags: FlagsObject = getters.getCurrentFlagsObject();  // 3. Сохранить в стэк текущее окно
         // commit('saveCurrentLayoutInStack', currentFlags);  // (Кнопка "Назад" в следующем окне вернет сначала данное окно, а затем MainWindow)
         commit('openMoveWindow');
-        const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
-        commit('saveCurrentLayoutInStack', currentFlags);
+        const flags = getters.getInitFlagsObject() as FlagsObject
+        flags.mainWindowFlag = false
+        flags.moveWindowFlag = true
+        commit('setWindowStack', [flags])
+        // const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
+        // commit('saveCurrentLayoutInStack', currentFlags);
     },
 
     openFilePreviewWindow({ commit, getters }) {
@@ -65,8 +69,12 @@ export const actions: ActionTree<WindowFlagsState, RootState> = {
         // const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
         // commit('saveCurrentLayoutInStack', currentFlags);
         commit('openMainSettingsWindow');
-        const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
-        commit('saveCurrentLayoutInStack', currentFlags);
+        const flags = getters.getInitFlagsObject() as FlagsObject
+        flags.mainWindowFlag = false
+        flags.mainSettingsWindowFlag = true
+        commit('setWindowStack', [flags])
+        // const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
+        // commit('saveCurrentLayoutInStack', currentFlags);
     },
 
     openConsoleWindow({ commit, getters }) {
@@ -76,6 +84,16 @@ export const actions: ActionTree<WindowFlagsState, RootState> = {
     },
 
     openProfilesWindow({ commit, getters, state, dispatch }) {
+        commit('openProfilesWindow');
+        const flags = getters.getInitFlagsObject() as FlagsObject
+        flags.mainWindowFlag = false
+        flags.profilesWindowFlag = true
+        commit('setWindowStack', [flags])
+        // const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
+        // commit('saveCurrentLayoutInStack', currentFlags);
+    },
+
+    openProfilesWindowWithStackSave({ commit, getters, state, dispatch }) {
         commit('openProfilesWindow');
         const currentFlags: FlagsObject = getters.getCurrentFlagsObject();
         commit('saveCurrentLayoutInStack', currentFlags);
