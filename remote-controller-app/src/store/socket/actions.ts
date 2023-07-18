@@ -41,8 +41,8 @@ export const actions: ActionTree<SocketState, RootState> = {
                 url: Globals.GITHUB_REPO
             })
             SocketActions.serverFilesListRoot('config')
-            dispatch('ourExtension/files/getAllFilesAndDirs', 'gcodes', { root: true })
-            dispatch('ourExtension/files/getAllFilesAndDirs', 'config', { root: true })
+            // dispatch('ourExtension/files/getAllFilesAndDirs', 'gcodes', { root: true })
+            // dispatch('ourExtension/files/getAllFilesAndDirs', 'config', { root: true })
         }
     },
 

@@ -8,6 +8,7 @@
 </template>
 
 <script lang="ts">
+// В ЭТОЙ ВЕТКЕ НЕ НУЖНО И ОТКЛЮЧЕНО НА УРОВНЕ 1 ШАГА
 // Подгрузка файлов и профилей:
 // 1. socket -> actions -> onSocketOpen() -> вызывается два dispatch('ourExtension/files/getAllFilesAndDirs') на gcodes и на config директории
 // 2. Далее в ourExtension/files/getAllFilesAndDirs выполняется SocketAction serverGetAllFilesAndDirs, по выполнению которого выполняется ourExtension/files/onGetAllFilesAndDirs
@@ -114,60 +115,60 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin, Gp
 
     mounted() {
         this.$store.dispatch('ourExtension/layoutsData/baseLayout/startTimeRefreshing');
-        setTimeout(() => {
-            if (this.printerPrinting || this.printerPaused) {
-                const alert: AlertType = {
-                    message: 'Принтер уже печатает. Открыто окно текущей печати',
-                    type: 'ok'
-                }
-                this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
-                this.initExisitingPrintingWindow()
-            }
-        }, 1000)
+        // setTimeout(() => {
+        //     if (this.printerPrinting || this.printerPaused) {
+        //         const alert: AlertType = {
+        //             message: 'Принтер уже печатает. Открыто окно текущей печати',
+        //             type: 'ok'
+        //         }
+        //         this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
+        //         this.initExisitingPrintingWindow()
+        //     }
+        // }, 1000)
 
     }
 
-    @Watch("printerPrinting")
-    printerPrintingWather() {
-        if (this.printerPrinting) {
-            setTimeout(() => {
-                if ((this.printerPrinting || this.printerPaused) && this.$route.path !== '/print') {
-                    this.initExisitingPrintingWindow()
-                    this.$router.push('/print')
-                }
-            }, 2000)
-        }
-    }
+    // @Watch("printerPrinting")
+    // printerPrintingWather() {
+    //     if (this.printerPrinting) {
+    //         setTimeout(() => {
+    //             if ((this.printerPrinting || this.printerPaused) && this.$route.path !== '/print') {
+    //                 this.initExisitingPrintingWindow()
+    //                 this.$router.push('/print')
+    //             }
+    //         }, 2000)
+    //     }
+    // }
 
-    @Watch('isFilesLoadingFinished', { deep: true })
-    isFilesLoadingFinishedWather() {
-        if (this.isFilesLoadingFinished) {
-            const filesMap: FileSystem = this.$store.getters['ourExtension/files/getFilesMap']
-            if (filesMap) {
-                filesMap.gcodes.forEach((value) => {
-                    this.parseGcodes(value)
-                })
-                this.$store.dispatch('ourExtension/layoutsData/newFileBrowseWindow/setCurrentPath', 'gcodes')
-            }
-        }
-    }
+    // @Watch('isFilesLoadingFinished', { deep: true })
+    // isFilesLoadingFinishedWather() {
+    //     if (this.isFilesLoadingFinished) {
+    //         const filesMap: FileSystem = this.$store.getters['ourExtension/files/getFilesMap']
+    //         if (filesMap) {
+    //             filesMap.gcodes.forEach((value) => {
+    //                 this.parseGcodes(value)
+    //             })
+    //             this.$store.dispatch('ourExtension/layoutsData/newFileBrowseWindow/setCurrentPath', 'gcodes')
+    //         }
+    //     }
+    // }
 
-    @Watch('isProfilesDownloadingFinished', { deep: true })
-    isProfilesDownloadingFinishedWather() {
-        if (this.isProfilesDownloadingFinished) {
-            const directoryData: DirectoryData = this.$store.getters['ourExtension/files/getProfilesFiles']
-            if (directoryData) {
-                const profilesList: Profile[] = []
-                const promiseList = []
-                for (const file of directoryData.files) {
-                    const response = this.getFile(file.name, 'config' + '/' + file.dirnameForMoonraker);
-                    let promise = response.then((responseData) => { this.handleProfileResponse(responseData, profilesList) })
-                    promiseList.push(promise)
-                }
-                Promise.all(promiseList).then(() => { this.$store.dispatch('ourExtension/profiles/setProfiles', profilesList) })
-            }
-        }
-    }
+    // @Watch('isProfilesDownloadingFinished', { deep: true })
+    // isProfilesDownloadingFinishedWather() {
+    //     if (this.isProfilesDownloadingFinished) {
+    //         const directoryData: DirectoryData = this.$store.getters['ourExtension/files/getProfilesFiles']
+    //         if (directoryData) {
+    //             const profilesList: Profile[] = []
+    //             const promiseList = []
+    //             for (const file of directoryData.files) {
+    //                 const response = this.getFile(file.name, 'config' + '/' + file.dirnameForMoonraker);
+    //                 let promise = response.then((responseData) => { this.handleProfileResponse(responseData, profilesList) })
+    //                 promiseList.push(promise)
+    //             }
+    //             Promise.all(promiseList).then(() => { this.$store.dispatch('ourExtension/profiles/setProfiles', profilesList) })
+    //         }
+    //     }
+    // }
 
     handleProfileResponse(response: AxiosResponse<any, any>, profilesList: Profile[]) {
         if (response.status === 200) {
