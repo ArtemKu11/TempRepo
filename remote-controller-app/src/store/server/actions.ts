@@ -68,7 +68,7 @@ export const actions: ActionTree<ServerState, RootState> = {
       // If klippy is connected, move on.
       commit('setKlippyRetries', 0)
       dispatch('initComponents', payload)  // Получает файлы с сервера
-      SocketActions.printerObjectsList()
+      SocketActions.printerObjectsList()  // Подписивыется на объекты
     }
   },
 

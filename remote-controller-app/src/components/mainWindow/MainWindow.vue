@@ -15,9 +15,9 @@
                         <div class="a-icon">a</div>
                     </div>
                     <div class="button-info">
-                        <span>16</span>
+                        <span>{{ voltageSp }}</span>
                         <div class="underline"></div>
-                        <span>Ток уст., А</span>
+                        <span>Напряжение уст., В</span>
                     </div>
                 </button>
                 <button class="parameter-button with-icon">
@@ -25,9 +25,9 @@
                         <div class="b-icon">b</div>
                     </div>
                     <div class="button-info">
-                        <span>220</span>
+                        <span>{{ currentSp }}</span>
                         <div class="underline"></div>
-                        <span>Напряжение уст., В</span>
+                        <span>Ток уст., А</span>
                     </div>
                 </button>
             </div>
@@ -38,18 +38,18 @@
                     <div class="icon-wrapper">
                     </div>
                     <div class="button-info">
-                        <span>10</span>
+                        <span>{{ voltageRead }}</span>
                         <!-- <div class="underline"></div> -->
-                        <span>Ток факт., А</span>
+                        <span>Напряжение факт., В</span>
                     </div>
                 </button>
-                <button class="parameter-button with-icon">
+                <button @click="clickHandler" class="parameter-button with-icon">
                     <div class="icon-wrapper">
                     </div>
                     <div class="button-info">
-                        <span>210</span>
+                        <span>{{ currentRead }}</span>
                         <!-- <div class="underline"></div> -->
-                        <span>Напряжение факт., В</span>
+                        <span>Ток факт., А</span>
                     </div>
                 </button>
             </div>
@@ -70,6 +70,28 @@ import { Component, Vue } from 'vue-property-decorator';
 export default class MainWindow extends Vue {
     get actualTime(): string {
         return this.$store.getters['ourExtension/layoutsData/baseLayout/getActualTime']();
+    }
+
+    get voltageSp() {
+        return this.$store.state.printer.printer.plasma_modbus.voltage_sp
+    }
+
+    get currentSp() {
+        return this.$store.state.printer.printer.plasma_modbus.current_sp
+    }
+
+    get voltageRead() {
+        return this.$store.state.printer.printer.plasma_modbus.voltage_read
+    }
+
+    get currentRead() {
+        return this.$store.state.printer.printer.plasma_modbus.current_read
+    }
+
+    clickHandler() {
+        console.log(this.$store.state.printer.printer.plasma_modbus)
+        console.log(this.$store.state.printer.printer.gorn)
+
     }
 }
 </script>

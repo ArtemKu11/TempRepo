@@ -156,6 +156,7 @@ export const actions: ActionTree<SocketState, RootState> = {
     },
 
     async notifyGcodeResponse({ dispatch }, payload) {
+        console.log('notifyGcodeResponse', payload)
         dispatch('console/onAddConsoleEntry', { message: `${Globals.CONSOLE_RECEIVE_PREFIX}${payload}` }, { root: true })
     },
 

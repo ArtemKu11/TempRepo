@@ -52,6 +52,7 @@
 
         .b-icon {
             @include bIconMini();
+            background-color: red;
         }
 
 

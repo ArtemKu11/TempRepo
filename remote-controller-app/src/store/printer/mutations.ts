@@ -42,6 +42,9 @@ export const mutations: MutationTree<PrinterState> = {
   },
 
   setSocketNotify (state, payload) {
+    // if (payload.key === 'plasma_modbus' || payload.key === 'gorn') {
+    //     console.log(payload)
+    // }
     if (typeof payload.payload === 'object') {
       const o = get(state.printer, payload.key)
       if (o === undefined) {

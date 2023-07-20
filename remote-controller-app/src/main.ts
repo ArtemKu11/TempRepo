@@ -35,7 +35,7 @@ appInit()
         // if (config.apiConfig.socketUrl && config.apiConnected && config.apiAuthenticated) {
         //     Vue.$socket.connect(config.apiConfig.socketUrl)
         // }
-        createGpioSocket()
+        // createGpioSocket()
         Vue.$socket.connect(config.apiConfig.socketUrl)
 
 

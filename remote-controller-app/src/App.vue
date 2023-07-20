@@ -3,7 +3,7 @@
         <router-view></router-view>
         <DefaultAlert v-if="alertFlag" />
         <InfoAlert v-if="infoAlertFlag" />
-        <!-- <FatalErrorAlert v-if="fatalErrorFlag" /> -->
+        <FatalErrorAlert v-if="fatalErrorFlag" />
     </div>
 </template>
 
