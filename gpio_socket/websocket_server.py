@@ -1,15 +1,16 @@
 import asyncio
 import json
-# import wiringpi
+import wiringpi
 import queue
 
 from dto import ServerResponse
 # from test_processor import TestProcessor
 # from gpio_processor import OPGpioProcessor
-from rpi_gpio_processor import RPiGpioProcessor
+# from rpi_gpio_processor import RPiGpioProcessor
+from gorn_controller_gpio import GornControllerGPIO
 
 import websockets
-from websockets.exceptions import ConnectionClosedOK
+from websockets.exceptions import ConnectionClosed, ConnectionClosedOK, ConnectionClosedError
 
 
 class WebSocketServer:
@@ -25,7 +26,7 @@ class WebSocketServer:
         serve_func = websockets.serve(self.new_client_connected, "localhost", 8125)
         # gpio_processor = TestProcessor(self.send_to_clients, self.clients_list)
         # gpio_processor = OPGpioProcessor(self.send_to_clients, self.clients_list)
-        gpio_processor = RPiGpioProcessor(self.send_to_clients, self.clients_list, self.loop, self.events_queue)
+        gpio_processor = GornControllerGPIO(self.send_to_clients, self.clients_list, self.loop, self.events_queue)
         await asyncio.gather(serve_func, gpio_processor.start_processing(), self.__listen_events())
 
     async def __listen_events(self):
@@ -51,7 +52,7 @@ class WebSocketServer:
             try:
                 message = await client_socket.recv()
                 print(message)
-            except ConnectionClosedOK:
+            except (ConnectionClosed, ConnectionClosedError, ConnectionClosedOK):
                 if self.clients_list.count(client_socket):
                     self.clients_list.remove(client_socket)
                     print('[ INFO ] КЛИЕНТ ОТКЛЮЧЕН')
@@ -63,7 +64,7 @@ class WebSocketServer:
 
 
 if __name__ == '__main__':
-    # wiringpi.wiringPiSetup()
+    wiringpi.wiringPiSetup()
     event_loop = asyncio.new_event_loop()
     server = WebSocketServer(event_loop)
     asyncio.set_event_loop(event_loop)

@@ -6,6 +6,7 @@ import { Store } from "vuex"
 
 export class GpioSocket {
     connection: WebSocket | null = null
+    // url = 'ws://192.168.1.113:8125'
     url = 'ws://localhost:8125'
     reconnectingTimeout = 1000
     debug = false
@@ -85,19 +86,31 @@ export class GpioSocket {
     handleButtonEvent(buttonEvent: ButtonEvent) {
         const buttonNumber = buttonEvent.button_number
         const commit = this.buttonsCommits.get(buttonNumber)
-        let isPressed = false
-        if (buttonEvent.type === 'key_down') {
-            isPressed = true
-        }
-        if (commit) {
-            this.store.commit(commit, isPressed)
-        } else {
+        if (!commit) {
             const alert: AlertType = {
                 message: "Неизвестный запрос с сервера на кнопку: " + buttonNumber,
                 type: 'red'
             }
             Alerts.showInfoAlert(alert)
+        } else {
+            if (buttonEvent.type === 'both') {
+                this.handleButtonBothEvent(commit)
+                return;
+            }
+            let isPressed = false
+            if (buttonEvent.type === 'key_down') {
+                isPressed = true
+            }
+            this.store.commit(commit, isPressed)
         }
+
+    }
+
+    handleButtonBothEvent(commit: string) {
+        this.store.commit(commit, true)
+        setTimeout(() => {
+            this.store.commit(commit, false)
+        }, 1)
     }
 
     handleEncoderEvent(encoderEvent: EncoderEvent) {
@@ -120,7 +133,7 @@ export class GpioSocket {
                 }
                 this.store.commit(commit, encoderState)
             }, 1)
-            
+
         } else {
             const alert: AlertType = {
                 message: "Неизвестный запрос с сервера на энкодер: " + encoderNumber,
