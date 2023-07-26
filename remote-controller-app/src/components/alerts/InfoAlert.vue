@@ -78,7 +78,7 @@ export default class InfoAlert extends Vue {
         if (height < 0) return
         element.style.top = -height + 'px';
         this.currentTimeout = setTimeout(() => {
-            height = height - 2
+            height = height - 5
             this.animationProcessing(element, height)
         }, 0)
     }
@@ -92,7 +92,7 @@ export default class InfoAlert extends Vue {
     }
 
     closingAnimationProcessing(element: HTMLElement, height: number, originalHeight: number) {
-        height = height - 2
+        height = height - 5
         if (height < -originalHeight) {
             this.infoAlert = null
             return

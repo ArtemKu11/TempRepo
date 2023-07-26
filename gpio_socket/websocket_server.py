@@ -10,7 +10,7 @@ from dto import ServerResponse
 from gorn_controller_gpio import GornControllerGPIO
 
 import websockets
-from websockets.exceptions import ConnectionClosed, ConnectionClosedOK, ConnectionClosedError
+from websockets.exceptions import ConnectionClosedOK
 
 
 class WebSocketServer:
@@ -52,7 +52,7 @@ class WebSocketServer:
             try:
                 message = await client_socket.recv()
                 print(message)
-            except (ConnectionClosed, ConnectionClosedError, ConnectionClosedOK):
+            except ConnectionClosedOK:
                 if self.clients_list.count(client_socket):
                     self.clients_list.remove(client_socket)
                     print('[ INFO ] КЛИЕНТ ОТКЛЮЧЕН')

@@ -32,7 +32,7 @@ import { Prop, Component, Vue, Mixins } from 'vue-property-decorator';
 })
 export default class FatalErrorAlert extends Mixins(StateMixin, ServicesMixin, WindowsMixin) {
 
-    items = ['Klipper', 'Прошивка', 'Moonraker', 'Интерфейс']
+    items = ['Выключить машину', 'Перезагрузить машину', 'Klipper', 'Прошивка', 'Moonraker', 'Интерфейс']
     listFlag = false
 
     get message(): string {
@@ -47,7 +47,7 @@ export default class FatalErrorAlert extends Mixins(StateMixin, ServicesMixin, W
     }
 
     restartKlipper() {
-        this.restartKlippy()
+        this.serviceRestartKlipper()
         const alert: InfoAlertType = {
             message: 'Отправлен запрос на перезагрузку Klipper',
             type: 'green'
@@ -88,6 +88,12 @@ export default class FatalErrorAlert extends Mixins(StateMixin, ServicesMixin, W
 
     selectItem(selectedItem: string) {
         switch (selectedItem) {
+            case 'Выключить машину':
+                this.hostShutdown()
+                break;
+            case 'Перезагрузить машину':
+                this.hostReboot()
+                break;
             case 'Klipper':
                 this.restartKlipper()
                 break;

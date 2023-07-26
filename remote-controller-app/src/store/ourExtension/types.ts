@@ -1,4 +1,5 @@
 import { LightFilesState } from "./files/types";
+import { GornState } from "./gorn/types";
 import { GpioState } from "./gpio/types";
 import { BaseLayoutState } from "./layoutsData/baseLayout/types";
 import { LayoutsDataState } from "./layoutsData/types";
@@ -10,5 +11,6 @@ export interface OurExtensionState {
     windowFlagsState: WindowFlagsState
     filesState: LightFilesState
     profilesState: ProfilesState
-    gpioState: GpioState
+    gpioState: GpioState,
+    gornState: GornState
 }

@@ -2,147 +2,295 @@
 
 .main-window-container {
     display: grid;
-    grid-template-rows: 50px auto 50px;
+    grid-template-rows: 100px auto 100px;
     height: 100%;
+    user-select: none;
+
 
     .header {
-        display: flex;
-        justify-content: center;
-        align-items: center;
 
-        span {
+        padding-left: 20px;
+        display: flex;
+        align-items: center;
+        gap: 30px;
+
+        .time {
+            @include fontMixin();
+            // margin-right: 30px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .state {
             @include fontMixin();
             color: white;
             font-size: 18px;
         }
+
+        .fatal-warning {
+            // margin-right: 23px;
+            display: block;
+            text-align: center;
+            line-height: 30px;
+            // width: 153px;
+            padding: 0px 30px;
+            height: 30px;
+            background: rgba(225, 1, 1, 0.72);
+            border-radius: 4px;
+            font-style: normal;
+            font-weight: 600;
+            font-size: 18px;
+
+            color: #FFFFFF;
+        }
     }
 
     .center {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
+        display: grid;
+        // grid-template-columns: 3fr 2fr;
 
-        .setting-buttons {
-            position: relative;
-            display: flex;
-            justify-content: space-evenly;
-            align-items: center;
-
-            .green-indicator {
-                @include greenIndicator();
-                top: auto;
-            }
-        }
-
-        .fact-buttons {
-            position: relative;
-            display: flex;
-            justify-content: space-evenly;
-            align-items: center;
-
-            .red-indicator {
-                @include redIndicator();
-                top: auto;
-            }
-        }
-
-        .a-icon {
-            @include aIconMini();
-        }
-
-        .b-icon {
-            @include bIconMini();
-            background-color: red;
-        }
-
-
-        .parameter-button {
-            // height: 106px;
-            justify-self: center;
-            width: max-content;
-            background: none;
-            border: none;
-            cursor: pointer;
+        .weld-parameters {
             display: flex;
             flex-direction: column;
-            text-align: center;
-            justify-content: center;
-            -webkit-tap-highlight-color: transparent;
+            justify-content: space-evenly;
 
-            .button-info {
+            .setting-buttons {
+                position: relative;
+                display: flex;
+                justify-content: space-evenly;
+                align-items: center;
+
+                .green-indicator {
+                    @include greenIndicator();
+                    top: auto;
+                }
+            }
+
+            .fact-buttons {
+                position: relative;
+                display: flex;
+                justify-content: space-evenly;
+                align-items: center;
+
+                .red-indicator {
+                    @include redIndicator();
+                    top: auto;
+                }
+            }
+
+            .a-icon {
+                @include aIconMini();
+            }
+
+            .b-icon {
+                @include bIconMini();
+                background-color: red;
+            }
+
+
+            .parameter-button {
+                // height: 106px;
+                justify-self: center;
+                width: max-content;
+                background: none;
+                border: none;
+                cursor: pointer;
                 display: flex;
                 flex-direction: column;
+                text-align: center;
+                justify-content: center;
+                -webkit-tap-highlight-color: transparent;
 
-                .img-wrapper {
-                    width: 100%;
-                    height: 58px;
+                .button-info {
                     display: flex;
-                    justify-content: center;
-                    align-items: center;
+                    flex-direction: column;
 
-                    img {
-                        align-self: center;
-                        pointer-events: none;
-                        height: 10px;
-                    }
-                }
+                    .img-wrapper {
+                        width: 100%;
+                        height: 58px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
 
-
-
-                span {
-                    display: block;
-                    align-self: center;
-
-                    &:first-of-type {
-                        font-weight: 700;
-                        font-size: 50px;
-                        color: white;
+                        img {
+                            align-self: center;
+                            pointer-events: none;
+                            height: 10px;
+                        }
                     }
 
-                    &:last-of-type {
-                        margin-top: 11px;
-                        font-weight: 400;
-                        font-size: 20px;
-                        color: #C3C3C3;
-                    }
-                }
 
-                .underline {
-                    align-self: center;
-                    margin-top: 7px;
-                    height: 7px;
-                    width: 117px;
-                    background: #00B2CA;
-                }
 
-                &:active {
                     span {
-                        &:last-of-type {
+                        display: block;
+                        align-self: center;
+
+                        &:first-of-type {
+                            font-weight: 700;
+                            font-size: 50px;
                             color: white;
+                        }
+
+                        &:last-of-type {
+                            margin-top: 11px;
+                            font-weight: 400;
+                            font-size: 20px;
+                            color: #C3C3C3;
+                        }
+                    }
+
+                    .underline {
+                        align-self: center;
+                        margin-top: 7px;
+                        height: 7px;
+                        width: 117px;
+                        background: #00B2CA;
+                    }
+
+                    &:active {
+                        span {
+                            &:last-of-type {
+                                color: white;
+                            }
                         }
                     }
                 }
+
             }
 
+            .parameter-button.with-icon {
+                display: flex;
+                flex-direction: row;
+
+                .icon-wrapper {
+                    position: relative;
+                    top: 15px;
+                    display: flex;
+                    align-items: center;
+                    min-width: 29px;
+                }
+
+                .button-info {
+                    display: flex;
+                    flex-direction: column;
+                }
+            }
         }
 
-        .parameter-button.with-icon {
+        .buttons {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
+            justify-content: space-evenly;
+            // justify-content: center;
+            // gap: 50px;
+            padding: 30px 0;
 
-            .icon-wrapper {
-                position: relative;
-                top: 15px;
-                display: flex;
-                align-items: center;
-                min-width: 29px;
-            }
-
-            .button-info {
+            .setup-button-wrapper {
                 display: flex;
                 flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
+                button {
+                    background: none;
+                    border: none;
+                    width: 305px;
+                    height: 50px;
+                    filter: drop-shadow(6px 6px 10px #000000) drop-shadow(-6px -6px 10px rgba(0, 148, 255, 0.37));
+                    border-radius: 12px;
+                    border: 3px solid rgba(226, 226, 226, 1);
+                    font-weight: 400;
+                    font-size: 20px;
+                    color: #D9D9D9;
+                    cursor: pointer;
+
+                    &:active {
+                        background: #434343;
+                    }
+                }
+
+                span {
+                    margin-top: 17px;
+                    display: block;
+                    color: rgba(195, 195, 195, 1);
+                    font-weight: 400;
+                    font-size: 20px;
+                }
             }
         }
+
+    }
+
+    .footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+
+        .module-div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            
+            .unit-params, .unit-name {
+                display: block;
+                color: white;
+                font-weight: 400;
+                font-size: 20px;
+            }
+        }
+        
+
+        .setup-button-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            button {
+                background: none;
+                border: none;
+                padding: 0 50px;
+                // width: 305px;
+                height: 50px;
+                filter: drop-shadow(6px 6px 10px #000000) drop-shadow(-6px -6px 10px rgba(0, 148, 255, 0.37));
+                border-radius: 12px;
+                border: 3px solid rgba(226, 226, 226, 1);
+                font-weight: 400;
+                font-size: 20px;
+                color: #D9D9D9;
+                cursor: pointer;
+
+                &:active {
+                    background: #434343;
+                }
+
+                span {
+                    margin-top: 17px;
+                    display: block;
+                    color: rgba(195, 195, 195, 1);
+                    font-weight: 400;
+                    font-size: 20px;
+                }
+            }
+
+            &.deactive {
+
+                button {
+                    border: 3px solid #434343;
+                    color: #434343;
+
+                    &:active {
+                        background: none;
+                    }
+                }
+
+
+            }
+
+
+        }
+
 
     }
 }

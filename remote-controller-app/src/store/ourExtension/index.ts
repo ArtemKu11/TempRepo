@@ -7,6 +7,7 @@ import { profiles } from "./profiles";
 import { OurExtensionState } from "./types";
 import windowFlags from "./windowFlags";
 import { gpio } from "./gpio";
+import { gorn } from "./gorn";
 
 const namespaced = true;
 
@@ -17,7 +18,8 @@ export const ourExtension: Module<OurExtensionState, RootState> = {
         windowFlags,
         files,
         profiles,
-        gpio
+        gpio,
+        gorn
     },
     actions: {
         reset() {

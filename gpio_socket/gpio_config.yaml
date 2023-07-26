@@ -9,9 +9,9 @@ button3:
   pin: 3
 encoder1:
   number: 1
-  first_pin: 9
-  second_pin: 10
+  first_pin: 10
+  second_pin: 9
 encoder2:
   number: 2
-  first_pin: 4
-  second_pin: 6
+  first_pin: 6
+  second_pin: 4

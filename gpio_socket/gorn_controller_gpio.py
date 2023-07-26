@@ -48,22 +48,39 @@ class GornControllerGPIO:
         emit_button_event = ButtonEvent(button_number=button.button_number, event_type='both').__dict__
         self.events_queue.put(emit_button_event, block=True)
 
-    def __listen_encoder(self, encoder: Encoder):  # хз как это работает, но работает)))
+    def __listen_encoder(self, encoder: Encoder):  # хз как это работает, но работает))) А вообще надо переделать
         last_first_pin_value = wiringpi.digitalRead(encoder.first_pin)
         last_second_pin_value = wiringpi.digitalRead(encoder.second_pin)
-        while last_first_pin_value != 1 and last_second_pin_value != 1:
+        # start_time_ms = int(time.time() * 1000)
+        # counter = 0
+        while not (last_first_pin_value == 1 and last_second_pin_value == 1):
+
             current_first_pin_value = wiringpi.digitalRead(encoder.first_pin)
             current_second_pin_value = wiringpi.digitalRead(encoder.second_pin)
-            if current_first_pin_value != last_first_pin_value or current_second_pin_value != last_second_pin_value:
-                if current_first_pin_value == 1 and current_second_pin_value == 0:
-                    return 'clockwise'
-                elif current_first_pin_value == 0 and current_second_pin_value == 1:
-                    return 'counter_clockwise'
-                else:
-                    return 'None'
-            else:
-                last_first_pin_value = current_first_pin_value
-                last_second_pin_value = current_second_pin_value
+            if last_first_pin_value == 0 and last_second_pin_value == 1 and current_first_pin_value == 1 and current_second_pin_value == 1:
+                return 'clockwise'
+            elif last_first_pin_value == 1 and last_second_pin_value == 0 and current_first_pin_value == 1 and current_second_pin_value == 1:
+                return 'counter_clockwise'
+            last_first_pin_value = current_first_pin_value
+            last_second_pin_value = current_second_pin_value
+
+            # counter += 1
+            # if counter == 100:
+            #     time_ms = int(time.time() * 1000)
+            #     if time_ms - start_time_ms > 100:
+            #         return 'None'
+            # current_first_pin_value = wiringpi.digitalRead(encoder.first_pin)
+            # current_second_pin_value = wiringpi.digitalRead(encoder.second_pin)
+            # if current_first_pin_value != last_first_pin_value or current_second_pin_value != last_second_pin_value:
+            #     if current_first_pin_value == 1 and current_second_pin_value == 0:
+            #         return 'clockwise'
+            #     elif current_first_pin_value == 0 and current_second_pin_value == 1:
+            #         return 'counter_clockwise'
+            #     else:
+            #         return 'None'
+            # else:
+            #     last_first_pin_value = current_first_pin_value
+            #     last_second_pin_value = current_second_pin_value
 
     def __listen_button(self, button: Button):
         if button.button_number in [2, 3]:

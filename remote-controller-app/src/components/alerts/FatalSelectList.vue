@@ -7,8 +7,8 @@
                 <button class="points-button"><img src="@/layouts/profiles_layout/img/points_icon.png"></button>
             </div>
             <div class="material-select-center">
-                <ItemButton @selectItem="selectItem" @activateItem="activateItem" @deactivateItems="deactivateItems" v-for="(item, index) of listItems" :key="index"
-                    :listInstance="item" />
+                <ItemButton @selectItem="selectItem" @activateItem="activateItem" @deactivateItems="deactivateItems"
+                    v-for="(item, index) of listItems" :key="index" :listInstance="item" />
             </div>
             <div class="file-select-footer"></div>
         </div>
@@ -30,12 +30,20 @@ export default class FatalSelectList extends Vue {
 
     @Prop()
     items!: string[]
+
+    @Prop()
+    zIndex!: number
+
     listItems: ListInstance[] = []
 
     mounted() {
         const container = this.$refs.mainContainer as HTMLElement;
         if (container) {
-            container.style.zIndex = '10'
+            if (typeof this.zIndex === 'number') {
+                container.style.zIndex = this.zIndex + ''
+            } else {
+                container.style.zIndex = '10'
+            }
         }
 
         for (const item of this.items) {
@@ -102,7 +110,7 @@ button {
 }
 
 .material-select-container {
-    min-height: 660px;
+    // min-height: 660px;
     position: absolute;
     z-index: 3;
     height: 100%;
@@ -110,17 +118,17 @@ button {
     display: grid;
     // grid-template-columns: $sidebarWidth auto;
     grid-template-rows: 1fr;
-    backdrop-filter: blur(5px);
+    // backdrop-filter: blur(5px);
     background: rgba(21, 21, 21, 0.9);
     // display: none;
 
     .material-select-content-container {
-        min-height: 660px;
+        // min-height: 660px;
         height: 100%;
         display: grid;
-        grid-template-rows: $headerHeight 50px auto 80px;
+        grid-template-rows: $headerHeight auto 80px;
         overflow-y: auto;
-        grid-column: 2/3;
+        // grid-column: 2/3;
         padding: 0px 40px;
 
         .material-select-header {
@@ -143,7 +151,8 @@ button {
                 background-repeat: no-repeat;
 
                 img {
-                    padding-right: 12px
+                    padding-right: 12px;
+                    padding-top: 5px;
                 }
             }
 
@@ -152,16 +161,22 @@ button {
                 background-image: url('@/layouts/profiles_layout/img/points_button.svg');
                 background-position: center;
                 background-repeat: no-repeat;
+
+                img {
+                    padding-left: 5px;
+                    padding-bottom: 5px;
+                }
             }
         }
 
         .material-select-center {
             // min-width: 1140px - $sidebarWidth;
-            grid-row: 3;
+            padding: 0 100px;
+            // grid-row: 3;
             width: 100%;
             height: 100%;
             justify-self: center;
-            padding-right: 100px;
+            // padding-right: 100px;
             overflow-y: scroll;
             display: flex;
             flex-direction: column;
@@ -217,7 +232,7 @@ button {
 
 
                 .material-info {
-                    height: 90px;
+                    height: 70px;
                     width: 100%;
                     display: grid;
                     grid-template-columns: 50px auto;
@@ -243,21 +258,21 @@ button {
                     span {
                         grid-column: 2;
                         font-weight: 700;
-                        font-size: 35px;
+                        font-size: 20px;
                         color: white;
                         // color: #6B6B6B;
-                        
+
                     }
                 }
 
                 button {
                     background: none;
                     border: none;
-                    width: 179px;
-                    height: 73px;
+                    width: 150px;
+                    height: 55px;
                     align-self: center;
                     justify-self: center;
-                    font-size: 25px;
+                    font-size: 20px;
                     font-weight: 700;
                     color: rgba(217, 217, 217, 1);
                     filter: drop-shadow(6px 6px 10px #000000) drop-shadow(-6px -6px 10px rgba(0, 148, 255, 0.37));
@@ -291,6 +306,4 @@ button {
         }
     }
 }
-
-
 </style>
