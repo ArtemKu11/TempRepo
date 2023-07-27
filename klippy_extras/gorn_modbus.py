@@ -41,6 +41,10 @@ class GornModbus:
                                     self.cmd_SET_WELD_PARAMETERS,
                                     desc=self.cmd_SET_WELD_PARAMETERS_help)
 
+        self.gcode.register_command('SET_NEW_UNIT_ADDRESS',
+                                    self.cmd_SET_NEW_UNIT_ADDRESS,
+                                    desc=self.cmd_SET_NEW_UNIT_ADDRESS_help)
+
         self.printer.register_event_handler("klippy:shutdown", self._handle_shutdown)
         self.printer.register_event_handler("klippy:connect",
                                             self._handle_connect)
@@ -267,6 +271,22 @@ class GornModbus:
         else:
             raise ValueError('Значение тока не число')
 
+    def __set_new_unit_address(self, unit: int, new_unit: int):
+        logging.info(f'Для устройства с unit={unit} установлен новый unit={new_unit}')
+        res = self.client.write_register(32, new_unit, unit=unit)
+        if type(res) == ModbusIOException:
+            raise res
+
+    cmd_SET_NEW_UNIT_ADDRESS_help = 'Установить новый сетевой адрес'
+    def cmd_SET_NEW_UNIT_ADDRESS(self, gcmd):
+        try:
+            command_params = gcmd.get_command_parameters()
+            unit = self.__get_unit(command_params)
+            new_unit = self.__get_new_unit(command_params)
+            self.__set_new_unit_address(unit, new_unit)
+        except Exception as e:
+            raise gcmd.error(e.__str__())
+
     cmd_SET_WELD_PARAMETERS_help = 'Установить напряжение и ток'
     def cmd_SET_WELD_PARAMETERS(self, gcmd):
         cmd_params = gcmd.get_command_parameters()
@@ -284,6 +304,18 @@ class GornModbus:
 
         except Exception as e:
             raise gcmd.error(e.__str__())
+
+    def __get_new_unit(self, command_params):
+        if 'NEW_UNIT' not in command_params:
+            raise ValueError('Необходимо указать new_unit устройства')
+        new_unit = command_params['NEW_UNIT'].strip()
+        if new_unit.isdigit():
+            new_unit = int(new_unit)
+        else:
+            raise ValueError('Некорректный new_unit устройства')
+        if new_unit not in self.unit_timers.keys():
+            raise ValueError('Некорректный new_unit устройства')
+        return new_unit
 
     cmd_GORN_ON_help = 'Включить сварочник'
     def cmd_GORN_ON(self, gcmd):

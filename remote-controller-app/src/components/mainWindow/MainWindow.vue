@@ -95,7 +95,7 @@
 import GpioMixin from '@/mixins/gpio';
 import StateMixin from '@/mixins/state';
 import { Alerts } from '@/store/ourExtension/layoutsData/alerts/helpers';
-import { InfoAlertType } from '@/store/ourExtension/layoutsData/alerts/types';
+import { AlertType, InfoAlertType } from '@/store/ourExtension/layoutsData/alerts/types';
 import { NetworkState, SystemInfo } from '@/store/server/types';
 import { Component, Mixins, Vue, Watch } from 'vue-property-decorator';
 import FatalSelectList from '@/components/alerts/FatalSelectList.vue'
@@ -108,7 +108,7 @@ import { GornClientState, GornServerState, UnitClientState, UnitServerState } fr
     },
 })
 export default class MainWindow extends Mixins(StateMixin, GpioMixin, ServicesMixin) {
-    listItems = ['Выключить копухтер', 'Перезагрузить компухтер', 'Перезагрузить Klipper', 'FIRMWARE RESTART', 'Обновить страницу']
+    listItems = ['Фикс сетeвого адреса', 'Выключить копухтер', 'Перезагрузить компухтер', 'Перезагрузить Klipper', 'FIRMWARE RESTART', 'Обновить страницу']
     listFlag = false
     longTouchTimeout: null | number = null
     firstStateLoadingFlag = true
@@ -623,22 +623,44 @@ export default class MainWindow extends Mixins(StateMixin, GpioMixin, ServicesMi
 
     }
 
+    unitAddressFix() {
+        const alert: AlertType = {
+            message: 'Отключите порт от первого модуля. Включите порт ко второму модулю. Если все готово, нажмите "ДА"',
+            type: 'yes_no',
+            confirmCallback: this.sendUnitAddressFix
+        }
+        this.$store.dispatch('ourExtension/layoutsData/alerts/addToAlertQueue', alert)
+    }
+
+    sendUnitAddressFix() {
+        const alert: InfoAlertType = {
+            message: 'Отправлен запрос на смену сетевого адреса',
+            type: 'green',
+            time: 2000
+        }
+        Alerts.showInfoAlert(alert)
+        this.sendGcode('SET_NEW_UNIT_ADDRESS unit=1 new_unit=2')
+    }
+
     selectItem(selectedItem: string) {
         this.closeList()
         switch (selectedItem) {
             case this.listItems[0]:
-                this.hostShutdown()
+                this.unitAddressFix()
                 break;
             case this.listItems[1]:
-                this.hostReboot()
+                this.hostShutdown()
                 break;
             case this.listItems[2]:
-                this.restartKlipper()
+                this.hostReboot()
                 break;
             case this.listItems[3]:
-                this.restartFirmware()
+                this.restartKlipper()
                 break;
             case this.listItems[4]:
+                this.restartFirmware()
+                break;
+            case this.listItems[5]:
                 this.restartInterface()
                 break;
         }
