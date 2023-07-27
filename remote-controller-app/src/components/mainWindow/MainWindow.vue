@@ -536,9 +536,9 @@ export default class MainWindow extends Mixins(StateMixin, GpioMixin, ServicesMi
             }
             if (allowedToOff.length) {
                 this.offModules(allowedToOff)
-                let message = `Запрос на выключение модулей: ${allowedToOff.map((item) => { return `№${item} ` })}`
+                let message = `Запрос на выключение модулей: ${allowedToOff.map((item) => { return ` №${item}` })}`
                 if (unknown.length) {
-                    message = `Запрос на выключение модулей: ${allowedToOff.map((item) => { return `№${item} ` })}. Проигнорированы модули: ${unknown.map((item) => { return `№${item} ` })} (Состояние неизвестно)`
+                    message = `Запрос на выключение модулей: ${allowedToOff.map((item) => { return ` №${item}` })}. Проигнорированы модули: ${unknown.map((item) => { return ` №${item}` })} (Состояние неизвестно)`
                 }
                 alert = {
                     message: message,
@@ -547,9 +547,9 @@ export default class MainWindow extends Mixins(StateMixin, GpioMixin, ServicesMi
                 Alerts.showInfoAlert(alert)
             } else if (allowedToOn.length) {
                 this.onModules(allowedToOn)
-                let message = `Запрос на включение модулей: ${allowedToOn.map((item) => { return `№${item} ` })}`
+                let message = `Запрос на включение модулей: ${allowedToOn.map((item) => { return ` №${item}` })}`
                 if (unknown.length) {
-                    message = `Запрос на включение модулей: ${allowedToOn.map((item) => { return `№${item} ` })}. Проигнорированы модули: ${unknown.map((item) => { return `№${item} ` })} (Состояние неизвестно)`
+                    message = `Запрос на включение модулей: ${allowedToOn.map((item) => { return ` №${item}` })}. Проигнорированы модули: ${unknown.map((item) => { return ` №${item}` })} (Состояние неизвестно)`
                 }
                 alert = {
                     message: message,
@@ -558,7 +558,7 @@ export default class MainWindow extends Mixins(StateMixin, GpioMixin, ServicesMi
                 Alerts.showInfoAlert(alert)
             } else {
                 alert = {
-                    message: `Состояние модулей (${unknown.map((item) => { return `№${item} ` })}) неизвестно. Запрос не отправлен`,
+                    message: `Состояние модулей (${unknown.map((item) => { return ` №${item}` })}) неизвестно. Запрос не отправлен`,
                     type: 'red'
                 }
                 Alerts.showInfoAlert(alert)
@@ -702,18 +702,13 @@ export default class MainWindow extends Mixins(StateMixin, GpioMixin, ServicesMi
     }
 
     clickHandler() {
-        const systemInfo = this.$store.getters['server/getSystemInfo'] as SystemInfo
-        if (systemInfo && systemInfo.network) {
-            const ipAdresses = this.getIpAddresses(systemInfo.network)
-            if (ipAdresses.length) {
-                const alert: InfoAlertType = {
-                    message: `Возможные ip-адреса: ${ipAdresses}`,
-                    type: 'green',
-                }
-                Alerts.showInfoAlert(alert)
-            } else {
-                this.noNetworkAlert()
+        const ipAdresses = this.ipAddresses
+        if (ipAdresses.length) {
+            const alert: InfoAlertType = {
+                message: `Возможные ip-адреса: ${ipAdresses}`,
+                type: 'green',
             }
+            Alerts.showInfoAlert(alert)
         } else {
             this.noNetworkAlert()
         }
@@ -726,21 +721,6 @@ export default class MainWindow extends Mixins(StateMixin, GpioMixin, ServicesMi
             time: 2000
         }
         Alerts.showInfoAlert(alert)
-    }
-
-    getIpAddresses(networkObj: NetworkState): string[] {
-        const ipAdrresses = []
-        for (const id in networkObj) {
-            const network = networkObj[id]
-            if (network.ip_addresses) {
-                for (const addr of network.ip_addresses) {
-                    if (addr.address && addr.address.startsWith('192')) {
-                        ipAdrresses.push(addr.address)
-                    }
-                }
-            }
-        }
-        return ipAdrresses
     }
 }
 </script>

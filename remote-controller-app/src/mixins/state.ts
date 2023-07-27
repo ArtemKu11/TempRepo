@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import { SocketActions } from '@/api/socketActions'
 import { Component } from 'vue-property-decorator'
+import { NetworkState, SystemInfo } from '@/store/server/types'
 
 @Component
 export default class StateMixin extends Vue {
@@ -135,5 +136,34 @@ export default class StateMixin extends Vue {
 
     get printerAllowedToStartPrint() {
         return this.printerState.toLowerCase() === 'ready' || this.printerState.toLowerCase() === 'idle' || this.printerState.toLowerCase() === 'cancelled'
+    }
+
+    get ipAddresses() {
+        const systemInfo = this.$store.getters['server/getSystemInfo'] as SystemInfo
+        if (systemInfo && systemInfo.network) {
+            const ipAdresses = this.getIpAddresses(systemInfo.network)
+            if (ipAdresses.length) {
+                return ipAdresses
+            } else {
+                return []
+            }
+        } else {
+            return []
+        }
+    }
+
+    getIpAddresses(networkObj: NetworkState): string[] {
+        const ipAdrresses = []
+        for (const id in networkObj) {
+            const network = networkObj[id]
+            if (network.ip_addresses) {
+                for (const addr of network.ip_addresses) {
+                    if (addr.address && addr.address.startsWith('192')) {
+                        ipAdrresses.push(addr.address)
+                    }
+                }
+            }
+        }
+        return ipAdrresses
     }
 }

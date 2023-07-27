@@ -1,8 +1,5 @@
 import logging
-import pymodbus
-from pymodbus.pdu import ModbusRequest
 from pymodbus.client.sync import ModbusSerialClient
-from pymodbus.transaction import ModbusRtuFramer
 from pymodbus.exceptions import ModbusIOException
 
 GORN_POWER_REFRESH_TIME = 0.5
