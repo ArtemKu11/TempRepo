@@ -4,8 +4,8 @@
             <div class="screen-name">Информация о системе</div>
             <div class="xweld-logo"><img class="xweld-logo-img" src="@/layouts/system_info_screen/img/xweld_logo.png"></div>
             <div class="system-info-placeholder">
+                <span>Сеть: {{ ipAddressesString }}</span>
                 <button @click="refreshWindow" class="refresh-button"><span>Обновить</span></button>
-
             </div>
         </div>
     </div>
@@ -13,14 +13,20 @@
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import StateMixin from '@/mixins/state';
+import { Component, Mixins, Vue } from 'vue-property-decorator';
 
 @Component({
     components: {
 
     },
 })
-export default class SystemInfoWindow extends Vue {
+export default class SystemInfoWindow extends Mixins(StateMixin) {
+    get ipAddressesString() {
+        const arr = this.ipAddresses
+        return arr.join(' ')
+    }
+
     refreshWindow() {
         location.reload()
     }
@@ -70,6 +76,9 @@ export default class SystemInfoWindow extends Vue {
         flex: 1;
         padding-top: 10px;
         padding-left: 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
 
 
         button {

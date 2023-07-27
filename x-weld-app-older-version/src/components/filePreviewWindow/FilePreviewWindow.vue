@@ -77,7 +77,7 @@ export default class FilePreviewWindow extends Mixins(FilesMixin, StateMixin, Wi
         this.$store.dispatch('ourExtension/layoutsData/profilesWindow/reset')
         this.$store.dispatch('ourExtension/layoutsData/profilesWindow/setFile', this.fileData)
         this.$store.dispatch('ourExtension/layoutsData/profilesWindow/setCallback', confirmCallback)
-        this.$store.dispatch('ourExtension/windowFlags/openProfilesWindow')
+        this.$store.dispatch('ourExtension/windowFlags/openProfilesWindowWithStackSave')
     }
 
     openPreviousWindow() {

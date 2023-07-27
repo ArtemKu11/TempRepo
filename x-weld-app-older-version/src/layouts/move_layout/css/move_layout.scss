@@ -253,7 +253,7 @@ $minHeightForFont: 600px;
                 display: grid;
                 grid-template-columns: 1fr 2fr 1fr;
                 grid-template-rows: 2fr 1fr;
-                grid-column-gap: 5px;
+                grid-column-gap: 15px;
 
                 button {
                     -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
@@ -274,12 +274,12 @@ $minHeightForFont: 600px;
 
                     img {
                         pointer-events: none;
-                        width: 50px;
+                        width: 40px;
                     }
 
                     &:active, .active {
                         img {
-                            width: 62px;
+                            width: 50px;
                             // width: 125%;
                             // height: 125%;
 
@@ -295,7 +295,7 @@ $minHeightForFont: 600px;
                         grid-column: 2;
                         grid-row: 1;
                         color: white;
-                        font-size: 60px;
+                        font-size: 55px;
                         font-weight: 700;
                         justify-self: center;
                         align-self: center;
