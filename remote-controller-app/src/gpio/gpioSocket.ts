@@ -1,3 +1,4 @@
+import { GpioBus } from "@/gpioBus"
 import { SocketRequest } from "@/plugins/socketClient"
 import { EncoderState } from "@/store/ourExtension/gpio/types"
 import { Alerts } from "@/store/ourExtension/layoutsData/alerts/helpers"
@@ -28,6 +29,8 @@ export class GpioSocket {
     }
 
     connect() {
+        GpioBus.$emit({ buttonNumber: 1, type: 'up' })
+
         this.connection = new WebSocket(this.url)
 
         this.connection.onopen = () => {
@@ -38,6 +41,7 @@ export class GpioSocket {
         this.connection.onclose = (e) => {
             if (this.debug) { console.log('СОКЕТ ЗАКРЫТ ', e) }
             this.store.commit('ourExtension/gpio/setSocketConnected', false)
+            GpioBus.$emit({ buttonNumber: 1, type: 'down' })
             setTimeout(this.connect.bind(this), this.reconnectingTimeout)
         }
 
@@ -120,7 +124,7 @@ export class GpioSocket {
                 }
                 this.store.commit(commit, encoderState)
             }, 1)
-            
+
         } else {
             const alert: AlertType = {
                 message: "Неизвестный запрос с сервера на энкодер: " + encoderNumber,

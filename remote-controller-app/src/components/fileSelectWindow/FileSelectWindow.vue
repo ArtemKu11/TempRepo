@@ -90,6 +90,9 @@ import GpioMixin from '@/mixins/gpio';
 
 import { PrintingDiapasonForMoonraker } from '@/store/ourExtension/profiles/types';
 import FilesMixin from '@/mixins/files';
+import { EventBus } from '@/eventBus';
+import { GpioBus } from '@/gpioBus';
+import { GpioEvent } from '@/gpioBus';
 
 
 
@@ -138,6 +141,19 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
     }
 
     mounted(): void {
+        GpioBus.bus.$on('gpioEvent', (payload: GpioEvent) => {
+            let button = ''
+            const handler = payload.type === 'down' ? this.gpioButtonDownEventHandler : this.gpioButtonUpEventHandler
+            switch (payload.buttonNumber) {
+                case 1:
+                    button = 'firstButton'
+                    break;
+
+                default:
+                    break;
+            }
+            handler(button);
+        })
         this.deactivateFiles()
     }
 
@@ -165,6 +181,8 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
 
     resolveButtonClick(button: string) {
         switch (button) {
+            case "firstButton":  // Выбор
+                return;
             case "fourthButton":  // Выбор
                 this.selectButtonClick()
                 return;
@@ -182,27 +200,27 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
         }
     }
 
-    
+
 
     selectButtonClick() {
-        this.tryToStartPrint();  // TODO раскоммениторовать и убрать
-        // const selectedFile = this.selectedFile
-        // const selectedDirectory = this.selectedDirectory
-        // if (selectedFile) {
-        //     this.tryToStartPrint()
-        //     return
-        // }
-        // if (selectedDirectory) {
-        //     this.$store.commit('ourExtension/layoutsData/newFileBrowseWindow/deactivateFiles');
-        //     const newPath = this.currentPath + "/" + selectedDirectory.name
-        //     this.$store.dispatch('ourExtension/layoutsData/newFileBrowseWindow/setCurrentPath', newPath);
-        //     return
-        // }
-        // const alert: InfoAlertType = {
-        //     message: "Ничего не выбрано",
-        //     type: 'red'
-        // }
-        // Alerts.showInfoAlert(alert)
+        // this.tryToStartPrint();  // TODO раскоммениторовать и убрать
+        const selectedFile = this.selectedFile
+        const selectedDirectory = this.selectedDirectory
+        if (selectedFile) {
+            this.tryToStartPrint()
+            return
+        }
+        if (selectedDirectory) {
+            this.$store.commit('ourExtension/layoutsData/newFileBrowseWindow/deactivateFiles');
+            const newPath = this.currentPath + "/" + selectedDirectory.name
+            this.$store.dispatch('ourExtension/layoutsData/newFileBrowseWindow/setCurrentPath', newPath);
+            return
+        }
+        const alert: InfoAlertType = {
+            message: "Ничего не выбрано",
+            type: 'red'
+        }
+        Alerts.showInfoAlert(alert)
     }
 
     tryToStartPrint() {
@@ -229,8 +247,8 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
     }
 
     startNewPrint() {
-        const selectedFile = mockHelper.getFileDataMock()
-        // const selectedFile = this.selectedFile  // Поменять местами
+        // const selectedFile = mockHelper.getFileDataMock()
+        const selectedFile = this.selectedFile  // Поменять местами
         if (selectedFile) {
 
             this.$store.commit('ourExtension/files/setSelectedFile', selectedFile)
@@ -293,14 +311,14 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
     // 3. touchStartHandler: this.setAllButtonsPressed(false)
     // 4. Скопировать все нижележащее 
 
-    gpioButtonDownEventHandler(button: string) {
+    gpioButtonUpEventHandler(button: string) {
         if (button in this.buttonsState) {
             const state = this.buttonsState as any
             state[button] = true
         }
     }
 
-    gpioButtonUpEventHandler(button: string, needToResolveClick = true) {
+    gpioButtonDownEventHandler(button: string, needToResolveClick = true) {
         if (button in this.buttonsState) {
             const state = this.buttonsState as any
             state[button] = false
@@ -314,12 +332,12 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
     firstButtonWather(newValue: boolean, oldValue: boolean) {
         const isPressed = this.isFirstButtonPressed
         if (isPressed) {
-            this.gpioButtonDownEventHandler('firstButton')
+            this.gpioButtonUpEventHandler('firstButton')
         } else {
             if (!this.buttonsInterrups.firstButton) {
-                this.gpioButtonUpEventHandler('firstButton')
+                this.gpioButtonDownEventHandler('firstButton')
             } else {
-                this.gpioButtonUpEventHandler('firstButton', false)
+                this.gpioButtonDownEventHandler('firstButton', false)
             }
         }
     }
@@ -328,15 +346,15 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
     secondButtonWather(newValue: boolean, oldValue: boolean) {
         const isPressed = this.isSecondButtonPressed
         if (isPressed) {
-            this.gpioButtonDownEventHandler('secondButton')
+            this.gpioButtonUpEventHandler('secondButton')
         } else {
             if (isPressed) {
-                this.gpioButtonUpEventHandler('secondButton')
+                this.gpioButtonDownEventHandler('secondButton')
             } else {
                 if (!this.buttonsInterrups.secondButton) {
-                    this.gpioButtonUpEventHandler('secondButton')
+                    this.gpioButtonDownEventHandler('secondButton')
                 } else {
-                    this.gpioButtonUpEventHandler('secondButton', false)
+                    this.gpioButtonDownEventHandler('secondButton', false)
                 }
             }
         }
@@ -346,12 +364,12 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
     thirdButtonWather(newValue: boolean, oldValue: boolean) {
         const isPressed = this.isThirdButtonPressed
         if (isPressed) {
-            this.gpioButtonDownEventHandler('thirdButton')
+            this.gpioButtonUpEventHandler('thirdButton')
         } else {
             if (!this.buttonsInterrups.thirdButton) {
-                this.gpioButtonUpEventHandler('thirdButton')
+                this.gpioButtonDownEventHandler('thirdButton')
             } else {
-                this.gpioButtonUpEventHandler('thirdButton', false)
+                this.gpioButtonDownEventHandler('thirdButton', false)
             }
         }
     }
@@ -360,12 +378,12 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
     fourthButtonWather(newValue: boolean, oldValue: boolean) {
         const isPressed = this.isFourthButtonPressed
         if (isPressed) {
-            this.gpioButtonDownEventHandler('fourthButton')
+            this.gpioButtonUpEventHandler('fourthButton')
         } else {
             if (!this.buttonsInterrups.fourthButton) {
-                this.gpioButtonUpEventHandler('fourthButton')
+                this.gpioButtonDownEventHandler('fourthButton')
             } else {
-                this.gpioButtonUpEventHandler('fourthButton', false)
+                this.gpioButtonDownEventHandler('fourthButton', false)
             }
         }
     }
@@ -374,12 +392,12 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
     fifthButtonWather(newValue: boolean, oldValue: boolean) {
         const isPressed = this.isFifthButtonPressed
         if (isPressed) {
-            this.gpioButtonDownEventHandler('fifthButton')
+            this.gpioButtonUpEventHandler('fifthButton')
         } else {
             if (!this.buttonsInterrups.fifthButton) {
-                this.gpioButtonUpEventHandler('fifthButton')
+                this.gpioButtonDownEventHandler('fifthButton')
             } else {
-                this.gpioButtonUpEventHandler('fifthButton', false)
+                this.gpioButtonDownEventHandler('fifthButton', false)
             }
         }
     }
@@ -388,12 +406,12 @@ export default class FileSelectWindow extends Mixins(StateMixin, WindowsMixin, F
     sixthButtonWather(newValue: boolean, oldValue: boolean) {
         const isPressed = this.isSixthButtonPressed
         if (isPressed) {
-            this.gpioButtonDownEventHandler('sixthButton')
+            this.gpioButtonUpEventHandler('sixthButton')
         } else {
             if (!this.buttonsInterrups.sixthButton) {
-                this.gpioButtonUpEventHandler('sixthButton')
+                this.gpioButtonDownEventHandler('sixthButton')
             } else {
-                this.gpioButtonUpEventHandler('sixthButton', false)
+                this.gpioButtonDownEventHandler('sixthButton', false)
             }
         }
     }

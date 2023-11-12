@@ -43,6 +43,9 @@ import { AlertType } from './store/ourExtension/layoutsData/alerts/types';
 import WindowsMixin from './mixins/windows';
 import GpioMixin from './mixins/gpio';
 import { Alerts } from './store/ourExtension/layoutsData/alerts/helpers';
+import { EventBus, FlashMessage } from '@/eventBus'
+import { GpioBus, GpioEvent } from './gpioBus';
+
 
 @Component({
     components: {
@@ -113,6 +116,9 @@ export default class App extends Mixins(FilesMixin, StateMixin, WindowsMixin, Gp
     }
 
     mounted() {
+        setTimeout(() => {
+            console.log(this.$store.getters['ourExtension/files/getFilesMap'])
+        }, 5000)
         this.$store.dispatch('ourExtension/layoutsData/baseLayout/startTimeRefreshing');
         setTimeout(() => {
             if (this.printerPrinting || this.printerPaused) {
