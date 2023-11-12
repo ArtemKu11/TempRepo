@@ -5,7 +5,6 @@ AppCopy.vue
 x-weld-app
 gpio_socket/.idea/
 gpio_socket/__pycache__
-
 gpio_socket/callback_test.py
 gpio_socket/asyncio_timer.py
 __pycache__
@@ -13,4 +12,5 @@ gpio_socket/encoder.py
 gpio_socket/rpi_interrupt.py
 gpio_socket/interrupt_detector.py
 gpio_socket/encoder_polling.py
-klippy_extras/
+klippy_extras/venv
+klippy_extras/.idea
