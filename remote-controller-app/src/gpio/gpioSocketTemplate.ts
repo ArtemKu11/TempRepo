@@ -6,11 +6,6 @@ export class GpioSocketTemplate {
     url = 'ws://localhost:8125'
     reconnectingTimeout = 1000
     debug = false
-    store: Store<any>
-
-    constructor(store: Store<any>) {
-        this.store = store
-    }
 
     connect() {
         // GpioBus.$emit({ buttonNumber: 1, type: 'up' })
@@ -19,12 +14,12 @@ export class GpioSocketTemplate {
 
         this.connection.onopen = () => {
             console.log('GPIO socket open')
-            this.store.commit('ourExtension/gpio/setSocketConnected', true)
+            // Кинуть Alerts.showInfoAlert
         }
 
         this.connection.onclose = (e) => {
             if (this.debug) { console.log('СОКЕТ ЗАКРЫТ ', e) }
-            this.store.commit('ourExtension/gpio/setSocketConnected', false)
+            // Кинуть Alerts.showInfoAlert
             setTimeout(this.connect.bind(this), this.reconnectingTimeout)
         }
 
@@ -36,7 +31,7 @@ export class GpioSocketTemplate {
             const response = m as any
             if (response.data) {  // TODO, если не data
                 const data = JSON.parse(response.data)
-                console.log('ОТ СОКЕТА:', data)
+                console.log('ОТ СОКЕТА:', data)  // Тут будет GpioBus.$emit()
             }
         }
     }
